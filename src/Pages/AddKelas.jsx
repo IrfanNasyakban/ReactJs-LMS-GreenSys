@@ -14,9 +14,7 @@ import {
   FaGraduationCap,
   FaRecycle,
   FaUsers,
-  FaLightbulb,
   FaSeedling,
-  FaTree
 } from "react-icons/fa";
 import { MdScience, MdClass } from "react-icons/md";
 import { BsDoorOpen } from "react-icons/bs";

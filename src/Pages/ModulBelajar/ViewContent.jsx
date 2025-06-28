@@ -29,6 +29,7 @@ import {
   FaLock,
   FaCheck,
   FaPlayCircle,
+  FaCertificate,
 } from "react-icons/fa";
 import { MdOndemandVideo, MdDescription, MdLibraryBooks } from "react-icons/md";
 import { BsCollection, BsFileEarmarkText } from "react-icons/bs";
@@ -146,6 +147,28 @@ const ViewContent = () => {
   const hasPreviousSubModule = () => {
     const currentIndex = getCurrentSubModuleIndex();
     return currentIndex > 0;
+  };
+
+  // function to check if this is the last submodule
+  const isLastSubModule = () => {
+    const currentIndex = getCurrentSubModuleIndex();
+    return currentIndex === subModuleDataByModulId?.length - 1;
+  };
+
+  // function to navigate to the certificate page
+  const navigateToCertificate = () => {
+    if (modulId) {
+      navigate(`/cetak-sertifikat/${modulId}`);
+    }
+  };
+
+  // function to check has can access the certificate
+  const canAccessCertificate = () => {
+    if (!isSiswa) return true; // Non-students can access certificate
+    if (!progressData) return false;
+
+    // Check if all submodules are completed
+    return progressData.completedSubModules === progressData.totalSubModules;
   };
 
   // ✅ NEW: Progress API functions
@@ -541,8 +564,9 @@ const ViewContent = () => {
               <p
                 className={`mb-6 ${isDark ? "text-gray-300" : "text-gray-600"}`}
               >
-                Anda telah menonton {Math.round(currentProgress.completionPercentage)}% dari
-                video ini. Tandai sebagai selesai?
+                Anda telah menonton{" "}
+                {Math.round(currentProgress.completionPercentage)}% dari video
+                ini. Tandai sebagai selesai?
               </p>
               <div className="flex gap-3">
                 <button
@@ -928,7 +952,7 @@ const ViewContent = () => {
                   >
                     {currentIndex + 1} / {subModuleDataByModulId.length}
                   </div>
-                  {/* ✅ NEW: Overall progress for students */}
+                  {/* ✅ Overall progress for students */}
                   {isSiswa && progressData && (
                     <div className="text-xs text-gray-500 mt-1">
                       {progressData.completedSubModules} dari{" "}
@@ -937,32 +961,66 @@ const ViewContent = () => {
                   )}
                 </div>
 
-                <motion.button
-                  onClick={navigateToNextSubModule}
-                  disabled={!hasNextSubModule()}
-                  whileHover={{ scale: hasNextSubModule() ? 1.02 : 1 }}
-                  whileTap={{ scale: hasNextSubModule() ? 0.98 : 1 }}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                    hasNextSubModule()
-                      ? `text-white shadow-lg hover:shadow-xl`
-                      : `opacity-50 cursor-not-allowed ${
-                          isDark
-                            ? "bg-gray-700 text-gray-500"
-                            : "bg-gray-200 text-gray-400"
-                        }`
-                  }`}
-                  style={{
-                    background: hasNextSubModule()
-                      ? `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
-                          currentColor,
-                          0.8
-                        )} 100%)`
-                      : undefined,
-                  }}
-                >
-                  Sub Modul Selanjutnya
-                  <FaChevronRight />
-                </motion.button>
+                {/* ✅ NEW: Conditional button - Next SubModule or Certificate */}
+                {isLastSubModule() ? (
+                  // Certificate Button for last submodule
+                  <motion.button
+                    onClick={navigateToCertificate}
+                    disabled={isSiswa && !canAccessCertificate()}
+                    whileHover={{
+                      scale: isSiswa && !canAccessCertificate() ? 1 : 1.02,
+                    }}
+                    whileTap={{
+                      scale: isSiswa && !canAccessCertificate() ? 1 : 0.98,
+                    }}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                      isSiswa && !canAccessCertificate()
+                        ? `opacity-50 cursor-not-allowed ${
+                            isDark
+                              ? "bg-gray-700 text-gray-500"
+                              : "bg-gray-200 text-gray-400"
+                          }`
+                        : `text-white shadow-lg hover:shadow-xl`
+                    }`}
+                    style={{
+                      background:
+                        isSiswa && !canAccessCertificate()
+                          ? undefined
+                          : `linear-gradient(135deg, #10B981 0%, #059669 100%)`, // Green gradient for certificate
+                    }}
+                  >
+                    <FaCertificate />
+                    Cetak Sertifikat
+                  </motion.button>
+                ) : (
+                  // Next SubModule Button
+                  <motion.button
+                    onClick={navigateToNextSubModule}
+                    disabled={!hasNextSubModule()}
+                    whileHover={{ scale: hasNextSubModule() ? 1.02 : 1 }}
+                    whileTap={{ scale: hasNextSubModule() ? 0.98 : 1 }}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                      hasNextSubModule()
+                        ? `text-white shadow-lg hover:shadow-xl`
+                        : `opacity-50 cursor-not-allowed ${
+                            isDark
+                              ? "bg-gray-700 text-gray-500"
+                              : "bg-gray-200 text-gray-400"
+                          }`
+                    }`}
+                    style={{
+                      background: hasNextSubModule()
+                        ? `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                            currentColor,
+                            0.8
+                          )} 100%)`
+                        : undefined,
+                    }}
+                  >
+                    Sub Modul Selanjutnya
+                    <FaChevronRight />
+                  </motion.button>
+                )}
               </motion.div>
             )}
 

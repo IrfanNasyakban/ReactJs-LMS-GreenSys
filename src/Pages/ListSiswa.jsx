@@ -6,19 +6,12 @@ import { getMe } from "../features/authSlice";
 import { motion } from "framer-motion";
 import { useStateContext } from "../contexts/ContextProvider";
 
-import { Header } from "../components";
-
 import { 
   FaEdit, 
   FaTrash, 
-  FaEye, 
-  FaUsers, 
-  FaGraduationCap,
   FaLeaf,
   FaUserGraduate,
-  FaChartBar,
   FaSearch,
-  FaFilter,
   FaDownload
 } from "react-icons/fa";
 import { MdScience, MdEco, MdNaturePeople } from "react-icons/md";

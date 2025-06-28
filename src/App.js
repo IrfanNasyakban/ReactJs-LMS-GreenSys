@@ -4,8 +4,8 @@ import { FiSettings } from "react-icons/fi";
 import { FaLeaf } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 
-import { Navbar, Footer, Sidebar, ThemeSettings } from "./components";
-import { Dashboard, ListSiswa, ListGuru, ListKelas, AddKelas, EditKelas, GantiPassword, ListUsers, AddUsers, AddProfileGuru, AddProfileSiswa, AddModulBelajar, ListModulBelajar, EditModulBelajar, ListSubModulBelajar, AddSubModulBelajar, EditSubModulBelajar, ViewContent } from "./Pages";
+import { Navbar, Footer, Sidebar, ThemeSettings, PDFViewer } from "./components";
+import { Dashboard, ProfileSaya, ListSiswa, EditDataSiswa, ListGuru, EditDataGuru, ListKelas, AddKelas, EditKelas, GantiPassword, ListUsers, AddUsers, AddProfileGuru, AddProfileSiswa, AddModulBelajar, ListModulBelajar, EditModulBelajar, ListSubModulBelajar, AddSubModulBelajar, EditSubModulBelajar, ViewContent, CetakSertifikat, ListCertificate, ListSoal, AddGroupSoal, EditGroupSoal, AddSoal, EditSoal, ListQuiz, StartQuiz } from "./Pages";
 
 import { useStateContext } from "./contexts/ContextProvider";
 
@@ -145,7 +145,7 @@ const AppContent = () => {
               <Route path="/forget-password" element={<ForgetPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/ganti-password" element={<GantiPassword />} />
-
+              <Route path="/profile-saya" element={<ProfileSaya />} />
               <Route path="/siswa" element={<ListSiswa />} />
               <Route path="/guru" element={<ListGuru />} />
               <Route path="/kelas" element={<ListKelas />} />
@@ -155,7 +155,8 @@ const AppContent = () => {
               <Route path="/users/tambah-users" element={<AddUsers />} />
               <Route path="/add-profile-siswa" element={<AddProfileSiswa />} />
               <Route path="/add-profile-guru" element={<AddProfileGuru />} />
-
+              <Route path="/siswa/:id" element={<EditDataSiswa />} />
+              <Route path="/guru/:id" element={<EditDataGuru />} />
               <Route path="/modul-belajar/add" element={<AddModulBelajar />} />
               <Route path="/modul-belajar" element={<ListModulBelajar />} />
               <Route path="/modul-belajar/edit/:id" element={<EditModulBelajar />} />
@@ -163,17 +164,28 @@ const AppContent = () => {
               <Route path="/sub-modul-belajar/add/:modulId" element={<AddSubModulBelajar />} />
               <Route path="/sub-modul-belajar/edit/:id" element={<EditSubModulBelajar />} />
               <Route path="/sub-modul-belajar/view/:id" element={<ViewContent />} />
+              <Route path="/cetak-sertifikat/:modulId" element={<CetakSertifikat />} />
+
+              <Route path="/certificate" element={<ListCertificate />} />
+
+              <Route path="/pdf-viewer" element={<PDFViewer />} />
+
+              <Route path="/quiz" element={<ListQuiz />} />
+              <Route path="/start-quiz/:groupId" element={<StartQuiz />} />
+              <Route path="/data-soal" element={<ListSoal />} />
+              <Route path="/soal/add-group" element={<AddGroupSoal />} />
+              <Route path="/soal/edit-group/:id" element={<EditGroupSoal />} />
+              <Route path="/soal/add-soal/:id" element={<AddSoal />} />
+              <Route path="/soal/edit/:id" element={<EditSoal />} />
               
               {/* Protected Routes */}
               <Route path="/dashboard" element={<Dashboard />} />
               
               {/* Uncomment these routes as needed */}
-              {/* <Route path="/profile-saya" element={<ProfileSaya />} />
-              <Route path="/data-soal" element={<ListDataSoal />} />
-              <Route path="/data-soal/tambah" element={<AddSoal />} />
+              {/* 
               <Route path="/data-soal/:id" element={<EditSoal />} />
               <Route path="/quiz" element={<ListQuiz />} />
-              <Route path="/start-quiz" element={<StartQuiz />} />
+              
               <Route path="/start-quiz-again/:id" element={<StartQuizLagi />} />
               <Route path="/hasil-quiz/:id" element={<HasilAkhir />} />
               <Route path="/nilai" element={<ListDataNilai />} />
@@ -181,8 +193,8 @@ const AppContent = () => {
               <Route path="/nilai-saya/:id" element={<DetailNilaiSaya />} />
               
     
-              <Route path="/siswa/:id" element={<EditDataSiswa />} />
-              <Route path="/guru/:id" element={<EditDataGuru />} />
+              
+              
               <Route path="/users/:id" element={<EditUsers />} />
               
               

@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector } from "react-redux";
 import { Link, NavLink } from 'react-router-dom'
 import { MdOutlineCancel, MdScience, MdEco } from 'react-icons/md'
-import { FaLeaf, FaUsers, FaChalkboardTeacher, FaBook, FaPencilAlt, FaLock, FaRecycle, FaSeedling, FaGraduationCap } from 'react-icons/fa';
+import { FaLeaf, FaUsers, FaCertificate, FaChalkboardTeacher, FaBook, FaPencilAlt, FaLock, FaRecycle, FaSeedling, FaGraduationCap } from 'react-icons/fa';
 import { BiSolidDashboard } from 'react-icons/bi';
 import { BsDoorOpen } from 'react-icons/bs';
 import { GiPlantSeed } from 'react-icons/gi';
@@ -89,6 +89,12 @@ const Sidebar = () => {
           icon: <FaRecycle />,
           allowedRoles: ['admin', 'guru'],
         },
+        {
+          name: 'certificate',
+          displayName: 'Certificate Leaners',
+          icon: <FaCertificate />,
+          allowedRoles: ['admin', 'guru', 'siswa'],
+        },
       ],
     },
     {
@@ -167,20 +173,6 @@ const Sidebar = () => {
               currentMode === 'Dark' ? 'text-white' : 'text-gray-800'
             }`}
           >
-            <div className="relative">
-              <img 
-                src={LogoSMA} 
-                alt="Logo SMA 1 Lhokseumawe" 
-                className="w-8 h-8 rounded-full border-2"
-                style={{ borderColor: getColorWithOpacity(currentColor, 0.3) }}
-              />
-              <div 
-                className="absolute -bottom-1 -right-1 p-1 rounded-full"
-                style={{ backgroundColor: currentColor }}
-              >
-                <FaLeaf className="text-white text-xs" />
-              </div>
-            </div>
             <div>
               <div className="flex items-center gap-1">
                 <span style={{ color: currentColor }}>Green</span>
@@ -190,13 +182,6 @@ const Sidebar = () => {
                   style={{ color: currentColor }}
                 />
               </div>
-              <span 
-                className={`text-xs block ${
-                  currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}
-              >
-                SMA 1 Lhokseumawe
-              </span>
             </div>
           </Link>
           

@@ -1,6 +1,9 @@
 export { default as Dashboard } from './Dashboard';
+export { default as ProfileSaya } from './ProfileSaya';
 export { default as ListSiswa } from './ListSiswa';
+export { default as EditDataSiswa } from './EditDataSiswa';
 export { default as ListGuru } from './ListGuru';
+export { default as EditDataGuru } from './EditDataGuru';
 export { default as ListKelas } from './ListKelas';
 export { default as AddKelas } from './AddKelas';
 export { default as EditKelas } from './EditKelas';
@@ -16,3 +19,12 @@ export { default as ListSubModulBelajar } from './ModulBelajar/ListSubModulBelaj
 export { default as AddSubModulBelajar } from './ModulBelajar/AddSubModulBelajar';
 export { default as EditSubModulBelajar } from './ModulBelajar/EditSubModulBelajar';
 export { default as ViewContent } from './ModulBelajar/ViewContent';
+export { default as CetakSertifikat } from './ModulBelajar/CetakSertifikat';
+export { default as ListCertificate } from './ListCertificate';
+export { default as ListQuiz } from './Soal/ListQuiz';
+export { default as ListSoal } from './Soal/ListSoal';
+export { default as AddGroupSoal } from './Soal/AddGroupSoal';
+export { default as EditGroupSoal } from './Soal/EditGroupSoal';
+export { default as AddSoal } from './Soal/AddSoal';
+export { default as EditSoal } from './Soal/EditSoal';
+export { default as StartQuiz } from './Soal/StartQuiz';
