@@ -8,11 +8,7 @@ import { motion } from "framer-motion";
 import {
   FaArrowLeft,
   FaChevronRight,
-  FaUser,
-  FaIdCard,
-  FaEnvelope,
-  FaMapMarkerAlt,
-  FaBirthdayCake,
+  FaPhone,
   FaVenusMars,
   FaEdit,
   FaCamera,
@@ -20,12 +16,7 @@ import {
   FaTimes,
   FaChalkboardTeacher,
   FaUserEdit,
-  FaImage,
-  FaUpload,
-  FaEye,
-  FaCalendarAlt,
   FaLightbulb,
-  FaSeedling,
   FaLeaf,
   FaBook,
   FaUsers,
@@ -36,7 +27,6 @@ import {
   MdEmail,
   MdLocationOn,
   MdCake,
-  MdSchool,
 } from "react-icons/md";
 import { BsPersonBadge } from "react-icons/bs";
 
@@ -44,6 +34,7 @@ const EditDataGuru = () => {
   const [nip, setNip] = useState("");
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
+  const [noHp, setNoHp] = useState("");
   const [gender, setGender] = useState("");
   const [tanggalLahir, setTanggalLahir] = useState("");
   const [alamat, setAlamat] = useState("");
@@ -116,6 +107,7 @@ const EditDataGuru = () => {
       setNip(data.nip || "");
       setNama(data.nama || "");
       setEmail(data.email || "");
+      setNoHp(data.noHp || "");
       setGender(data.gender || "");
       setTanggalLahir(formatDateForInput(data.tanggalLahir) || "");
       setAlamat(data.alamat || "");
@@ -147,6 +139,7 @@ const EditDataGuru = () => {
     formData.append("nip", nip);
     formData.append("nama", nama);
     formData.append("email", email);
+    formData.append("noHp", noHp);
     formData.append("gender", gender);
     formData.append("tanggalLahir", tanggalLahir);
     formData.append("alamat", alamat);
@@ -411,7 +404,7 @@ const EditDataGuru = () => {
                 }}
               >
                 <div className="relative inline-block">
-                  {preview ? (
+                  {preview && preview !== "http://localhost:5000/images/null" && preview !== `${process.env.REACT_APP_URL_API}/images/null` ? (
                     <img
                       src={preview}
                       alt="Preview"
@@ -465,7 +458,7 @@ const EditDataGuru = () => {
                       <div className="flex justify-between">
                         <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Gender:</span>
                         <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
-                          {gender === 'L' ? 'Laki-laki' : gender === 'P' ? 'Perempuan' : 'Belum dipilih'}
+                          {gender === 'Laki-laki' ? 'Laki-laki' : gender === 'Perempuan' ? 'Perempuan' : 'Belum dipilih'}
                         </span>
                       </div>
                       {tanggalLahir && (
@@ -651,44 +644,85 @@ const EditDataGuru = () => {
                     </div>
                   </div>
 
-                  {/* Email */}
-                  <div
-                    className="p-4 rounded-xl border"
-                    style={{
-                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
-                      borderColor: getColorWithOpacity(currentColor, 0.2),
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-3">
-                      <MdEmail style={{ color: currentColor }} />
-                      <label className={`font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                        Email *
-                      </label>
-                    </div>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Masukkan email"
-                      className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
-                        isDark
-                          ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
-                          : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
-                      }`}
+                  {/* Email dan No Hp */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div
+                      className="p-4 rounded-xl border"
                       style={{
-                        borderColor: getColorWithOpacity(currentColor, 0.3),
-                        boxShadow: `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`,
+                        backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                        borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = currentColor;
-                        e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(currentColor, 0.1)}`;
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <MdEmail style={{ color: currentColor }} />
+                        <label className={`font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                          Email *
+                        </label>
+                      </div>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Masukkan email"
+                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                          isDark
+                            ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
+                            : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
+                        }`}
+                        style={{
+                          borderColor: getColorWithOpacity(currentColor, 0.3),
+                          boxShadow: `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`,
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = currentColor;
+                          e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(currentColor, 0.1)}`;
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = getColorWithOpacity(currentColor, 0.3);
+                          e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`;
+                        }}
+                      />
+                    </div>
+
+                    <div
+                      className="p-4 rounded-xl border"
+                      style={{
+                        backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                        borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = getColorWithOpacity(currentColor, 0.3);
-                        e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`;
-                      }}
-                    />
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <FaPhone style={{ color: currentColor }} />
+                        <label className={`font-medium ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                          No Hp/WhatsApp
+                        </label>
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={noHp}
+                        onChange={(e) => setNoHp(e.target.value)}
+                        placeholder="Masukkan nomor hp/WhatsApp"
+                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                          isDark
+                            ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
+                            : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
+                        }`}
+                        style={{
+                          borderColor: getColorWithOpacity(currentColor, 0.3),
+                          boxShadow: `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`,
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = currentColor;
+                          e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(currentColor, 0.1)}`;
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = getColorWithOpacity(currentColor, 0.3);
+                          e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`;
+                        }}
+                      />
+                    </div>
                   </div>
 
                   {/* Gender & Tanggal Lahir */}
@@ -708,40 +742,40 @@ const EditDataGuru = () => {
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <label className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
-                          gender === 'L' 
+                          gender === 'Laki-laki' 
                             ? `border-transparent text-white` 
                             : isDark 
                               ? 'border-gray-600 bg-gray-700 hover:bg-gray-600' 
                               : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
                         }`}
-                        style={gender === 'L' ? {
+                        style={gender === 'Laki-laki' ? {
                           background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`
                         } : {}}>
                           <input
                             type="radio"
                             name="gender"
-                            value="L"
-                            checked={gender === 'L'}
+                            value="Laki-laki"
+                            checked={gender === 'Laki-laki'}
                             onChange={(e) => setGender(e.target.value)}
                             className="hidden"
                           />
                           <span className="text-sm font-medium">Laki-laki</span>
                         </label>
                         <label className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
-                          gender === 'P' 
+                          gender === 'Perempuan' 
                             ? `border-transparent text-white` 
                             : isDark 
                               ? 'border-gray-600 bg-gray-700 hover:bg-gray-600' 
                               : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
                         }`}
-                        style={gender === 'P' ? {
+                        style={gender === 'Perempuan' ? {
                           background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`
                         } : {}}>
                           <input
                             type="radio"
                             name="gender"
-                            value="P"
-                            checked={gender === 'P'}
+                            value="Perempuan"
+                            checked={gender === 'Perempuan'}
                             onChange={(e) => setGender(e.target.value)}
                             className="hidden"
                           />

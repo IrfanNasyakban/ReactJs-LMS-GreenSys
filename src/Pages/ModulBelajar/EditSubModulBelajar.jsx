@@ -22,13 +22,15 @@ import {
   FaYoutube,
   FaLayerGroup,
   FaEdit,
+  FaFilePdf,
+  FaDownload,
 } from "react-icons/fa";
 import {
   MdLibraryBooks,
   MdDescription,
   MdSubdirectoryArrowRight,
 } from "react-icons/md";
-import { BsFileEarmarkText, BsCollection } from "react-icons/bs";
+import { BsFileEarmarkText, BsCollection, BsFileEarmarkPdf } from "react-icons/bs";
 
 const EditSubModulBelajar = () => {
   const [subJudul, setSubJudul] = useState("");
@@ -39,6 +41,13 @@ const EditSubModulBelajar = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [existingImageUrl, setExistingImageUrl] = useState("");
   const [removeImage, setRemoveImage] = useState(false);
+  
+  // New PDF states
+  const [pdfFile, setPdfFile] = useState(null);
+  const [existingPdfUrl, setExistingPdfUrl] = useState("");
+  const [existingPdfName, setExistingPdfName] = useState("");
+  const [removePdf, setRemovePdf] = useState(false);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -48,6 +57,7 @@ const EditSubModulBelajar = () => {
 
   const { currentColor, currentMode } = useStateContext();
   const fileInputRef = useRef(null);
+  const pdfInputRef = useRef(null); // New PDF input ref
 
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -154,6 +164,38 @@ const EditSubModulBelajar = () => {
     }
   };
 
+  // Handle PDF upload with validation
+  const handlePdfChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Client-side validation
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      
+      // Check file size
+      if (file.size > maxSize) {
+        setError("Ukuran file PDF harus kurang dari 10 MB");
+        if (pdfInputRef.current) {
+          pdfInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Check file type
+      if (file.type !== 'application/pdf') {
+        setError("File harus berformat PDF");
+        if (pdfInputRef.current) {
+          pdfInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Clear any previous errors
+      setError("");
+      setPdfFile(file);
+      setRemovePdf(false); // Reset remove flag when uploading new PDF
+    }
+  };
+
   // Remove image completely
   const handleRemoveImage = () => {
     setImage(null);
@@ -162,6 +204,16 @@ const EditSubModulBelajar = () => {
     // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  // Remove PDF completely
+  const handleRemovePdf = () => {
+    setPdfFile(null);
+    setRemovePdf(true); // Flag to indicate PDF should be removed
+    // Reset file input
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = "";
     }
   };
 
@@ -176,10 +228,28 @@ const EditSubModulBelajar = () => {
     }
   };
 
+  // Cancel new PDF upload (revert to existing)
+  const cancelPdfChange = () => {
+    setPdfFile(null);
+    setRemovePdf(false);
+    // Reset file input
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = "";
+    }
+  };
+
   const triggerFileUpload = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
       fileInputRef.current.click();
+    }
+  };
+
+  // Trigger PDF upload
+  const triggerPdfUpload = () => {
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = '';
+      pdfInputRef.current.click();
     }
   };
 
@@ -208,6 +278,12 @@ const EditSubModulBelajar = () => {
       setExistingImageUrl(subModulData.url);
       setImagePreview(subModulData.url);
       
+      // Set PDF data if available
+      if (subModulData.urlPdf) {
+        setExistingPdfUrl(subModulData.urlPdf);
+        setExistingPdfName(subModulData.namaPdf || 'Document.pdf');
+      }
+      
       console.log("Data Sub Modul:", subModulData);
     } catch (error) {
       console.error("Error fetching sub modul:", error);
@@ -223,126 +299,140 @@ const EditSubModulBelajar = () => {
   };
 
   const updateSubModul = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setError("");
-  setSuccess("");
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError("");
+    setSuccess("");
 
-  if (urlYoutube && !validateYouTubeURL(urlYoutube)) {
-    setError("Link YouTube tidak valid. Format: https://youtube.com/watch?v=... atau https://youtu.be/...");
-    setIsSubmitting(false);
-    return;
-  }
-  
-  try {
-    const token = localStorage.getItem("accessToken");
-    const apiUrl = process.env.REACT_APP_URL_API;
-    
-    // Check if there are any image changes (new upload or removal)
-    const hasImageChanges = image || removeImage;
-    
-    if (!hasImageChanges) {
-      // No image changes, send only text data as JSON
-      await axios.patch(
-        `${apiUrl}/sub-modul/${id}`,
-        {
-          subJudul: subJudul,
-          subDeskripsi: subDeskripsi,
-          linkYoutube: urlYoutube,  // ✅ FIXED: Ganti dari urlYoutube ke linkYoutube
-          modulId: modulId,          // ✅ FIXED: Tambahkan modulId
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    } else {
-      // Image changes detected (upload or removal), use FormData
-      const formData = new FormData();
-      formData.append("subJudul", subJudul);
-      formData.append("subDeskripsi", subDeskripsi);
-      formData.append("linkYoutube", urlYoutube);  // ✅ FIXED: Ganti dari urlYoutube ke linkYoutube
-      formData.append("modulId", modulId);          // ✅ FIXED: Tambahkan modulId
-      
-      // Add image file if uploading new image
-      if (image) {
-        formData.append("file", image);
-      }
-      
-      // Add removeImage flag if user wants to remove image
-      if (removeImage) {
-        formData.append("removeImage", "true");
-      }
-
-      // DEBUG: Log what's being sent
-      console.log("=== DEBUG FORMDATA ===");
-      console.log("removeImage flag:", removeImage);
-      console.log("image file:", image);
-      console.log("modulId:", modulId);
-      
-      // Log all FormData entries
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
-      console.log("=== END DEBUG ===");
-
-      await axios.patch(
-        `${apiUrl}/sub-modul/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    if (urlYoutube && !validateYouTubeURL(urlYoutube)) {
+      setError("Link YouTube tidak valid. Format: https://youtube.com/watch?v=... atau https://youtu.be/...");
+      setIsSubmitting(false);
+      return;
     }
     
-    setSuccess("Sub Modul berhasil diperbarui!");
-    
-    // Redirect after showing success message
-    setTimeout(() => {
-      navigate(`/modul-belajar/detail/${modulId}`);
-    }, 1500);
-    
-  } catch (error) {
-    console.error("Error:", error.response ? error.response.data : error.message);
-    
-    // Handle specific error messages from backend
-    if (error.response) {
-      const { status, data } = error.response;
+    try {
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       
-      switch (status) {
-        case 422:
-          // Validation errors (file size, file type, etc.)
-          setError(data.msg || "Terjadi kesalahan validasi");
-          break;
-        case 404:
-          setError("Sub Modul tidak ditemukan");
-          break;
-        case 401:
-          setError("Sesi Anda telah berakhir. Silakan login kembali");
-          setTimeout(() => {
-            navigate("/login");
-          }, 2000);
-          break;
-        case 500:
-          setError("Terjadi kesalahan server. Silakan coba lagi");
-          break;
-        default:
-          setError(data.msg || "Terjadi kesalahan tidak terduga");
+      // Check if there are any file changes (image or PDF upload/removal)
+      const hasImageChanges = image || removeImage;
+      const hasPdfChanges = pdfFile || removePdf;
+      const hasFileChanges = hasImageChanges || hasPdfChanges;
+      
+      if (!hasFileChanges) {
+        // No file changes, send only text data as JSON
+        await axios.patch(
+          `${apiUrl}/sub-modul/${id}`,
+          {
+            subJudul: subJudul,
+            subDeskripsi: subDeskripsi,
+            urlYoutube: urlYoutube,
+            modulId: modulId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } else {
+        // File changes detected (upload or removal), use FormData
+        const formData = new FormData();
+        formData.append("subJudul", subJudul);
+        formData.append("subDeskripsi", subDeskripsi);
+        formData.append("urlYoutube", urlYoutube);
+        formData.append("modulId", modulId);
+        
+        // Add image file if uploading new image
+        if (image) {
+          formData.append("file", image);
+        }
+        
+        // Add removeImage flag if user wants to remove image
+        if (removeImage) {
+          formData.append("removeImage", "true");
+        }
+
+        // Add PDF file if uploading new PDF
+        if (pdfFile) {
+          formData.append("pdfFile", pdfFile);
+        }
+        
+        // Add removePdf flag if user wants to remove PDF
+        if (removePdf) {
+          formData.append("removePdf", "true");
+        }
+
+        // DEBUG: Log what's being sent
+        console.log("=== DEBUG FORMDATA ===");
+        console.log("removeImage flag:", removeImage);
+        console.log("removePdf flag:", removePdf);
+        console.log("image file:", image);
+        console.log("pdf file:", pdfFile);
+        console.log("modulId:", modulId);
+        
+        // Log all FormData entries
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ': ' + pair[1]);
+        }
+        console.log("=== END DEBUG ===");
+
+        await axios.patch(
+          `${apiUrl}/sub-modul/${id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
       }
-    } else if (error.request) {
-      setError("Tidak dapat terhubung ke server. Periksa koneksi internet Anda");
-    } else {
-      setError("Terjadi kesalahan tidak terduga");
+      
+      setSuccess("Sub Modul berhasil diperbarui!");
+      
+      // Redirect after showing success message
+      setTimeout(() => {
+        navigate(`/modul-belajar/detail/${modulId}`);
+      }, 1500);
+      
+    } catch (error) {
+      console.error("Error:", error.response ? error.response.data : error.message);
+      
+      // Handle specific error messages from backend
+      if (error.response) {
+        const { status, data } = error.response;
+        
+        switch (status) {
+          case 422:
+            // Validation errors (file size, file type, etc.)
+            setError(data.msg || "Terjadi kesalahan validasi");
+            break;
+          case 404:
+            setError("Sub Modul tidak ditemukan");
+            break;
+          case 401:
+            setError("Sesi Anda telah berakhir. Silakan login kembali");
+            setTimeout(() => {
+              navigate("/login");
+            }, 2000);
+            break;
+          case 500:
+            setError("Terjadi kesalahan server. Silakan coba lagi");
+            break;
+          default:
+            setError(data.msg || "Terjadi kesalahan tidak terduga");
+        }
+      } else if (error.request) {
+        setError("Tidak dapat terhubung ke server. Periksa koneksi internet Anda");
+      } else {
+        setError("Terjadi kesalahan tidak terduga");
+      }
+      
+      setIsSubmitting(false);
     }
-    
-    setIsSubmitting(false);
-  }
-};
+  };
 
   return (
     <div className="p-6">
@@ -994,6 +1084,177 @@ const EditSubModulBelajar = () => {
                     </p>
                   </div>
 
+                  {/* Upload PDF Section */}
+                  <div
+                    className="p-6 rounded-xl border"
+                    style={{
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2),
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <FaFilePdf style={{ color: '#dc2626' }} />
+                      <h3
+                        className={`font-semibold text-lg ${
+                          isDark ? "text-white" : "text-gray-800"
+                        }`}
+                      >
+                        File PDF Materi
+                      </h3>
+                      <span
+                        className={`text-sm px-2 py-1 rounded ${
+                          isDark
+                            ? "bg-gray-700 text-gray-300"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        Opsional
+                      </span>
+                    </div>
+
+                    <label
+                      className={`block text-sm font-medium mb-3 ${
+                        isDark ? "text-gray-200" : "text-gray-700"
+                      }`}
+                    >
+                      Upload File PDF Materi Pembelajaran
+                    </label>
+
+                    {/* Hidden PDF input */}
+                    <input
+                      ref={pdfInputRef}
+                      type="file"
+                      id="pdf-upload"
+                      name="pdfFile"
+                      accept=".pdf"
+                      onChange={handlePdfChange}
+                      className="hidden"
+                    />
+
+                    {/* Current/New PDF Display */}
+                    {(existingPdfUrl && !removePdf) || pdfFile ? (
+                      <div className="relative mb-4">
+                        <div
+                          className="flex items-center p-4 rounded-xl border bg-red-50"
+                          style={{ borderColor: getColorWithOpacity('#dc2626', 0.3) }}
+                        >
+                          <FaFilePdf className="text-red-600 text-2xl mr-3" />
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-800">
+                              {pdfFile ? `New: ${pdfFile.name}` : existingPdfName}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {pdfFile 
+                                ? `${(pdfFile.size / (1024 * 1024)).toFixed(2)} MB`
+                                : 'Current PDF file'
+                              }
+                            </p>
+                            {existingPdfUrl && !pdfFile && (
+                              <a
+                                href={existingPdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                              >
+                                <FaDownload className="text-xs" />
+                                Download current PDF
+                              </a>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={triggerPdfUpload}
+                              className="px-3 py-1 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                            >
+                              {pdfFile ? 'Ganti Lagi' : 'Ganti'}
+                            </button>
+                            {pdfFile && (
+                              <button
+                                type="button"
+                                onClick={cancelPdfChange}
+                                className="px-3 py-1 text-xs bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
+                              >
+                                Batal
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={handleRemovePdf}
+                              className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
+                            >
+                              Hapus
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* PDF Upload Area - show if no PDF or PDF removed */}
+                    {(!existingPdfUrl || removePdf) && !pdfFile && (
+                      <div className="relative mb-4">
+                        {removePdf && (
+                          <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-700">
+                              ⚠️ File PDF akan dihapus. Upload PDF baru atau batal untuk mempertahankan PDF yang ada.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => setRemovePdf(false)}
+                              className="mt-2 px-3 py-1 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-300"
+                            >
+                              Batalkan Penghapusan
+                            </button>
+                          </div>
+                        )}
+                        
+                        <button
+                          type="button"
+                          onClick={triggerPdfUpload}
+                          className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl transition-all duration-300 hover:border-opacity-100 ${
+                            isDark
+                              ? "border-gray-600 bg-gray-700 hover:bg-gray-600"
+                              : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                          }`}
+                          style={{
+                            borderColor: getColorWithOpacity('#dc2626', 0.3),
+                          }}
+                        >
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <FaFilePdf
+                              className="mb-2 text-2xl text-red-600"
+                            />
+                            <p
+                              className={`mb-2 text-sm ${
+                                isDark ? "text-gray-300" : "text-gray-500"
+                              }`}
+                            >
+                              <span className="font-semibold">
+                                Klik untuk upload PDF
+                              </span>{" "}
+                              atau drag & drop
+                            </p>
+                            <p
+                              className={`text-xs ${
+                                isDark ? "text-gray-400" : "text-gray-500"
+                              }`}
+                            >
+                              PDF (MAX. 10MB)
+                            </p>
+                          </div>
+                        </button>
+                      </div>
+                    )}
+
+                    <p
+                      className={`mt-2 text-sm ${
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
+                      📄 Upload file PDF untuk materi pembelajaran tambahan. 💡 Tips: Klik "Ganti" untuk upload PDF baru, "Hapus" untuk menghapus PDF, atau "Batalkan Penghapusan" untuk mempertahankan PDF yang ada.
+                    </p>
+                  </div>
+
                   {/* Action Buttons */}
                   <div className="flex items-center justify-between pt-6">
                     <motion.button
@@ -1233,6 +1494,29 @@ const EditSubModulBelajar = () => {
                         isDark ? "text-gray-400" : "text-gray-500"
                       }`}
                     >
+                      File PDF:
+                    </p>
+                    <p
+                      className={`text-sm ${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      }`}
+                    >
+                      {removePdf 
+                        ? '❌ Akan dihapus' 
+                        : pdfFile 
+                          ? '🔄 Akan diganti' 
+                          : existingPdfUrl 
+                            ? '📄 Ada PDF' 
+                            : 'Tidak ada PDF'
+                      }
+                    </p>
+                  </div>
+                  <div>
+                    <p
+                      className={`text-xs ${
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
                       Gambar Cover:
                     </p>
                     <p
@@ -1351,6 +1635,19 @@ const EditSubModulBelajar = () => {
                           }`}
                         >
                           Gunakan "Batalkan Penghapusan" jika salah hapus gambar
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaFilePdf
+                          style={{ color: "#dc2626" }}
+                          className="text-sm"
+                        />
+                        <span
+                          className={`text-xs ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          PDF dapat diperbarui atau dihapus sesuai kebutuhan
                         </span>
                       </div>
                       <div className="flex items-center gap-2">

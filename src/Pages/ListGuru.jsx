@@ -122,17 +122,6 @@ const ListGuru = () => {
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
 
-  const calculateAge = (birthDate) => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
   const isDark = currentMode === 'Dark';
 
   return (
@@ -275,13 +264,16 @@ const ListGuru = () => {
                     NIP
                   </th>
                   <th className={`px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider ${isDark ? 'text-white' : 'text-gray-700'}`}>
-                    Green Educator
+                    Nama
                   </th>
                   <th className={`px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider ${isDark ? 'text-white' : 'text-gray-700'}`}>
                     Username
                   </th>
                   <th className={`px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider ${isDark ? 'text-white' : 'text-gray-700'}`}>
                     Email
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider ${isDark ? 'text-white' : 'text-gray-700'}`}>
+                    No Hp
                   </th>
                   <th className={`px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider ${isDark ? 'text-white' : 'text-gray-700'}`}>
                     Gender
@@ -341,35 +333,38 @@ const ListGuru = () => {
                         {teacher.email}
                       </td>
                       <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {teacher.noHp}
+                      </td>
+                      <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                           {teacher.gender}
                       </td>
                       <td className={`px-6 py-4 text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                         {formatTanggal(teacher.tanggalLahir)}
                       </td>
                       <td className="px-6 py-4">
-                        {teacher.url ? (
-                          <img
-                            src={teacher.url}
-                            alt={`Foto ${teacher.nama}`}
-                            className="w-10 h-10 rounded-full object-cover border-2"
-                            style={{ borderColor: getColorWithOpacity(currentColor, 0.3) }}
-                            onError={(e) => {
-                              e.target.src = "https://via.placeholder.com/40?text=No+Image";
-                            }}
-                          />
-                        ) : (
-                          <div 
-                            className="w-10 h-10 rounded-full flex items-center justify-center border-2"
-                            style={{ 
-                              backgroundColor: getColorWithOpacity(currentColor, 0.1),
-                              borderColor: getColorWithOpacity(currentColor, 0.3)
-                            }}
-                          >
-                            <span className="text-xs font-medium" style={{ color: currentColor }}>
-                              {teacher.nama.charAt(0)}
-                            </span>
-                          </div>
-                        )}
+                        {(teacher.url && teacher.url !== "http://localhost:5000/images/null" && teacher.url !== `${process.env.REACT_APP_URL_API}/images/null`) ? (
+                        <img
+                          src={teacher.url}
+                          alt={`Foto ${teacher.nama}`}
+                          className="w-10 h-10 rounded-full object-cover border-2"
+                          style={{ borderColor: getColorWithOpacity(currentColor, 0.3) }}
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/40?text=No+Image";
+                          }}
+                        />
+                      ) : (
+                        <div 
+                          className="w-10 h-10 rounded-full flex items-center justify-center border-2"
+                          style={{ 
+                            backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                            borderColor: getColorWithOpacity(currentColor, 0.3)
+                          }}
+                        >
+                          <span className="text-xs font-medium" style={{ color: currentColor }}>
+                            {teacher.nama.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">

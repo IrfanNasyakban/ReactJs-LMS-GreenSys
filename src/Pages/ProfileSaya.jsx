@@ -7,15 +7,10 @@ import { useStateContext } from "../contexts/ContextProvider";
 import { motion } from "framer-motion";
 import {
   FaUser,
-  FaIdCard,
-  FaEnvelope,
-  FaMapMarkerAlt,
-  FaBirthdayCake,
+  FaPhone,
   FaVenusMars,
-  FaSchool,
   FaEdit,
   FaCamera,
-  FaCalendarAlt,
   FaGraduationCap,
   FaChalkboardTeacher,
   FaUserCircle,
@@ -25,19 +20,16 @@ import {
   FaLightbulb,
   FaBook,
   FaAward,
-  FaClock,
-  FaEye,
 } from "react-icons/fa";
 import {
   MdLibraryBooks,
-  MdDescription,
   MdSchool,
   MdPerson,
   MdEmail,
   MdLocationOn,
   MdCake,
 } from "react-icons/md";
-import { BsPersonBadge, BsCalendar3 } from "react-icons/bs";
+import { BsPersonBadge } from "react-icons/bs";
 
 const ProfileSaya = () => {
   const [siswaId, setSiswaId] = useState("");
@@ -47,9 +39,9 @@ const ProfileSaya = () => {
   const [username, setUsername] = useState("");
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
+  const [noHp, setNoHp] = useState("");
   const [kelas, setKelas] = useState("");
   const [gender, setGender] = useState("");
-  const [umur, setUmur] = useState("");
   const [tanggalLahir, setTanggalLahir] = useState("");
   const [alamat, setAlamat] = useState("");
   const [preview, setPreview] = useState(null);
@@ -114,11 +106,14 @@ const ProfileSaya = () => {
         setNis(profileData.nis);
         setNama(profileData.nama);
         setEmail(profileData.email);
+        setNoHp(profileData.noHp);
         setKelas(profileData.kelas.kelas);
         setGender(profileData.gender);
         setTanggalLahir(profileData.tanggalLahir);
         setAlamat(profileData.alamat);
         setPreview(profileData.url);
+        console.log(profileData.gender);
+        
 
         // Mengakses username dari nested object 'user'
         if (profileData.user) {
@@ -150,6 +145,7 @@ const ProfileSaya = () => {
         setNip(profileData.nip);
         setNama(profileData.nama);
         setEmail(profileData.email);
+        setNoHp(profileData.noHp);
         setGender(profileData.gender);
         setTanggalLahir(profileData.tanggalLahir);
         setAlamat(profileData.alamat);
@@ -308,7 +304,7 @@ const ProfileSaya = () => {
                 }}
               >
                 <div className="relative inline-block">
-                  {preview ? (
+                  {preview && preview !== "http://localhost:5000/images/null" && preview !== `${process.env.REACT_APP_URL_API}/images/null` ? (
                     <img
                       src={preview}
                       alt="Profile"
@@ -477,6 +473,19 @@ const ProfileSaya = () => {
                     </p>
                   </div>
 
+                  {/* No Hp */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <FaPhone className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        No Hp/WhatsApp
+                      </label>
+                    </div>
+                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                      {noHp || 'Belum diisi'}
+                    </p>
+                  </div>
+
                   {/* Kelas (hanya untuk siswa) */}
                   {user?.role === 'siswa' && (
                     <div className="space-y-2">
@@ -501,7 +510,7 @@ const ProfileSaya = () => {
                       </label>
                     </div>
                     <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {gender === 'L' ? 'Laki-laki' : gender === 'P' ? 'Perempuan' : 'Belum diisi'}
+                      {gender === 'L' || gender === 'Laki-laki' ? 'Laki-laki' : gender === 'P' || gender === 'Perempuan' ? 'Perempuan' : 'Belum diisi'}
                     </p>
                   </div>
 
@@ -522,19 +531,19 @@ const ProfileSaya = () => {
                       )}
                     </p>
                   </div>
-                </div>
 
-                {/* Alamat */}
-                <div className="mt-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MdLocationOn className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                    <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {/* Alamat */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <MdLocationOn className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                       Alamat
-                    </label>
-                  </div>
-                  <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                      </label>
+                    </div>
+                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
                     {alamat || 'Belum diisi'}
                   </p>
+                  </div>
                 </div>
               </div>
             </motion.div>

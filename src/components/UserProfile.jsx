@@ -21,6 +21,7 @@ import { useStateContext } from "../contexts/ContextProvider";
 import avatar from "../data/avatar.jpg";
 
 const UserProfile = () => {
+  const [nama, setNama] = useState(null);
   const [urlImage, setUrlImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -67,6 +68,7 @@ const UserProfile = () => {
 
       if (response.data?.data?.url) {
         setUrlImage(response.data.data.url);
+        setNama(response.data.data.nama);
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -238,7 +240,7 @@ const UserProfile = () => {
           {/* User Details */}
           <div className="flex-1 min-w-0">
             <h4 className={`font-bold truncate ${isDark ? 'text-white' : 'text-gray-800'}`}>
-              {user ? capitalizeFirstLetter(user.username) : "Admin"}
+              {nama ? capitalizeFirstLetter(nama) : "Admin"}
             </h4>
             <p className={`text-sm truncate ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               {user?.email || "admin@greensys.com"}

@@ -60,12 +60,6 @@ const Sidebar = () => {
           allowedRoles: ['admin', 'guru'],
         },
         {
-          name: 'quiz',
-          displayName: 'Green Quiz',
-          icon: <FaPencilAlt />,
-          allowedRoles: ['siswa'],
-        },
-        {
           name: 'nilai',
           displayName: 'Eco Assessment',
           icon: <FaLeaf />,

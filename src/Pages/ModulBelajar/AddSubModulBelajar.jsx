@@ -20,10 +20,12 @@ import {
   FaChevronRight,
   FaPlayCircle,
   FaYoutube,
-  FaLayerGroup
+  FaLayerGroup,
+  FaFilePdf,
+  FaDownload
 } from "react-icons/fa";
 import { MdLibraryBooks, MdDescription, MdSubdirectoryArrowRight } from "react-icons/md";
-import { BsFileEarmarkText, BsCollection } from "react-icons/bs";
+import { BsFileEarmarkText, BsCollection, BsFileEarmarkPdf } from "react-icons/bs";
 
 const AddSubModulBelajar = () => {
   const [subJudul, setSubJudul] = useState("");
@@ -31,6 +33,7 @@ const AddSubModulBelajar = () => {
   const [urlYoutube, setUrlYoutube] = useState("");
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [pdfFile, setPdfFile] = useState(null); // New state for PDF
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -39,6 +42,7 @@ const AddSubModulBelajar = () => {
   
   const { currentColor, currentMode } = useStateContext();
   const fileInputRef = useRef(null);
+  const pdfInputRef = useRef(null); // New ref for PDF input
   const { modulId } = useParams();
   
   const dispatch = useDispatch();
@@ -140,6 +144,37 @@ const AddSubModulBelajar = () => {
     }
   };
 
+  // Handle PDF upload with validation
+  const handlePdfChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Client-side validation
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      
+      // Check file size
+      if (file.size > maxSize) {
+        setError("Ukuran file PDF harus kurang dari 10 MB");
+        if (pdfInputRef.current) {
+          pdfInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Check file type
+      if (file.type !== 'application/pdf') {
+        setError("File harus berformat PDF");
+        if (pdfInputRef.current) {
+          pdfInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Clear any previous errors
+      setError("");
+      setPdfFile(file);
+    }
+  };
+
   // Remove image
   const removeImage = () => {
     setImage(null);
@@ -149,11 +184,27 @@ const AddSubModulBelajar = () => {
     }
   };
 
+  // Remove PDF
+  const removePdf = () => {
+    setPdfFile(null);
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = '';
+    }
+  };
+
   // Trigger file upload
   const triggerFileUpload = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
       fileInputRef.current.click();
+    }
+  };
+
+  // Trigger PDF upload
+  const triggerPdfUpload = () => {
+    if (pdfInputRef.current) {
+      pdfInputRef.current.value = '';
+      pdfInputRef.current.click();
     }
   };
 
@@ -188,6 +239,11 @@ const AddSubModulBelajar = () => {
     formData.append("urlYoutube", urlYoutube);
     formData.append("modulId", modulId);
     formData.append("file", image);
+    
+    // Add PDF file if selected
+    if (pdfFile) {
+      formData.append("pdfFile", pdfFile);
+    }
 
     try {
       const token = localStorage.getItem("accessToken");
@@ -615,9 +671,6 @@ const AddSubModulBelajar = () => {
                       <h3 className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
                         Link Video YouTube
                       </h3>
-                      <span className={`text-sm px-2 py-1 rounded ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
-                        Opsional
-                      </span>
                     </div>
                     
                     <label className={`block text-sm font-medium mb-3 ${
@@ -672,9 +725,6 @@ const AddSubModulBelajar = () => {
                       <h3 className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
                         Gambar Cover Sub Modul
                       </h3>
-                      <span className={`text-sm px-2 py-1 rounded text-white`} style={{ backgroundColor: '#ef4444' }}>
-                        Wajib
-                      </span>
                     </div>
                     
                     <label className={`block text-sm font-medium mb-3 ${
@@ -769,6 +819,108 @@ const AddSubModulBelajar = () => {
                     
                     <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       ⚠️ Gambar cover wajib diupload untuk sub modul
+                    </p>
+                  </div>
+
+                  {/* Upload PDF Section */}
+                  <div 
+                    className="p-6 rounded-xl border"
+                    style={{
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <FaFilePdf style={{ color: '#dc2626' }} />
+                      <h3 className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                        File PDF Materi
+                      </h3>
+                      <span className={`text-sm px-2 py-1 rounded ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                        Opsional
+                      </span>
+                    </div>
+                    
+                    <label className={`block text-sm font-medium mb-3 ${
+                      isDark ? 'text-gray-200' : 'text-gray-700'
+                    }`}>
+                      Upload File PDF Materi Pembelajaran
+                    </label>
+
+                    {/* Hidden PDF input */}
+                    <input
+                      ref={pdfInputRef}
+                      type="file"
+                      id="pdf-upload"
+                      name="pdfFile"
+                      accept=".pdf"
+                      onChange={handlePdfChange}
+                      className="hidden"
+                    />
+
+                    {/* PDF Upload Area */}
+                    {!pdfFile ? (
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={triggerPdfUpload}
+                          className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl transition-all duration-300 hover:border-opacity-100 ${
+                            isDark 
+                              ? 'border-gray-600 bg-gray-700 hover:bg-gray-600' 
+                              : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+                          }`}
+                          style={{
+                            borderColor: getColorWithOpacity('#dc2626', 0.3),
+                          }}
+                        >
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <FaFilePdf 
+                              className="mb-2 text-2xl text-red-600"
+                            />
+                            <p className={`mb-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
+                              <span className="font-semibold">Klik untuk upload PDF</span> atau drag & drop
+                            </p>
+                            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              PDF (MAX. 10MB)
+                            </p>
+                          </div>
+                        </button>
+                      </div>
+                    ) : (
+                      /* PDF Preview */
+                      <div className="relative">
+                        <div 
+                          className="flex items-center p-4 rounded-xl border bg-red-50"
+                          style={{ borderColor: getColorWithOpacity('#dc2626', 0.3) }}
+                        >
+                          <FaFilePdf className="text-red-600 text-2xl mr-3" />
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-800">{pdfFile.name}</p>
+                            <p className="text-sm text-gray-600">
+                              {(pdfFile.size / (1024 * 1024)).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={triggerPdfUpload}
+                              className="px-3 py-1 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                            >
+                              Ganti
+                            </button>
+                            <button
+                              type="button"
+                              onClick={removePdf}
+                              className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
+                            >
+                              Hapus
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      📄 Upload file PDF untuk materi pembelajaran tambahan
                     </p>
                   </div>
                   
@@ -926,6 +1078,14 @@ const AddSubModulBelajar = () => {
                   </div>
                   <div>
                     <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      File PDF:
+                    </p>
+                    <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {pdfFile ? '📄 PDF tersedia' : 'Tidak ada PDF'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       Gambar Cover:
                     </p>
                     <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -995,6 +1155,12 @@ const AddSubModulBelajar = () => {
                         <FaYoutube style={{ color: '#FF0000' }} className="text-sm" />
                         <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                           Video YouTube untuk pembelajaran visual
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaFilePdf style={{ color: '#dc2626' }} className="text-sm" />
+                        <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          File PDF untuk materi tambahan
                         </span>
                       </div>
                       <div className="flex items-center gap-2">

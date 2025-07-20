@@ -17,7 +17,7 @@ import {
   FaQuestionCircle,
   FaLightbulb,
 } from "react-icons/fa";
-import { MdQuiz, MdClass, MdAccessTime } from "react-icons/md";
+import { MdQuiz, MdBook, MdClass, MdAccessTime } from "react-icons/md";
 import { BsListUl, BsGrid3X3Gap } from "react-icons/bs";
 import { GiPlantSeed } from "react-icons/gi";
 
@@ -885,137 +885,151 @@ const ListSoal = () => {
             </div>
           </motion.div>
         ) : viewMode === "card" ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {currentGroupItems.map((group, index) => (
-              <motion.div
-                key={group.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                whileHover={{ scale: 1.02 }}
-                className="rounded-xl shadow-lg overflow-hidden border transition-all duration-300 hover:shadow-xl"
-                style={{
-                  backgroundColor: isDark ? "#1f2937" : "#ffffff",
-                  borderColor: getColorWithOpacity(currentColor, 0.2),
-                }}
-              >
-                {/* Card Header */}
-                <div
-                  className="p-4"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {currentGroupItems.map((group, index) => (
+                <motion.div
+                  key={group.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="rounded-xl shadow-lg overflow-hidden border transition-all duration-300 hover:shadow-xl"
                   style={{
-                    background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
-                      currentColor,
-                      0.8
-                    )} 100%)`,
+                    backgroundColor: isDark ? "#1f2937" : "#ffffff",
+                    borderColor: getColorWithOpacity(currentColor, 0.2),
                   }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <MdQuiz className="text-white text-lg" />
-                      <span className="text-white font-semibold text-sm">
-                        Green Quiz
-                      </span>
-                    </div>
-                    <FaLayerGroup className="text-white text-lg" />
-                  </div>
-                </div>
-
-                {/* Card Content */}
-                <div className="p-4">
-                  <h3
-                    className={`font-bold text-lg mb-2 ${
-                      isDark ? "text-white" : "text-gray-800"
-                    }`}
+                  {/* Card Header */}
+                  <div
+                    className="p-4"
+                    style={{
+                      background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                        currentColor,
+                        0.8
+                      )} 100%)`,
+                    }}
                   >
-                    {group.judul}
-                  </h3>
-
-                  <div className="space-y-3 mb-4">
-                    <div className="flex items-center gap-2">
-                      <MdClass
-                        style={{ color: currentColor }}
-                        className="text-sm"
-                      />
-                      <span
-                        className={`text-sm ${
-                          isDark ? "text-gray-300" : "text-gray-600"
-                        }`}
-                      >
-                        {group.kelas?.namaKelas || "Kelas tidak ditemukan"}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <MdAccessTime
-                        style={{ color: currentColor }}
-                        className="text-sm"
-                      />
-                      <span
-                        className={`text-sm ${
-                          isDark ? "text-gray-300" : "text-gray-600"
-                        }`}
-                      >
-                        {formatDuration(group.durasi)}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <FaQuestionCircle
-                        style={{ color: currentColor }}
-                        className="text-sm"
-                      />
-                      <span
-                        className={`text-sm ${
-                          isDark ? "text-gray-300" : "text-gray-600"
-                        }`}
-                      >
-                        {group.soals?.length || 0} soal
-                      </span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MdQuiz className="text-white text-lg" />
+                        <span className="text-white font-semibold text-sm">
+                          Green Quiz
+                        </span>
+                      </div>
+                      <FaLayerGroup className="text-white text-lg" />
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-600">
-                    <button
-                      onClick={() => handleViewDetail(group)}
-                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-white text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                      style={{
-                        background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
-                          currentColor,
-                          0.8
-                        )} 100%)`,
-                      }}
-                    >
-                      <FaEye />
-                      Detail
-                    </button>
-                    <button
-                      onClick={() => navigate(`/soal/edit-group/${group.id}`)}
-                      className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
-                        isDark
-                          ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  {/* Card Content */}
+                  <div className="p-4">
+                    <h3
+                      className={`font-bold text-lg mb-2 ${
+                        isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => openDeleteModal(group)}
-                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all duration-300"
-                    >
-                      <FaTrash />
-                    </button>
+                      {group.judul}
+                    </h3>
+
+                    <div className="space-y-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <MdBook
+                          style={{ color: currentColor }}
+                          className="text-sm"
+                        />
+                        <span
+                          className={`text-sm font-bold ${
+                            isDark ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
+                          Modul: {group.modul?.judul || "-"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <MdClass
+                          style={{ color: currentColor }}
+                          className="text-sm"
+                        />
+                        <span
+                          className={`text-sm ${
+                            isDark ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
+                          {group.kelas?.namaKelas || "Kelas tidak ditemukan"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <MdAccessTime
+                          style={{ color: currentColor }}
+                          className="text-sm"
+                        />
+                        <span
+                          className={`text-sm ${
+                            isDark ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
+                          {formatDuration(group.durasi)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <FaQuestionCircle
+                          style={{ color: currentColor }}
+                          className="text-sm"
+                        />
+                        <span
+                          className={`text-sm ${
+                            isDark ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
+                          {group.soals?.length || 0} soal
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-600">
+                      <button
+                        onClick={() => handleViewDetail(group)}
+                        className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-white text-sm font-medium transition-all duration-300 hover:shadow-lg"
+                        style={{
+                          background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                            currentColor,
+                            0.8
+                          )} 100%)`,
+                        }}
+                      >
+                        <FaEye />
+                        Detail
+                      </button>
+                      <button
+                        onClick={() => navigate(`/soal/edit-group/${group.id}`)}
+                        className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                          isDark
+                            ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => openDeleteModal(group)}
+                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all duration-300"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        ) : (
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
           /* Table View */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1040,6 +1054,9 @@ const ListSoal = () => {
                   >
                     <th className="px-6 py-4 text-left text-white font-semibold text-sm uppercase tracking-wider">
                       Judul Grup
+                    </th>
+                    <th className="px-6 py-4 text-left text-white font-semibold text-sm uppercase tracking-wider">
+                      Module
                     </th>
                     <th className="px-6 py-4 text-left text-white font-semibold text-sm uppercase tracking-wider">
                       Kelas
@@ -1078,6 +1095,13 @@ const ListSoal = () => {
                           />
                           {group.judul}
                         </div>
+                      </td>
+                      <td
+                        className={`px-6 py-4 text-sm ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        {group.modul?.judul || "-"}
                       </td>
                       <td
                         className={`px-6 py-4 text-sm ${

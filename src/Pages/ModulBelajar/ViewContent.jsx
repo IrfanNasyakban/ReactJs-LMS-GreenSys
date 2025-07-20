@@ -29,21 +29,43 @@ import {
   FaLock,
   FaCheck,
   FaPlayCircle,
-  FaCertificate,
+  FaClipboardList,
+  FaFilePdf,
+  FaDownload,
+  FaSearchPlus,
+  FaSearchMinus,
+  FaChevronUp,
+  FaChevronDown,
 } from "react-icons/fa";
-import { MdOndemandVideo, MdDescription, MdLibraryBooks } from "react-icons/md";
+import { MdOndemandVideo, MdDescription, MdLibraryBooks, MdPictureAsPdf } from "react-icons/md";
 import { BsCollection, BsFileEarmarkText } from "react-icons/bs";
 
 const ViewContent = () => {
   const [modulId, setModulId] = useState("");
+  const [siswaId, setSiswaId] = useState("");
+  const [groupSoalId, setGroupSoalId] = useState(null);
   const [subModuleData, setSubModuleData] = useState(null);
+  const [videoDuration, setVideoDuration] = useState(0);
   const [subModuleDataByModulId, setSubModuleDataByModulId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
-  // ✅ NEW: Progress tracking states
+  // PDF Viewer states
+  const [pdfPages, setPdfPages] = useState([]);
+  const [isPdfLoading, setIsPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState("");
+  const [pdfZoom, setPdfZoom] = useState(1);
+  const [currentPdfPage, setCurrentPdfPage] = useState(0);
+  const [isPdfExpanded, setIsPdfExpanded] = useState(false);
+
+  // Progress tracking states
   const [progressData, setProgressData] = useState(null);
+  const [isProgressLoading, setIsProgressLoading] = useState(true);
+  const [isQuizDataLoading, setIsQuizDataLoading] = useState(true);
+  const [quizResults, setQuizResults] = useState([]);
+  const [isQuizResultsLoading, setIsQuizResultsLoading] = useState(false);
+  const [hasCompletedQuiz, setHasCompletedQuiz] = useState(false);
   const [currentProgress, setCurrentProgress] = useState({
     isCompleted: false,
     completionPercentage: 0,
@@ -60,7 +82,7 @@ const ViewContent = () => {
   const { currentColor, currentMode } = useStateContext();
 
   const isDark = currentMode === "Dark";
-  const isSiswa = user?.role === "siswa"; // ✅ Check if user is student
+  const isSiswa = user?.role === "siswa";
 
   // Helper function for colors with opacity
   const getColorWithOpacity = (color, opacity) => {
@@ -71,13 +93,129 @@ const ViewContent = () => {
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
 
+  // ✅ SIMPLIFIED PDF conversion function using PROXY ONLY
+  const convertPdfToImages = async (pdfUrl) => {
+    if (!pdfUrl) return;
+
+    try {
+      setIsPdfLoading(true);
+      setPdfError("");
+      
+      // Import PDF.js dynamically
+      const pdfjsLib = await import('pdfjs-dist');
+      
+      // Set worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+
+      // ✅ ALWAYS use proxy endpoint - no fallbacks needed
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
+      
+      console.log("Using PDF proxy for:", pdfUrl);
+      
+      const proxyResponse = await fetch(`${apiUrl}/pdf-proxy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pdfUrl })
+      });
+      
+      if (!proxyResponse.ok) {
+        throw new Error(`Proxy error! status: ${proxyResponse.status}`);
+      }
+      
+      const arrayBuffer = await proxyResponse.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdfDocument = await loadingTask.promise;
+
+      const pages = [];
+      
+      // Convert each page to image
+      for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {
+        const page = await pdfDocument.getPage(pageNum);
+        
+        // Set scale for better quality
+        const scale = 2.0;
+        const viewport = page.getViewport({ scale });
+
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render page to canvas
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport
+        };
+
+        await page.render(renderContext).promise;
+
+        // Convert canvas to image URL
+        const imageUrl = canvas.toDataURL('image/jpeg', 0.9);
+        
+        pages.push({
+          pageNumber: pageNum,
+          imageUrl: imageUrl,
+          width: viewport.width,
+          height: viewport.height
+        });
+      }
+
+      setPdfPages(pages);
+      setCurrentPdfPage(0);
+      console.log(`Successfully converted ${pages.length} pages to images`);
+      
+    } catch (error) {
+      console.error("Error converting PDF to images:", error);
+      setPdfError(`Gagal memuat file PDF: ${error.message}`);
+    } finally {
+      setIsPdfLoading(false);
+    }
+  };
+
+  // PDF control functions
+  const zoomIn = () => {
+    setPdfZoom(prev => Math.min(prev + 0.25, 3));
+  };
+
+  const zoomOut = () => {
+    setPdfZoom(prev => Math.max(prev - 0.25, 0.5));
+  };
+
+  const nextPage = () => {
+    setCurrentPdfPage(prev => Math.min(prev + 1, pdfPages.length - 1));
+  };
+
+  const prevPage = () => {
+    setCurrentPdfPage(prev => Math.max(prev - 1, 0));
+  };
+
+  const goToPage = (pageIndex) => {
+    setCurrentPdfPage(pageIndex);
+  };
+
+  const downloadPdf = () => {
+    if (subModuleData?.urlPdf) {
+      const link = document.createElement('a');
+      link.href = subModuleData.urlPdf;
+      link.download = subModuleData.namaPdf || 'document.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   // Get current sub module index
   const getCurrentSubModuleIndex = () => {
     if (!subModuleDataByModulId || !subModuleData) return -1;
     return subModuleDataByModulId.findIndex((item) => item.id === parseInt(id));
   };
 
-  // ✅ NEW: Check if submodule is completed
+  // Check if submodule is completed
   const isSubModuleCompleted = (subModuleId) => {
     if (!progressData || !progressData.subModulesProgress) return false;
     const progress = progressData.subModulesProgress.find(
@@ -86,12 +224,11 @@ const ViewContent = () => {
     return progress?.progress?.isCompleted || false;
   };
 
-  // ✅ NEW: Check if submodule can be accessed
+  // Check if submodule can be accessed
   const canAccessSubModule = (index) => {
-    if (!isSiswa) return true; // Non-students can access all
-    if (index === 0) return true; // First submodule always accessible
+    if (!isSiswa) return true;
+    if (index === 0) return true;
 
-    // Check if previous submodule is completed
     const previousSubModule = subModuleDataByModulId[index - 1];
     return isSubModuleCompleted(previousSubModule.id);
   };
@@ -106,9 +243,7 @@ const ViewContent = () => {
       const nextIndex = currentIndex + 1;
       if (canAccessSubModule(nextIndex)) {
         const nextSubModule = subModuleDataByModulId[nextIndex];
-        // Tambahkan logika untuk refresh sebelum navigasi
         const currentPath = `/sub-modul-belajar/view/${nextSubModule.id}`;
-        // Menggunakan window.location.reload() untuk refresh.
         window.location.href = currentPath;
       } else {
         alert("Selesaikan sub modul sebelumnya terlebih dahulu!");
@@ -151,27 +286,90 @@ const ViewContent = () => {
 
   // function to check if this is the last submodule
   const isLastSubModule = () => {
+    if (!subModuleDataByModulId || subModuleDataByModulId.length === 0)
+      return false;
     const currentIndex = getCurrentSubModuleIndex();
-    return currentIndex === subModuleDataByModulId?.length - 1;
+    return currentIndex === subModuleDataByModulId.length - 1;
   };
 
-  // function to navigate to the certificate page
-  const navigateToCertificate = () => {
-    if (modulId) {
-      navigate(`/cetak-sertifikat/${modulId}`);
+  const hasQuizAvailable = () => {
+    return groupSoalId !== null && groupSoalId !== undefined;
+  };
+
+  // function to navigate to the quiz page
+  const navigateToQuiz = () => {
+    if (groupSoalId) {
+      navigate(`/start-quiz/${groupSoalId}`);
     }
   };
 
-  // function to check has can access the certificate
-  const canAccessCertificate = () => {
-    if (!isSiswa) return true; // Non-students can access certificate
-    if (!progressData) return false;
+  const fetchQuizResults = async () => {
+    try {
+      setIsQuizResultsLoading(true);
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
 
-    // Check if all submodules are completed
-    return progressData.completedSubModules === progressData.totalSubModules;
+      const response = await axios.get(
+        `${apiUrl}/student-results/${siswaId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setQuizResults(response.data.data || []);
+
+        // Cek apakah siswa sudah mengerjakan quiz untuk groupSoalId ini
+        const currentSiswaId = siswaId;
+        const hasCompleted = response.data.data.some(
+          (result) =>
+            result.siswaId === currentSiswaId &&
+            result.groupSoalId === groupSoalId
+        );
+        setHasCompletedQuiz(hasCompleted);
+      }
+    } catch (error) {
+      console.error("Error fetching quiz results:", error);
+    } finally {
+      setIsQuizResultsLoading(false);
+    }
   };
 
-  // ✅ NEW: Progress API functions
+  useEffect(() => {
+    if (isSiswa && groupSoalId) {
+      fetchQuizResults();
+    }
+  }, [isSiswa, groupSoalId]);
+
+  // function to check can access the quiz
+  const canAccessQuiz = () => {
+    if (!isSiswa) return true;
+
+    // Masih loading, disable button
+    if (isProgressLoading || isQuizDataLoading || isQuizResultsLoading)
+      return false;
+
+    // Tidak ada quiz tersedia
+    if (!groupSoalId) return false;
+
+    // Jika sudah mengerjakan quiz, disable button
+    if (hasCompletedQuiz) return false;
+
+    // Kombinasi pengecekan - current module completed ATAU semua module completed
+    const currentModuleCompleted = currentProgress.isCompleted;
+    const allModulesCompleted =
+      progressData &&
+      progressData.completedSubModules >= progressData.totalSubModules;
+
+    const result = currentModuleCompleted || allModulesCompleted;
+
+    return result;
+  };
+
+  // Progress API functions
   const startProgress = async () => {
     if (!isSiswa) return;
 
@@ -216,7 +414,6 @@ const ViewContent = () => {
         }
       );
 
-      // Update local state
       setCurrentProgress((prev) => ({
         ...prev,
         watchTime: watchTime,
@@ -245,7 +442,6 @@ const ViewContent = () => {
         }
       );
 
-      // Update local state
       setCurrentProgress((prev) => ({
         ...prev,
         isCompleted: true,
@@ -253,7 +449,7 @@ const ViewContent = () => {
       }));
 
       // Refresh progress data
-      getProgressData();
+      await getProgressData();
       setShowCompleteModal(false);
     } catch (error) {
       console.error("Error marking as completed:", error);
@@ -262,7 +458,10 @@ const ViewContent = () => {
   };
 
   const getProgressData = async () => {
-    if (!isSiswa || !modulId) return;
+    if (!isSiswa || !modulId) {
+      setIsProgressLoading(false);
+      return;
+    }
 
     try {
       const token = localStorage.getItem("accessToken");
@@ -280,13 +479,19 @@ const ViewContent = () => {
       setProgressData(response.data);
     } catch (error) {
       console.error("Error getting progress data:", error);
+    } finally {
+      setIsProgressLoading(false);
     }
   };
 
   const getCurrentProgressData = async () => {
-    if (!isSiswa) return;
+    if (!isSiswa) {
+      setIsProgressLoading(false);
+      return;
+    }
 
     try {
+      setIsProgressLoading(true);
       const token = localStorage.getItem("accessToken");
       const apiUrl = process.env.REACT_APP_URL_API;
 
@@ -304,6 +509,8 @@ const ViewContent = () => {
       }
     } catch (error) {
       console.error("Error getting current progress:", error);
+    } finally {
+      setIsProgressLoading(false);
     }
   };
 
@@ -334,25 +541,50 @@ const ViewContent = () => {
     }
   };
 
-  // ✅ NEW: Simulate video progress (you can integrate with actual video player)
-  const simulateVideoProgress = () => {
-    if (!isSiswa || currentProgress.isCompleted) return;
+  // Fungsi konversi menit ke detik
+  const parseTimeToSeconds = (timeString) => {
+    if (!timeString) return 60;
 
+    const parts = timeString.split(":");
+    let seconds = 0;
+
+    if (parts.length === 2) {
+      seconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    } else if (parts.length === 3) {
+      seconds =
+        parseInt(parts[0]) * 3600 +
+        parseInt(parts[1]) * 60 +
+        parseInt(parts[2]);
+    } else {
+      seconds = 60;
+    }
+
+    return seconds;
+  };
+
+  // Simulate video progress
+  const simulateVideoProgress = () => {
+    if (!isSiswa || currentProgress.isCompleted || !subModuleData) return;
+
+    const videoDurationInSeconds = parseTimeToSeconds(subModuleData.time);
     let watchTimeCounter = currentProgress.watchTime || 0;
 
     const interval = setInterval(() => {
       setCurrentProgress((prev) => {
-        const newWatchTime = prev.watchTime + 5; // 5 seconds increment
+        const newWatchTime = prev.watchTime + 5;
         watchTimeCounter = newWatchTime;
-        const newPercentage = Math.min((newWatchTime / 60) * 100, 100);
 
-        // Update API every 30 seconds
+        const newPercentage = Math.min(
+          (newWatchTime / videoDurationInSeconds) * 100,
+          100
+        );
+
         if (newWatchTime % 30 === 0) {
           updateProgressAPI(newWatchTime, newPercentage);
         }
 
-        // Auto complete setelah 60 detik
-        if (newWatchTime >= 60 && !prev.isCompleted) {
+        const completionThreshold = Math.floor(videoDurationInSeconds * 0.8);
+        if (newWatchTime >= completionThreshold && !prev.isCompleted) {
           setTimeout(() => {
             markAsCompleted();
           }, 1000);
@@ -371,7 +603,7 @@ const ViewContent = () => {
           completionPercentage: newPercentage,
         };
       });
-    }, 5000); // Update every 5 seconds
+    }, 5000);
 
     return () => clearInterval(interval);
   };
@@ -397,36 +629,64 @@ const ViewContent = () => {
     return new Date(dateString).toLocaleDateString("id-ID", options);
   };
 
+  // useEffect hooks
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
 
   useEffect(() => {
+    if (!isSiswa) {
+      setIsProgressLoading(false);
+      setIsQuizDataLoading(false);
+    }
+  }, [isSiswa]);
+
+  useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       getSubModulById();
+      getProfileSiswa();
     } else {
       navigate("/login");
     }
   }, [navigate, id]);
 
   useEffect(() => {
+    if (subModuleData?.time) {
+      const duration = parseTimeToSeconds(subModuleData.time);
+      setVideoDuration(duration);
+    }
+    
+    // Convert PDF to images when subModuleData is loaded
+    if (subModuleData?.urlPdf) {
+      convertPdfToImages(subModuleData.urlPdf);
+    }
+  }, [subModuleData]);
+
+  // Proper loading sequence
+  useEffect(() => {
     if (modulId) {
       getSubModulByModulId();
+      getModulById(); // This will set groupSoalId and isQuizDataLoading
+
       if (isSiswa) {
-        getProgressData();
-        getCurrentProgressData();
+        // Load progress data in sequence
+        const loadProgressData = async () => {
+          await getProgressData();
+          await getCurrentProgressData();
+        };
+
+        loadProgressData();
         checkAccessAPI();
       }
     }
   }, [modulId, isSiswa]);
 
-  // ✅ NEW: Start progress and simulate video watching when component mounts
+  // Start progress and simulate video watching
   useEffect(() => {
     if (subModuleData && isSiswa && canAccess) {
       startProgress();
 
-      // Start simulating video progress after 3 seconds
       const timeout = setTimeout(() => {
         const cleanup = simulateVideoProgress();
         return cleanup;
@@ -435,6 +695,50 @@ const ViewContent = () => {
       return () => clearTimeout(timeout);
     }
   }, [subModuleData, isSiswa, canAccess]);
+
+  const getProfileSiswa = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/profile-siswa`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data && response.data.data) {
+        const profileData = response.data.data;
+        setSiswaId(profileData.id);
+      } else {
+        console.error("Format data tidak sesuai:", response.data);
+      }
+    } catch (error) {
+      console.error("Error mengambil profile siswa:", error);
+    }
+  };
+
+  // getModulById with proper loading state
+  const getModulById = async () => {
+    if (!modulId) return;
+
+    try {
+      setIsQuizDataLoading(true);
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/modul/${modulId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = response.data;
+      setGroupSoalId(data.group_soal?.id || null);
+    } catch (error) {
+      console.error("Error fetching modul data:", error);
+      setError("Gagal memuat data modul");
+    } finally {
+      setIsQuizDataLoading(false);
+    }
+  };
 
   const getSubModulById = async () => {
     try {
@@ -542,7 +846,7 @@ const ViewContent = () => {
 
   return (
     <div className="min-h-screen p-6">
-      {/* ✅ NEW: Complete Modal */}
+      {/* Complete Modal */}
       {showCompleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <motion.div
@@ -693,7 +997,7 @@ const ViewContent = () => {
                       {subModuleDataByModulId.length}
                     </p>
                   )}
-                  {/* ✅ NEW: Progress indicator for students */}
+                  {/* Progress indicator for students */}
                   {isSiswa && (
                     <div className="flex items-center gap-2">
                       {currentProgress.isCompleted ? (
@@ -715,6 +1019,11 @@ const ViewContent = () => {
                           <span className="text-sm text-gray-500">
                             {Math.round(currentProgress.completionPercentage)}%
                           </span>
+                          {subModuleData.time && (
+                            <span className="text-xs text-gray-400">
+                              ({subModuleData.time})
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -722,7 +1031,7 @@ const ViewContent = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                {/* ✅ NEW: Complete button for students */}
+                {/* Complete button for students */}
                 {isSiswa && !currentProgress.isCompleted && (
                   <motion.button
                     onClick={() => setShowCompleteModal(true)}
@@ -859,7 +1168,7 @@ const ViewContent = () => {
                             Fullscreen
                           </span>
                         </div>
-                        {/* ✅ NEW: Progress info for students */}
+                        {/* Progress info for students */}
                         {isSiswa && (
                           <div className="flex items-center gap-1">
                             <FaClock style={{ color: currentColor }} />
@@ -872,6 +1181,7 @@ const ViewContent = () => {
                               {(currentProgress.watchTime % 60)
                                 .toString()
                                 .padStart(2, "0")}
+                              {subModuleData.time && ` / ${subModuleData.time}`}
                             </span>
                           </div>
                         )}
@@ -910,7 +1220,7 @@ const ViewContent = () => {
             </motion.div>
 
             {/* Navigation Buttons with Access Control */}
-            {subModuleDataByModulId && subModuleDataByModulId.length > 1 && (
+            {subModuleDataByModulId && subModuleDataByModulId.length >= 1 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -952,7 +1262,7 @@ const ViewContent = () => {
                   >
                     {currentIndex + 1} / {subModuleDataByModulId.length}
                   </div>
-                  {/* ✅ Overall progress for students */}
+                  {/* Overall progress for students */}
                   {isSiswa && progressData && (
                     <div className="text-xs text-gray-500 mt-1">
                       {progressData.completedSubModules} dari{" "}
@@ -961,39 +1271,47 @@ const ViewContent = () => {
                   )}
                 </div>
 
-                {/* ✅ NEW: Conditional button - Next SubModule or Certificate */}
-                {isLastSubModule() ? (
-                  // Certificate Button for last submodule
-                  <motion.button
-                    onClick={navigateToCertificate}
-                    disabled={isSiswa && !canAccessCertificate()}
-                    whileHover={{
-                      scale: isSiswa && !canAccessCertificate() ? 1 : 1.02,
-                    }}
-                    whileTap={{
-                      scale: isSiswa && !canAccessCertificate() ? 1 : 0.98,
-                    }}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                      isSiswa && !canAccessCertificate()
-                        ? `opacity-50 cursor-not-allowed ${
-                            isDark
-                              ? "bg-gray-700 text-gray-500"
-                              : "bg-gray-200 text-gray-400"
-                          }`
-                        : `text-white shadow-lg hover:shadow-xl`
-                    }`}
-                    style={{
-                      background:
-                        isSiswa && !canAccessCertificate()
-                          ? undefined
-                          : `linear-gradient(135deg, #10B981 0%, #059669 100%)`, // Green gradient for certificate
-                    }}
-                  >
-                    <FaCertificate />
-                    Cetak Sertifikat
-                  </motion.button>
-                ) : (
-                  // Next SubModule Button
+                {/* Conditional button - Next SubModule or Quiz */}
+                {isLastSubModule() && hasQuizAvailable() ? (
+                  // Quiz Button for last submodule - ONLY for siswa
+                  user.role === "siswa" ? (
+                    <motion.button
+                      onClick={navigateToQuiz}
+                      disabled={!canAccessQuiz() || hasCompletedQuiz}
+                      whileHover={{
+                        scale: !canAccessQuiz() || hasCompletedQuiz ? 1 : 1.02,
+                      }}
+                      whileTap={{
+                        scale: !canAccessQuiz() || hasCompletedQuiz ? 1 : 0.98,
+                      }}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                        !canAccessQuiz() || hasCompletedQuiz
+                          ? `opacity-50 cursor-not-allowed ${
+                              isDark
+                                ? "bg-gray-700 text-gray-500"
+                                : "bg-gray-200 text-gray-400"
+                            }`
+                          : `text-white shadow-lg hover:shadow-xl`
+                      }`}
+                      style={{
+                        background:
+                          !canAccessQuiz() || hasCompletedQuiz
+                            ? undefined
+                            : `linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)`,
+                      }}
+                    >
+                      <FaClipboardList />
+                      {isProgressLoading ||
+                      isQuizDataLoading ||
+                      isQuizResultsLoading
+                        ? "Loading..."
+                        : hasCompletedQuiz
+                        ? "Anda Telah Mengerjakannya"
+                        : "Kerjakan Quiz"}
+                    </motion.button>
+                  ) : null
+                ) : !isLastSubModule() ? (
+                  // Next SubModule Button - for all users
                   <motion.button
                     onClick={navigateToNextSubModule}
                     disabled={!hasNextSubModule()}
@@ -1020,7 +1338,7 @@ const ViewContent = () => {
                     Sub Modul Selanjutnya
                     <FaChevronRight />
                   </motion.button>
-                )}
+                ) : null}
               </motion.div>
             )}
 
@@ -1062,12 +1380,205 @@ const ViewContent = () => {
                 </div>
               </div>
             </motion.div>
+
+            {/* PDF Viewer Section */}
+            {subModuleData.urlPdf && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="rounded-2xl shadow-xl overflow-hidden"
+                style={{
+                  backgroundColor: isDark ? "#1f2937" : "#ffffff",
+                  border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
+                }}
+              >
+                {/* PDF Header */}
+                <div
+                  className="py-4 px-6"
+                  style={{
+                    backgroundColor: getColorWithOpacity('#dc2626', 0.1),
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FaFilePdf style={{ color: '#dc2626' }} />
+                      <h3
+                        className={`font-semibold text-lg ${
+                          isDark ? "text-white" : "text-gray-800"
+                        }`}
+                      >
+                        Materi PDF - {subModuleData.namaPdf || 'Document.pdf'}
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={downloadPdf}
+                        className="flex items-center gap-1 px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      >
+                        <FaDownload />
+                        Download
+                      </button>
+                      <button
+                        onClick={() => setIsPdfExpanded(!isPdfExpanded)}
+                        className="flex items-center gap-1 px-3 py-1 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      >
+                        {isPdfExpanded ? <FaChevronUp /> : <FaChevronDown />}
+                        {isPdfExpanded ? 'Tutup' : 'Buka'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* PDF Content */}
+                {isPdfExpanded && (
+                  <div className="p-6">
+                    {isPdfLoading ? (
+                      <div className="text-center py-12">
+                        <div
+                          className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+                          style={{
+                            borderColor: `#dc2626 transparent #dc2626 #dc2626`,
+                          }}
+                        />
+                        <p className={`text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
+                          Memuat PDF...
+                        </p>
+                        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                          Menggunakan proxy server untuk mengakses PDF
+                        </p>
+                      </div>
+                    ) : pdfError ? (
+                      <div className="text-center py-12">
+                        <FaFilePdf className="text-red-400 text-6xl mx-auto mb-4" />
+                        <p className={`text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                          Gagal memuat PDF
+                        </p>
+                        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                          {pdfError}
+                        </p>
+                        <button
+                          onClick={() => convertPdfToImages(subModuleData.urlPdf)}
+                          className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        >
+                          Coba Lagi
+                        </button>
+                      </div>
+                    ) : pdfPages.length > 0 ? (
+                      <div>
+                        {/* PDF Controls */}
+                        <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={prevPage}
+                              disabled={currentPdfPage === 0}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaChevronLeft />
+                            </button>
+                            <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                              Halaman {currentPdfPage + 1} dari {pdfPages.length}
+                            </span>
+                            <button
+                              onClick={nextPage}
+                              disabled={currentPdfPage === pdfPages.length - 1}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaChevronRight />
+                            </button>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={zoomOut}
+                              disabled={pdfZoom <= 0.5}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaSearchMinus />
+                            </button>
+                            <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                              {Math.round(pdfZoom * 100)}%
+                            </span>
+                            <button
+                              onClick={zoomIn}
+                              disabled={pdfZoom >= 3}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaSearchPlus />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* PDF Page Display */}
+                        <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                          <div 
+                            className="flex justify-center p-4 overflow-auto"
+                            style={{ maxHeight: '180vh' }}
+                          >
+                            <img
+                              src={pdfPages[currentPdfPage]?.imageUrl}
+                              alt={`PDF Page ${currentPdfPage + 1}`}
+                              className="max-w-full h-auto shadow-lg"
+                              style={{ 
+                                transform: `scale(${pdfZoom})`,
+                                transformOrigin: 'top center'
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Page Thumbnails */}
+                        {pdfPages.length > 1 && (
+                          <div className="mt-4">
+                            <h4 className={`text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                              Halaman Lainnya:
+                            </h4>
+                            <div className="flex gap-2 overflow-x-auto pb-2">
+                              {pdfPages.map((page, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => goToPage(index)}
+                                  className={`flex-shrink-0 relative ${
+                                    index === currentPdfPage 
+                                      ? 'ring-2 ring-blue-500' 
+                                      : 'hover:ring-1 hover:ring-gray-300'
+                                  } rounded transition-all`}
+                                >
+                                  <img
+                                    src={page.imageUrl}
+                                    alt={`Page ${index + 1}`}
+                                    className="w-16 h-20 object-cover rounded"
+                                  />
+                                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded-b">
+                                    {index + 1}
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <MdPictureAsPdf className="text-gray-400 text-6xl mx-auto mb-4" />
+                        <p className={`text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                          Tidak dapat memuat PDF
+                        </p>
+                        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                          File PDF mungkin kosong atau tidak valid
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            )}
           </div>
 
           {/* Sidebar with Progress Tracking */}
           <div className="lg:col-span-1 space-y-6">
             {/* Sub Module List with Progress Indicators */}
-            {subModuleDataByModulId && subModuleDataByModulId.length > 1 && (
+            {subModuleDataByModulId && subModuleDataByModulId.length >= 1 && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -1156,7 +1667,7 @@ const ViewContent = () => {
                               <p className="text-sm font-medium line-clamp-2">
                                 {subModule.subJudul}
                               </p>
-                              {/* ✅ NEW: Progress indicator for students */}
+                              {/* Progress indicator for students */}
                               {isSiswa && progressData && (
                                 <div className="mt-1">
                                   {isCompleted ? (
@@ -1184,7 +1695,7 @@ const ViewContent = () => {
                     })}
                   </div>
 
-                  {/* ✅ NEW: Overall progress bar for students */}
+                  {/* Overall progress bar for students */}
                   {isSiswa && progressData && (
                     <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
@@ -1214,7 +1725,6 @@ const ViewContent = () => {
               </motion.div>
             )}
 
-            {/* Rest of the sidebar components remain the same... */}
             {/* Sub Module Info */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -1286,7 +1796,32 @@ const ViewContent = () => {
                       {subModuleData.modul?.judul}
                     </p>
                   </div>
-                  {/* ✅ NEW: Progress info for current submodule */}
+                  {/* PDF info */}
+                  {subModuleData.urlPdf && (
+                    <div>
+                      <p
+                        className={`text-xs ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        Materi PDF:
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <FaFilePdf className="text-red-500" />
+                        <p
+                          className={`text-sm ${
+                            isDark ? "text-gray-300" : "text-gray-600"
+                          }`}
+                        >
+                          {subModuleData.namaPdf || 'Document.pdf'}
+                        </p>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {pdfPages.length > 0 ? `${pdfPages.length} halaman` : 'Tersedia untuk download'}
+                      </p>
+                    </div>
+                  )}
+                  {/* Progress info for current submodule */}
                   {isSiswa && (
                     <div>
                       <p
@@ -1458,6 +1993,19 @@ const ViewContent = () => {
                         </p>
                       </div>
                       <div className="flex items-start gap-2">
+                        <FaFilePdf
+                          style={{ color: '#dc2626' }}
+                          className="text-sm mt-1 flex-shrink-0"
+                        />
+                        <p
+                          className={`text-xs ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          Baca materi PDF untuk pemahaman yang lebih mendalam
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
                         <FaBook
                           style={{ color: currentColor }}
                           className="text-sm mt-1 flex-shrink-0"
@@ -1512,6 +2060,19 @@ const ViewContent = () => {
                           }`}
                         >
                           Gunakan fitur navigation untuk berpindah antar konten
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <FaFilePdf
+                          style={{ color: '#dc2626' }}
+                          className="text-sm mt-1 flex-shrink-0"
+                        />
+                        <p
+                          className={`text-xs ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          PDF viewer dengan zoom dan navigasi halaman tersedia
                         </p>
                       </div>
                     </>

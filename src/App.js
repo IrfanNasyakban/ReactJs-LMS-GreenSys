@@ -5,7 +5,7 @@ import { FaLeaf } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 
 import { Navbar, Footer, Sidebar, ThemeSettings, PDFViewer } from "./components";
-import { Dashboard, ProfileSaya, ListSiswa, EditDataSiswa, ListGuru, EditDataGuru, ListKelas, AddKelas, EditKelas, GantiPassword, ListUsers, AddUsers, AddProfileGuru, AddProfileSiswa, AddModulBelajar, ListModulBelajar, EditModulBelajar, ListSubModulBelajar, AddSubModulBelajar, EditSubModulBelajar, ViewContent, CetakSertifikat, ListCertificate, ListSoal, AddGroupSoal, EditGroupSoal, AddSoal, EditSoal, ListQuiz, StartQuiz } from "./Pages";
+import { Dashboard, ProfileSaya, ListSiswa, EditDataSiswa, ListGuru, EditDataGuru, ListKelas, AddKelas, EditKelas, GantiPassword, ListUsers, AddUsers, AddProfileGuru, AddProfileSiswa, AddModulBelajar, ListModulBelajar, EditModulBelajar, ListSubModulBelajar, AddSubModulBelajar, EditSubModulBelajar, ViewContent, CetakSertifikat, ListCertificate, ListSoal, AddGroupSoal, EditGroupSoal, AddSoal, EditSoal, ListQuiz, StartQuiz, HasilAkhir, ListDataNilai, NilaiSaya, DetailNilai } from "./Pages";
 
 import { useStateContext } from "./contexts/ContextProvider";
 
@@ -164,7 +164,7 @@ const AppContent = () => {
               <Route path="/sub-modul-belajar/add/:modulId" element={<AddSubModulBelajar />} />
               <Route path="/sub-modul-belajar/edit/:id" element={<EditSubModulBelajar />} />
               <Route path="/sub-modul-belajar/view/:id" element={<ViewContent />} />
-              <Route path="/cetak-sertifikat/:modulId" element={<CetakSertifikat />} />
+              <Route path="/cetak-sertifikat/:modulId/:nilaiId" element={<CetakSertifikat />} />
 
               <Route path="/certificate" element={<ListCertificate />} />
 
@@ -172,6 +172,7 @@ const AppContent = () => {
 
               <Route path="/quiz" element={<ListQuiz />} />
               <Route path="/start-quiz/:groupId" element={<StartQuiz />} />
+              <Route path="/hasil-quiz/:id" element={<HasilAkhir />} />
               <Route path="/data-soal" element={<ListSoal />} />
               <Route path="/soal/add-group" element={<AddGroupSoal />} />
               <Route path="/soal/edit-group/:id" element={<EditGroupSoal />} />
@@ -180,6 +181,10 @@ const AppContent = () => {
               
               {/* Protected Routes */}
               <Route path="/dashboard" element={<Dashboard />} />
+
+              <Route path="/nilai" element={<ListDataNilai />} />
+              <Route path="/nilai-saya" element={<NilaiSaya />} />
+              <Route path="/detail-nilai/:id" element={<DetailNilai />} />
               
               {/* Uncomment these routes as needed */}
               {/* 
@@ -187,8 +192,7 @@ const AppContent = () => {
               <Route path="/quiz" element={<ListQuiz />} />
               
               <Route path="/start-quiz-again/:id" element={<StartQuizLagi />} />
-              <Route path="/hasil-quiz/:id" element={<HasilAkhir />} />
-              <Route path="/nilai" element={<ListDataNilai />} />
+              
               <Route path="/nilai-saya" element={<NilaiSaya />} />
               <Route path="/nilai-saya/:id" element={<DetailNilaiSaya />} />
               

@@ -183,17 +183,63 @@ const ListCertificate = () => {
     }
   };
 
+  // ✅ FIXED: Updated to use proper PDF viewer route
   const handleViewCertificate = (url) => {
     if (url) {
-      window.open(`/pdf-viewer?pdfUrl=${url}`, "_blank");
+      console.log("Opening PDF viewer for:", url);
+      // Use the same route pattern as mentioned in documents
+      navigate(`/pdf-viewer?pdfUrl=${encodeURIComponent(url)}`);
+    } else {
+      console.error("No certificate URL provided");
+      alert("URL sertifikat tidak tersedia");
     }
   };
 
-  const handleDownloadCertificate = (url, studentName) => {
-    if (url) {
+  // ✅ FIXED: Updated download function with proxy support
+  const handleDownloadCertificate = async (url, studentName) => {
+    if (!url) {
+      alert("URL sertifikat tidak tersedia");
+      return;
+    }
+
+    try {
+      // Use proxy endpoint for consistent download behavior
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
+      
+      const response = await fetch(`${apiUrl}/pdf-proxy`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pdfUrl: url })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `Sertifikat_${studentName || 'Unknown'}_${Date.now()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      window.URL.revokeObjectURL(downloadUrl);
+      
+    } catch (error) {
+      console.error("Download error:", error);
+      // Fallback to direct download
       const link = document.createElement('a');
       link.href = url;
-      link.download = `Sertifikat_${studentName}.pdf`;
+      link.download = `Sertifikat_${studentName || 'Unknown'}.pdf`;
+      link.target = '_blank';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

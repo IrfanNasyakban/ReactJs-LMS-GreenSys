@@ -26,9 +26,11 @@ import { GiPlantSeed } from "react-icons/gi";
 
 const AddGroupSoal = () => {
   const [kelasList, setKelasList] = useState([]);
+  const [modulList, setModulList] = useState([]);
   const [judul, setJudul] = useState("");
   const [durasi, setDurasi] = useState("");
   const [kelasId, setKelasId] = useState("");
+  const [modulId, setModulId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { currentColor, currentMode } = useStateContext();
@@ -58,6 +60,7 @@ const AddGroupSoal = () => {
     const token = localStorage.getItem("accessToken");
     if (token) {
       getKelas();
+      getModul();
     } else {
       navigate("/login");
     }
@@ -78,6 +81,24 @@ const AddGroupSoal = () => {
     }
   };
 
+  const getModul = async () => {
+    try {
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const response = await axios.get(`${apiUrl}/modul`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      const filteredData = response.data.filter(modul => modul.group_soal === null);
+    
+      setModulList(filteredData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const saveGroupSoal = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -86,6 +107,7 @@ const AddGroupSoal = () => {
     formData.append("judul", judul);
     formData.append("durasi", parseInt(durasi));
     formData.append("kelasId", kelasId);
+    formData.append("modulId", modulId);
 
     const jsonData = {};
     formData.forEach((value, key) => {
@@ -217,6 +239,88 @@ const AddGroupSoal = () => {
               {/* Form Content */}
               <div className="p-8">
                 <form onSubmit={saveGroupSoal} className="space-y-8">
+                  {/* Tingkat Modul Section */}
+                  <div
+                    className="p-6 rounded-xl border"
+                    style={{
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2),
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <FaGraduationCap style={{ color: currentColor }} />
+                      <h3
+                        className={`font-semibold text-lg ${
+                          isDark ? "text-white" : "text-gray-800"
+                        }`}
+                      >
+                        Pilih Modul
+                      </h3>
+                    </div>
+
+                    <label
+                      className={`block text-sm font-medium mb-3 ${
+                        isDark ? "text-gray-200" : "text-gray-700"
+                      }`}
+                    >
+                      Pilih Modul untuk Grup Soal
+                    </label>
+                    <div className="relative">
+                      <select
+                        name="modulId"
+                        required
+                        className={`block w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                          isDark
+                            ? "bg-gray-700 text-white border-gray-600"
+                            : "bg-white text-gray-900 border-gray-300"
+                        }`}
+                        style={{
+                          borderColor: getColorWithOpacity(currentColor, 0.3),
+                          boxShadow: `0 0 0 1px ${getColorWithOpacity(
+                            currentColor,
+                            0.1
+                          )}`,
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = currentColor;
+                          e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(
+                            currentColor,
+                            0.1
+                          )}`;
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = getColorWithOpacity(
+                            currentColor,
+                            0.3
+                          );
+                          e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(
+                            currentColor,
+                            0.1
+                          )}`;
+                        }}
+                        value={modulId}
+                        onChange={(e) => setModulId(e.target.value)}
+                      >
+                        <option value="">Pilih Modul</option>
+                        {modulList.map((modul) => (
+                          <option key={modul.id} value={modul.id}>
+                            {modul.judul}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <MdSchool style={{ color: currentColor }} />
+                      </div>
+                    </div>
+                    <p
+                      className={`mt-2 text-sm ${
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
+                      Modul akan tersedia untuk group soal yang dipilih
+                    </p>
+                  </div>
+
                   {/* Judul Section */}
                   <div
                     className="p-6 rounded-xl border"

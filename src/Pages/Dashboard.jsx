@@ -209,7 +209,7 @@ const Dashboard = () => {
                   Dashboard <span style={{ color: currentColor }}>GreenSys</span>
                 </h1>
                 <p className={`${currentMode === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Green Science Learning Management System - SMA 1 Lhokseumawe
+                  Green Science Learning Management System
                 </p>
               </div>
             </div>

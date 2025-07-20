@@ -15,6 +15,7 @@ import {
   FaIdCard,
   FaUser,
   FaEnvelope,
+  FaPhone,
   FaCalendarAlt,
   FaMapMarkerAlt,
   FaCamera,
@@ -30,6 +31,7 @@ const AddProfileGuru = () => {
   const [nip, setNip] = useState("");
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
+  const [noHp, setNoHp] = useState("");
   const [gender, setGender] = useState("");
   const [tanggalLahir, setTanggalLahir] = useState("");
   const [alamat, setAlamat] = useState("");
@@ -70,6 +72,7 @@ const AddProfileGuru = () => {
     formData.append("nip", nip);
     formData.append("nama", nama);
     formData.append("email", email);
+    formData.append("noHp", noHp);
     formData.append("gender", gender);
     formData.append("tanggalLahir", tanggalLahir);
     formData.append("alamat", alamat);
@@ -328,6 +331,45 @@ const AddProfileGuru = () => {
                           />
                           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                             <FaEnvelope style={{ color: currentColor }} className="animate-pulse" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* No Hp */}
+                      <div>
+                        <label className={`block text-sm font-medium mb-3 ${
+                          isDark ? 'text-gray-200' : 'text-gray-700'
+                        }`}>
+                          Nomor Hp
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            name="noHp"
+                            required
+                            placeholder="No Hp/WhatsApp"
+                            className={`block w-full px-4 py-3 pr-12 rounded-xl border transition-all duration-300 focus:outline-none ${
+                              isDark 
+                                ? 'bg-gray-700 text-white border-gray-600 placeholder-gray-400' 
+                                : 'bg-white text-gray-900 border-gray-300 placeholder-gray-500'
+                            }`}
+                            style={{
+                              borderColor: getColorWithOpacity(currentColor, 0.3),
+                              boxShadow: `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.borderColor = currentColor;
+                              e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(currentColor, 0.1)}`;
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = getColorWithOpacity(currentColor, 0.3);
+                              e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`;
+                            }}
+                            value={noHp}
+                            onChange={(e) => setNoHp(e.target.value)}
+                          />
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <FaPhone style={{ color: currentColor }} className="animate-pulse" />
                           </div>
                         </div>
                       </div>

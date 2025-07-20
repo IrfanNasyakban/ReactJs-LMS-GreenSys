@@ -339,7 +339,7 @@ const StartQuiz = () => {
                 <div className="flex items-center gap-4 mb-4">
                   <FaBookOpen className="text-3xl" />
                   <div>
-                    <h1 className="text-3xl font-bold">{quizData?.judul}</h1>
+                    <h1 className="text-3xl font-bold">{quizData?.modul?.judul}</h1>
                     <p className="text-xl opacity-90">Instruksi Kuis Green Science</p>
                   </div>
                 </div>
@@ -450,10 +450,10 @@ const StartQuiz = () => {
                     <ul className="space-y-3">
                       <li className="flex justify-between">
                         <span className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                          Mata Pelajaran:
+                          Module Pembelajaran:
                         </span>
                         <span className={`font-medium ${isDark ? "text-white" : "text-gray-800"}`}>
-                          Green Science
+                          {quizData?.modul?.judul || "Green Science"}
                         </span>
                       </li>
                       <li className="flex justify-between">

@@ -28,3 +28,7 @@ export { default as EditGroupSoal } from './Soal/EditGroupSoal';
 export { default as AddSoal } from './Soal/AddSoal';
 export { default as EditSoal } from './Soal/EditSoal';
 export { default as StartQuiz } from './Soal/StartQuiz';
+export { default as HasilAkhir } from './Soal/HasilAkhir';
+export { default as ListDataNilai } from './Soal/ListDataNilai';
+export { default as NilaiSaya } from './Soal/NilaiSaya';
+export { default as DetailNilai } from './Soal/DetailNilai';

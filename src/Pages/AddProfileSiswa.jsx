@@ -20,17 +20,14 @@ import {
   FaCamera,
   FaLeaf,
   FaRecycle,
-  FaTree,
-  FaSeedling,
   FaCheckCircle,
   FaTimesCircle,
-  FaLightbulb,
   FaBook,
   FaPencilAlt,
-  FaSchool
+  FaSchool,
+  FaPhone
 } from "react-icons/fa";
-import { MdScience, MdEco, MdNaturePeople, MdVerifiedUser, MdClass } from "react-icons/md";
-import { GiPlantSeed } from "react-icons/gi";
+import { MdScience, MdEco } from "react-icons/md";
 import { BsDoorOpen } from "react-icons/bs";
 
 const AddProfileSiswa = () => {
@@ -38,6 +35,7 @@ const AddProfileSiswa = () => {
   const [nis, setNis] = useState("");
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
+  const [noHp, setNoHp] = useState("");
   const [kelasId, setKelasId] = useState("");
   const [gender, setGender] = useState("");
   const [tanggalLahir, setTanggalLahir] = useState("");
@@ -96,6 +94,7 @@ const AddProfileSiswa = () => {
     formData.append("nis", nis);
     formData.append("nama", nama);
     formData.append("email", email);
+    formData.append("noHp", noHp);
     formData.append("kelasId", kelasId);
     formData.append("gender", gender);
     formData.append("tanggalLahir", tanggalLahir);
@@ -142,9 +141,6 @@ const AddProfileSiswa = () => {
 
   // Form validation
   const isFormValid = nis && nama && email && kelasId && gender && tanggalLahir && alamat;
-
-  // Get selected class name
-  const selectedClass = kelasList.find(k => k.id === parseInt(kelasId));
 
   return (
     <div className="p-6">
@@ -489,7 +485,7 @@ const AddProfileSiswa = () => {
                       </div>
 
                       {/* Alamat */}
-                      <div className="md:col-span-2">
+                      <div>
                         <label className={`block text-sm font-medium mb-3 ${
                           isDark ? 'text-gray-200' : 'text-gray-700'
                         }`}>
@@ -523,6 +519,45 @@ const AddProfileSiswa = () => {
                           />
                           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                             <FaMapMarkerAlt style={{ color: currentColor }} className="animate-pulse" />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* No Hp */}
+                      <div>
+                        <label className={`block text-sm font-medium mb-3 ${
+                          isDark ? 'text-gray-200' : 'text-gray-700'
+                        }`}>
+                          Nomor HP
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="tel"
+                            name="noHp"
+                            required
+                            placeholder="Nomor HP aktif"
+                            className={`block w-full px-4 py-3 pr-12 rounded-xl border transition-all duration-300 focus:outline-none ${
+                              isDark 
+                                ? 'bg-gray-700 text-white border-gray-600 placeholder-gray-400' 
+                                : 'bg-white text-gray-900 border-gray-300 placeholder-gray-500'
+                            }`}
+                            style={{
+                              borderColor: getColorWithOpacity(currentColor, 0.3),
+                              boxShadow: `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.borderColor = currentColor;
+                              e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(currentColor, 0.1)}`;
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = getColorWithOpacity(currentColor, 0.3);
+                              e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(currentColor, 0.1)}`;
+                            }}
+                            value={noHp}
+                            onChange={(e) => setNoHp(e.target.value)}
+                          />
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <FaPhone style={{ color: currentColor }} className="animate-pulse" />
                           </div>
                         </div>
                       </div>

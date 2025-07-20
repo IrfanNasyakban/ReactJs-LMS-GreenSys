@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -16,28 +13,22 @@ import {
   FaHome,
   FaPrint,
   FaExternalLinkAlt,
+  FaChevronLeft,
+  FaChevronRight,
+  FaSearchPlus,
+  FaSearchMinus,
 } from 'react-icons/fa';
 
-import { AiOutlineZoomOut, AiOutlineZoomIn } from "react-icons/ai";
-
-// Set up PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
-
 function PDFViewer() {
-  const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
+  const [pdfPages, setPdfPages] = useState([]);
+  const [currentPdfPage, setCurrentPdfPage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [scale, setScale] = useState(1.0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [viewMethod, setViewMethod] = useState('react-pdf'); // 'react-pdf', 'iframe', 'direct'
   const location = useLocation();
   const navigate = useNavigate();
   const [pdfUrl, setPdfUrl] = useState('');
-  const [pdfData, setPdfData] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -45,133 +36,112 @@ function PDFViewer() {
     
     if (url) {
       setPdfUrl(url);
-      loadPDF(url);
+      loadPDFWithProxy(url);
     } else {
       setError('No PDF URL provided');
       setLoading(false);
     }
   }, [location.search]);
 
-  // Enhanced PDF loading with multiple fallback methods
-  const loadPDF = async (url) => {
+  // ✅ SIMPLIFIED PDF loading using PROXY ONLY
+  const loadPDFWithProxy = async (url) => {
     try {
       setLoading(true);
       setError(null);
       
-      // Method 1: Try loading with authentication for react-pdf
-      const success = await loadPDFWithAuth(url);
-      if (success) {
-        setViewMethod('react-pdf');
-        return;
-      }
+      // Import PDF.js dynamically
+      const pdfjsLib = await import('pdfjs-dist');
       
-      // Method 2: Fallback to direct iframe
-      console.log('Fallback to iframe method');
-      setViewMethod('iframe');
-      setLoading(false);
-      
-    } catch (err) {
-      console.error('All PDF loading methods failed:', err);
-      setError(err.message || 'Failed to load PDF');
-      setLoading(false);
-    }
-  };
+      // Set worker
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
-  // Load PDF data for react-pdf with authentication
-  const loadPDFWithAuth = async (url) => {
-    try {
-      const token = localStorage.getItem('accessToken');
+      // ✅ ALWAYS use proxy endpoint - consistent with ViewContent.jsx
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
       
-      // Try the API endpoint first (for authenticated access)
-      let fetchUrl = url;
-      if (url.includes('/certificates/')) {
-        // Convert direct URL to API endpoint
-        const filename = url.split('/certificates/')[1];
-        fetchUrl = `${process.env.REACT_APP_URL_API}/certificate/${filename}`;
-      }
+      console.log("Using PDF proxy for certificate:", url);
+      console.log("API URL:", apiUrl);
       
-      const response = await fetch(fetchUrl, {
-        method: 'GET',
+      const proxyResponse = await fetch(`${apiUrl}/pdf-proxy`, {
+        method: 'POST',
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',
-          'Accept': 'application/pdf',
+          'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        body: JSON.stringify({ pdfUrl: url })
       });
-
-      if (!response.ok) {
-        // If API fails, try direct URL
-        console.log('API endpoint failed, trying direct URL');
-        return await loadPDFDirect(url);
-      }
-
-      const blob = await response.blob();
       
-      // Verify it's a PDF
-      if (blob.type !== 'application/pdf' && !blob.type.includes('pdf')) {
-        throw new Error('Response is not a PDF file');
+      console.log("Proxy response status:", proxyResponse.status);
+      
+      if (!proxyResponse.ok) {
+        const errorText = await proxyResponse.text();
+        console.error("Proxy error response:", errorText);
+        throw new Error(`Proxy error! status: ${proxyResponse.status} - ${errorText}`);
+      }
+      
+      const arrayBuffer = await proxyResponse.arrayBuffer();
+      console.log("Received arrayBuffer size:", arrayBuffer.byteLength);
+      
+      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+      const pdfDocument = await loadingTask.promise;
+
+      const pages = [];
+      
+      // Convert each page to image
+      for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {
+        const page = await pdfDocument.getPage(pageNum);
+        
+        // Set scale for better quality
+        const renderScale = 2.0;
+        const viewport = page.getViewport({ scale: renderScale });
+
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render page to canvas
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport
+        };
+
+        await page.render(renderContext).promise;
+
+        // Convert canvas to image URL
+        const imageUrl = canvas.toDataURL('image/jpeg', 0.9);
+        
+        pages.push({
+          pageNumber: pageNum,
+          imageUrl: imageUrl,
+          width: viewport.width,
+          height: viewport.height
+        });
       }
 
-      const arrayBuffer = await blob.arrayBuffer();
-      setPdfData(arrayBuffer);
-      return true;
+      setPdfPages(pages);
+      setCurrentPdfPage(0);
+      console.log(`Successfully converted ${pages.length} pages to images`);
       
     } catch (error) {
-      console.warn('Auth PDF loading failed:', error);
-      return false;
+      console.error("Error loading PDF via proxy:", error);
+      setError(`Gagal memuat file PDF: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
-
-  // Load PDF directly without authentication
-  const loadPDFDirect = async (url) => {
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/pdf',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const blob = await response.blob();
-      const arrayBuffer = await blob.arrayBuffer();
-      setPdfData(arrayBuffer);
-      return true;
-      
-    } catch (error) {
-      console.warn('Direct PDF loading failed:', error);
-      return false;
-    }
-  };
-
-  function onDocumentLoadSuccess({ numPages }) {
-    setNumPages(numPages);
-    setPageNumber(1);
-    setLoading(false);
-    setError(null);
-  }
-
-  function onDocumentLoadError(error) {
-    console.error('PDF document load error:', error);
-    // Fallback to iframe method
-    console.log('React-PDF failed, switching to iframe');
-    setViewMethod('iframe');
-    setLoading(false);
-  }
 
   function changePage(offset) {
-    setPageNumber(prevPageNumber => {
+    setCurrentPdfPage(prevPageNumber => {
       const newPage = prevPageNumber + offset;
-      return Math.max(1, Math.min(newPage, numPages || 1));
+      return Math.max(0, Math.min(newPage, pdfPages.length - 1));
     });
   }
 
   function goToPage(page) {
-    const pageNum = Math.max(1, Math.min(page, numPages || 1));
-    setPageNumber(pageNum);
+    const pageNum = Math.max(0, Math.min(page - 1, pdfPages.length - 1));
+    setCurrentPdfPage(pageNum);
   }
 
   function zoomIn() {
@@ -230,66 +200,6 @@ function PDFViewer() {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
-
-  // Render different view methods
-  const renderPDFViewer = () => {
-    if (viewMethod === 'react-pdf' && pdfData) {
-      return (
-        <div className="flex justify-center bg-gray-50 dark:bg-gray-900 min-h-[600px] p-6">
-          <div className="shadow-2xl">
-            <Document
-              file={pdfData}
-              onLoadSuccess={onDocumentLoadSuccess}
-              onLoadError={onDocumentLoadError}
-              loading={
-                <div className="flex flex-col items-center justify-center h-96">
-                  <FaSpinner className="text-blue-500 text-4xl mb-4 animate-spin" />
-                  <p className="text-gray-600 dark:text-gray-400">Loading PDF...</p>
-                </div>
-              }
-              error={
-                <div className="flex flex-col items-center justify-center h-96">
-                  <FaExclamationTriangle className="text-red-500 text-4xl mb-4" />
-                  <p className="text-red-600 dark:text-red-400">Failed to load PDF</p>
-                  <button
-                    onClick={() => setViewMethod('iframe')}
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  >
-                    Try Alternative View
-                  </button>
-                </div>
-              }
-            >
-              <Page
-                pageNumber={pageNumber}
-                scale={scale}
-                renderTextLayer={true}
-                renderAnnotationLayer={true}
-                className="shadow-lg"
-              />
-            </Document>
-          </div>
-        </div>
-      );
-    }
-
-    // Fallback to iframe
-    return (
-      <div className="p-6 bg-gray-50 dark:bg-gray-900">
-        <iframe
-          src={pdfUrl}
-          width="100%"
-          height={isFullscreen ? "100vh" : "800px"}
-          style={{ border: 'none', borderRadius: '8px' }}
-          title="PDF Certificate"
-          onLoad={() => setLoading(false)}
-          onError={() => {
-            setError('Failed to load PDF in iframe');
-          }}
-        />
-      </div>
-    );
-  };
 
   // Error state
   if (error) {
@@ -386,18 +296,12 @@ function PDFViewer() {
                 Certificate Viewer
               </span>
               <span className="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
-                {viewMethod}
+                Proxy Mode
               </span>
             </div>
 
             {/* Right Controls */}
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMethod(viewMethod === 'react-pdf' ? 'iframe' : 'react-pdf')}
-                className="px-3 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm"
-              >
-                Switch View
-              </button>
               <button
                 onClick={printPDF}
                 className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
@@ -440,7 +344,7 @@ function PDFViewer() {
               Loading PDF...
             </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              Please wait while we load your certificate
+              Menggunakan proxy server untuk mengakses sertifikat
             </p>
           </div>
         ) : (
@@ -449,18 +353,18 @@ function PDFViewer() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
           >
-            {/* PDF Controls - only show for react-pdf method */}
-            {viewMethod === 'react-pdf' && numPages && (
+            {/* PDF Controls */}
+            {pdfPages.length > 0 && (
               <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   {/* Navigation Controls */}
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => changePage(-1)}
-                      disabled={pageNumber <= 1}
+                      disabled={currentPdfPage <= 0}
                       className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                     >
-                      <FaArrowLeft />
+                      <FaChevronLeft />
                       Previous
                     </button>
                     
@@ -469,23 +373,23 @@ function PDFViewer() {
                       <input
                         type="number"
                         min="1"
-                        max={numPages || 1}
-                        value={pageNumber}
+                        max={pdfPages.length}
+                        value={currentPdfPage + 1}
                         onChange={(e) => goToPage(parseInt(e.target.value) || 1)}
-                        className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-center text-sm"
+                        className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-center text-sm dark:bg-gray-600 dark:text-white"
                       />
                       <span className="text-sm text-gray-600 dark:text-gray-300">
-                        of {numPages || '--'}
+                        of {pdfPages.length}
                       </span>
                     </div>
 
                     <button
                       onClick={() => changePage(1)}
-                      disabled={pageNumber >= (numPages || 1)}
+                      disabled={currentPdfPage >= pdfPages.length - 1}
                       className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                     >
                       Next
-                      <FaArrowRight />
+                      <FaChevronRight />
                     </button>
                   </div>
 
@@ -496,7 +400,7 @@ function PDFViewer() {
                       className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
                       title="Zoom Out"
                     >
-                      <AiOutlineZoomOut />
+                      <FaSearchMinus />
                     </button>
                     <span className="text-sm text-gray-600 dark:text-gray-300 min-w-[60px] text-center">
                       {Math.round(scale * 100)}%
@@ -506,7 +410,7 @@ function PDFViewer() {
                       className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
                       title="Zoom In"
                     >
-                      <AiOutlineZoomIn />
+                      <FaSearchPlus />
                     </button>
                     <button
                       onClick={resetZoom}
@@ -519,8 +423,63 @@ function PDFViewer() {
               </div>
             )}
 
-            {/* PDF Document */}
-            {renderPDFViewer()}
+            {/* PDF Document Display */}
+            <div className="p-6">
+              {pdfPages.length > 0 ? (
+                <div>
+                  {/* Current Page Display */}
+                  <div className="flex justify-center bg-gray-50 dark:bg-gray-900 min-h-[600px] p-6 rounded-lg">
+                    <div className="shadow-2xl">
+                      <img
+                        src={pdfPages[currentPdfPage]?.imageUrl}
+                        alt={`PDF Page ${currentPdfPage + 1}`}
+                        className="max-w-full h-auto shadow-lg rounded-lg"
+                        style={{ 
+                          transform: `scale(${scale})`,
+                          transformOrigin: 'top center'
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Page Thumbnails */}
+                  {pdfPages.length > 1 && (
+                    <div className="mt-6">
+                      <h4 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">
+                        Halaman Lainnya:
+                      </h4>
+                      <div className="flex gap-3 overflow-x-auto pb-3">
+                        {pdfPages.map((page, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentPdfPage(index)}
+                            className={`flex-shrink-0 relative ${
+                              index === currentPdfPage 
+                                ? 'ring-2 ring-blue-500' 
+                                : 'hover:ring-1 hover:ring-gray-300'
+                            } rounded transition-all`}
+                          >
+                            <img
+                              src={page.imageUrl}
+                              alt={`Page ${index + 1}`}
+                              className="w-20 h-28 object-cover rounded shadow-md"
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-b">
+                              {index + 1}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-96">
+                  <FaFilePdf className="text-gray-400 text-6xl mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400">No PDF content available</p>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </div>
