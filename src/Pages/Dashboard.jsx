@@ -16,7 +16,11 @@ import {
   FaEye,
   FaSignOutAlt,
   FaInfoCircle,
-  FaChartLine
+  FaChartLine,
+  FaClock,
+  FaTrophy,
+  FaPlay,
+  FaCheckCircle
 } from "react-icons/fa";
 import { MdScience, MdEco, MdNaturePeople } from "react-icons/md";
 import { GiPlantSeed } from "react-icons/gi";
@@ -30,6 +34,18 @@ const Dashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [redirectPath, setRedirectPath] = useState("");
+  
+  // Student progress state
+  const [studentStatistics, setStudentStatistics] = useState({
+    totalSubModules: 0,
+    completedSubModules: 0,
+    overallProgress: 0,
+    totalWatchTime: 0,
+    averageCompletion: 0,
+    moduleStatistics: []
+  });
+  const [recentProgress, setRecentProgress] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Context
   const { currentColor, currentMode } = useStateContext();
@@ -37,37 +53,72 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
-  // Data untuk cards dashboard
-  const dashboardData = [
-    {
-      icon: <FaBook />,
-      count: jumlahModul,
-      title: "Modul Green Science",
-      subtitle: "Pembelajaran IPA berkelanjutan",
-      color: currentColor,
-    },
-    {
-      icon: <FaPencilAlt />,
-      count: jumlahSoal,
-      title: "Bank Soal Eco-Learning",
-      subtitle: "Evaluasi berbasis lingkungan",
-      color: currentColor,
-    },
-    {
-      icon: <FaUsers />,
-      count: jumlahSiswa,
-      title: "Green Learners",
-      subtitle: "Siswa masa depan berkelanjutan",
-      color: currentColor,
-    },
-    {
-      icon: <FaChalkboardTeacher />,
-      count: jumlahGuru,
-      title: "Green Educators",
-      subtitle: "Guru ramah lingkungan",
-      color: currentColor,
-    },
-  ];
+  // Data untuk cards dashboard (berbeda untuk siswa dan admin/guru)
+  const getDashboardData = () => {
+    if (user?.role === "siswa") {
+      return [
+        {
+          icon: <FaBook />,
+          count: studentStatistics.totalSubModules,
+          title: "Total Sub Modul",
+          subtitle: "Materi pembelajaran tersedia",
+          color: currentColor,
+        },
+        {
+          icon: <FaCheckCircle />,
+          count: studentStatistics.completedSubModules,
+          title: "Sub Modul Selesai",
+          subtitle: "Pembelajaran yang telah diselesaikan",
+          color: currentColor,
+        },
+        {
+          icon: <FaTrophy />,
+          count: `${Math.round(studentStatistics.overallProgress)}%`,
+          title: "Progress Keseluruhan",
+          subtitle: "Tingkat penyelesaian pembelajaran",
+          color: currentColor,
+        },
+        {
+          icon: <FaClock />,
+          count: `${Math.round(studentStatistics.totalWatchTime / 60)}m`,
+          title: "Waktu Belajar",
+          subtitle: "Total waktu yang dihabiskan",
+          color: currentColor,
+        },
+      ];
+    } else {
+      return [
+        {
+          icon: <FaBook />,
+          count: jumlahModul,
+          title: "Modul Green Science",
+          subtitle: "Pembelajaran IPA berkelanjutan",
+          color: currentColor,
+        },
+        {
+          icon: <FaPencilAlt />,
+          count: jumlahSoal,
+          title: "Bank Soal Eco-Learning",
+          subtitle: "Evaluasi berbasis lingkungan",
+          color: currentColor,
+        },
+        {
+          icon: <FaUsers />,
+          count: jumlahSiswa,
+          title: "Green Learners",
+          subtitle: "Siswa masa depan berkelanjutan",
+          color: currentColor,
+        },
+        {
+          icon: <FaChalkboardTeacher />,
+          count: jumlahGuru,
+          title: "Green Educators",
+          subtitle: "Guru ramah lingkungan",
+          color: currentColor,
+        },
+      ];
+    }
+  };
 
   // Effects
   useEffect(() => {
@@ -77,7 +128,11 @@ const Dashboard = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      fetchDashboardData();
+      if (user?.role === "siswa") {
+        fetchStudentProgressData();
+      } else {
+        fetchDashboardData();
+      }
       checkUserProfile();
     } else {
       navigate("/");
@@ -94,9 +149,14 @@ const Dashboard = () => {
       // Fetch all data
       const [modulRes, soalRes, usersRes] = await Promise.all([
         axios.get(`${apiUrl}/modul`, { headers }),
-        axios.get(`${apiUrl}/soal`, { headers }),
+        axios.get(`${apiUrl}/group-soal`, { headers }),
         axios.get(`${apiUrl}/users`, { headers }),
       ]);
+
+      console.log("data modul:" + modulRes.data);
+      console.log("data soal:" + soalRes.data);
+      console.log("data siswa:" + usersRes.data);
+      
 
       setJumlahModul(modulRes.data.length);
       setJumlahSoal(soalRes.data.length);
@@ -107,6 +167,37 @@ const Dashboard = () => {
       setJumlahGuru(guruUsers.length);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
+    }
+  };
+
+  // Student Progress API Functions
+  const fetchStudentProgressData = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const apiUrl = process.env.REACT_APP_URL_API;
+      const headers = { Authorization: `Bearer ${token}` };
+
+      // Fetch student statistics
+      const statisticsRes = await axios.get(`${apiUrl}/student-progress/statistics`, { headers });
+      setStudentStatistics(statisticsRes.data);
+
+      // Fetch recent progress (you might want to create a new endpoint for this)
+      // For now, we'll use module statistics as recent progress
+      setRecentProgress(statisticsRes.data.moduleStatistics || []);
+
+    } catch (error) {
+      console.error("Error fetching student progress:", error);
+      setStudentStatistics({
+        totalSubModules: 0,
+        completedSubModules: 0,
+        overallProgress: 0,
+        totalWatchTime: 0,
+        averageCompletion: 0,
+        moduleStatistics: []
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,6 +247,16 @@ const Dashboard = () => {
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
+
+  // Helper function to format time
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) {
+      return `${hours}j ${minutes}m`;
+    }
+    return `${minutes}m`;
   };
 
   return (
@@ -209,7 +310,10 @@ const Dashboard = () => {
                   Dashboard <span style={{ color: currentColor }}>GreenSys</span>
                 </h1>
                 <p className={`${currentMode === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Green Science Learning Management System
+                  {user?.role === "siswa" 
+                    ? "Selamat datang di pembelajaran Green Science" 
+                    : "Green Science Learning Management System"
+                  }
                 </p>
               </div>
             </div>
@@ -223,7 +327,7 @@ const Dashboard = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
         >
-          {dashboardData.map((item, index) => (
+          {getDashboardData().map((item, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -250,7 +354,7 @@ const Dashboard = () => {
                       className="text-3xl font-bold"
                       style={{ color: currentColor }}
                     >
-                      {item.count}
+                      {loading && user?.role === "siswa" ? "..." : item.count}
                     </div>
                   </div>
                 </div>
@@ -267,154 +371,468 @@ const Dashboard = () => {
           ))}
         </motion.div>
 
-        {/* Progress Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-8"
-        >
-          <div 
-            className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
-            style={{ 
-              backgroundColor: getColorWithOpacity(currentColor, 0.08),
-              borderColor: getColorWithOpacity(currentColor, 0.2)
-            }}
-          >
-            <div className="flex items-center gap-3 mb-6">
+        {/* Progress Section - Different for Students and Admin/Guru */}
+        {user?.role === "siswa" ? (
+          // Student Progress Section
+          <div className="grid lg:grid-cols-2 gap-8 mb-8">
+            {/* Module Progress */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
               <div 
-                className="p-2 rounded-full"
-                style={{ backgroundColor: currentColor }}
-              >
-                <FaChartLine className="text-white text-xl" />
-              </div>
-              <div>
-                <h2 className={`text-2xl font-bold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
-                  Progress Green Science Learning
-                </h2>
-                <p className={`${currentMode === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Monitoring pembelajaran berkelanjutan dan ramah lingkungan
-                </p>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* Literasi Sains */}
-              <div 
-                className="p-4 rounded-xl border"
+                className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
                 style={{ 
-                  backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                  backgroundColor: getColorWithOpacity(currentColor, 0.08),
                   borderColor: getColorWithOpacity(currentColor, 0.2)
                 }}
               >
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-6">
                   <div 
                     className="p-2 rounded-full"
                     style={{ backgroundColor: currentColor }}
                   >
-                    <MdScience className="text-white" />
+                    <FaChartLine className="text-white text-xl" />
                   </div>
                   <div>
-                    <h3 className={`font-semibold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
-                      Literasi Sains
-                    </h3>
-                    <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Pemahaman konsep IPA
+                    <h2 className={`text-2xl font-bold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Progress Modul
+                    </h2>
+                    <p className={`${currentMode === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Kemajuan pembelajaran per modul
                     </p>
                   </div>
                 </div>
-                <div 
-                  className="h-2 bg-gray-200 rounded-full mb-2"
-                  style={{ backgroundColor: getColorWithOpacity(currentColor, 0.2) }}
-                >
-                  <div 
-                    className="h-2 rounded-full transition-all duration-1000"
-                    style={{ backgroundColor: currentColor, width: '75%' }}
-                  ></div>
-                </div>
-                <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  75% tercapai
-                </p>
-              </div>
 
-              {/* Green Economy */}
+                <div className="space-y-4">
+                  {loading ? (
+                    <div className="flex justify-center items-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: currentColor }}></div>
+                    </div>
+                  ) : recentProgress.length > 0 ? (
+                    recentProgress.map((module, index) => {
+                      const moduleProgress = module.totalSubModules > 0 
+                        ? (module.completedSubModules / module.totalSubModules) * 100 
+                        : 0;
+
+                      return (
+                        <div 
+                          key={index}
+                          className="p-4 rounded-xl border"
+                          style={{ 
+                            backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                            borderColor: getColorWithOpacity(currentColor, 0.2)
+                          }}
+                        >
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <h3 className={`font-semibold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                                {module.modulTitle}
+                              </h3>
+                              <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {module.completedSubModules}/{module.totalSubModules} sub modul selesai
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <span className="font-bold" style={{ color: currentColor }}>
+                                {Math.round(moduleProgress)}%
+                              </span>
+                              <p className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {formatTime(module.totalWatchTime)}
+                              </p>
+                            </div>
+                          </div>
+                          <div 
+                            className="h-2 bg-gray-200 rounded-full"
+                            style={{ backgroundColor: getColorWithOpacity(currentColor, 0.2) }}
+                          >
+                            <div 
+                              className="h-2 rounded-full transition-all duration-1000"
+                              style={{ 
+                                backgroundColor: currentColor, 
+                                width: `${moduleProgress}%` 
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className={`text-center py-8 ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <FaBook className="text-4xl mb-3 mx-auto opacity-50" />
+                      <p>Belum ada progress pembelajaran</p>
+                      <p className="text-sm">Mulai belajar untuk melihat progress Anda</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Learning Summary */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
               <div 
-                className="p-4 rounded-xl border"
+                className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
                 style={{ 
-                  backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                  backgroundColor: getColorWithOpacity(currentColor, 0.08),
                   borderColor: getColorWithOpacity(currentColor, 0.2)
                 }}
               >
-                <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center gap-3 mb-6">
                   <div 
                     className="p-2 rounded-full"
                     style={{ backgroundColor: currentColor }}
                   >
-                    <FaRecycle className="text-white" />
+                    <FaTrophy className="text-white text-xl" />
                   </div>
                   <div>
-                    <h3 className={`font-semibold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
-                      Green Economy
-                    </h3>
-                    <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Ekonomi berkelanjutan
+                    <h2 className={`text-2xl font-bold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Ringkasan Pembelajaran
+                    </h2>
+                    <p className={`${currentMode === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Statistik pembelajaran Anda
                     </p>
                   </div>
                 </div>
-                <div 
-                  className="h-2 bg-gray-200 rounded-full mb-2"
-                  style={{ backgroundColor: getColorWithOpacity(currentColor, 0.2) }}
-                >
-                  <div 
-                    className="h-2 rounded-full transition-all duration-1000"
-                    style={{ backgroundColor: currentColor, width: '68%' }}
-                  ></div>
-                </div>
-                <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  68% implementasi
-                </p>
-              </div>
 
-              {/* Limbah Organik */}
-              <div 
-                className="p-4 rounded-xl border"
-                style={{ 
-                  backgroundColor: getColorWithOpacity(currentColor, 0.05),
-                  borderColor: getColorWithOpacity(currentColor, 0.2)
-                }}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div 
-                    className="p-2 rounded-full"
+                <div className="space-y-4">
+                  {/* Overall Progress Circle */}
+                  <div className="text-center mb-6">
+                    <div className="relative w-32 h-32 mx-auto">
+                      <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          stroke={getColorWithOpacity(currentColor, 0.2)}
+                          strokeWidth="8"
+                          fill="none"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="40"
+                          stroke={currentColor}
+                          strokeWidth="8"
+                          fill="none"
+                          strokeDasharray={`${2 * Math.PI * 40}`}
+                          strokeDashoffset={`${2 * Math.PI * 40 * (1 - studentStatistics.overallProgress / 100)}`}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold" style={{ color: currentColor }}>
+                            {Math.round(studentStatistics.overallProgress)}%
+                          </div>
+                          <div className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Selesai
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Achievement Stats */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div 
+                      className="p-3 rounded-lg text-center"
+                      style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
+                    >
+                      <div className="text-lg font-bold" style={{ color: currentColor }}>
+                        {studentStatistics.completedSubModules}
+                      </div>
+                      <div className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Modul Selesai
+                      </div>
+                    </div>
+                    <div 
+                      className="p-3 rounded-lg text-center"
+                      style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
+                    >
+                      <div className="text-lg font-bold" style={{ color: currentColor }}>
+                        {formatTime(studentStatistics.totalWatchTime)}
+                      </div>
+                      <div className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Waktu Belajar
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Action Button */}
+                  <button
+                    onClick={() => navigate('/modul-belajar')}
+                    className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 text-white font-medium rounded-lg transition-all duration-300 hover:shadow-lg"
                     style={{ backgroundColor: currentColor }}
                   >
-                    <MdNaturePeople className="text-white" />
-                  </div>
-                  <div>
-                    <h3 className={`font-semibold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
-                      Limbah Organik
-                    </h3>
-                    <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Pengolahan berkelanjutan
-                    </p>
-                  </div>
+                    <FaPlay />
+                    Lanjutkan Belajar
+                  </button>
                 </div>
-                <div 
-                  className="h-2 bg-gray-200 rounded-full mb-2"
-                  style={{ backgroundColor: getColorWithOpacity(currentColor, 0.2) }}
-                >
-                  <div 
-                    className="h-2 rounded-full transition-all duration-1000"
-                    style={{ backgroundColor: currentColor, width: '82%' }}
-                  ></div>
-                </div>
-                <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  82% partisipasi
-                </p>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </motion.div>
+        ) : (
+          // Admin/Guru Progress Section (Original)
+          <div className="grid lg:grid-cols-2 gap-8 mb-8">
+            {/* Tentang GreenSys */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <div 
+                className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
+                style={{ 
+                  backgroundColor: getColorWithOpacity(currentColor, 0.08),
+                  borderColor: getColorWithOpacity(currentColor, 0.2)
+                }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div 
+                    className="p-2 rounded-full"
+                    style={{ backgroundColor: currentColor }}
+                  >
+                    <FaInfoCircle className="text-white text-xl" />
+                  </div>
+                  <div>
+                    <h2 className={`text-2xl font-bold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Tentang GreenSys
+                    </h2>
+                    <p className={`${currentMode === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Platform pembelajaran Green Science terdepan
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div 
+                    className="p-4 rounded-xl border"
+                    style={{ 
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className="p-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: currentColor }}
+                      >
+                        <MdScience className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className={`font-semibold mb-1 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                          Pembelajaran Berkelanjutan
+                        </h3>
+                        <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Mengintegrasikan konsep green science dalam pendidikan IPA untuk menciptakan generasi yang peduli lingkungan.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div 
+                    className="p-4 rounded-xl border"
+                    style={{ 
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className="p-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: currentColor }}
+                      >
+                        <FaUsers className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className={`font-semibold mb-1 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                          Komunitas Edukatif
+                        </h3>
+                        <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Menghubungkan guru dan siswa dalam ekosistem pembelajaran yang mendukung praktik ramah lingkungan.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div 
+                    className="p-4 rounded-xl border"
+                    style={{ 
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className="p-2 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: currentColor }}
+                      >
+                        <FaChartLine className="text-white text-sm" />
+                      </div>
+                      <div>
+                        <h3 className={`font-semibold mb-1 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                          Monitoring & Evaluasi
+                        </h3>
+                        <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Sistem pelacakan kemajuan yang komprehensif untuk memantau pencapaian pembelajaran green science.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Fitur Unggulan */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <div 
+                className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
+                style={{ 
+                  backgroundColor: getColorWithOpacity(currentColor, 0.08),
+                  borderColor: getColorWithOpacity(currentColor, 0.2)
+                }}
+              >
+                <div className="flex items-center gap-3 mb-6">
+                  <div 
+                    className="p-2 rounded-full"
+                    style={{ backgroundColor: currentColor }}
+                  >
+                    <FaLeaf className="text-white text-xl" />
+                  </div>
+                  <div>
+                    <h2 className={`text-2xl font-bold ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Fitur Unggulan
+                    </h2>
+                    <p className={`${currentMode === 'Dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Teknologi terdepan untuk pendidikan berkelanjutan
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Interactive Learning */}
+                  <div 
+                    className="p-4 rounded-xl border text-center"
+                    style={{ 
+                      backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div 
+                      className="p-3 rounded-full mx-auto mb-3 w-fit"
+                      style={{ backgroundColor: currentColor }}
+                    >
+                      <FaBook className="text-white text-lg" />
+                    </div>
+                    <h3 className={`font-semibold text-sm mb-2 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Modul Interaktif
+                    </h3>
+                    <p className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Pembelajaran multimedia dengan simulasi virtual
+                    </p>
+                  </div>
+
+                  {/* Green Assessment */}
+                  <div 
+                    className="p-4 rounded-xl border text-center"
+                    style={{ 
+                      backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div 
+                      className="p-3 rounded-full mx-auto mb-3 w-fit"
+                      style={{ backgroundColor: currentColor }}
+                    >
+                      <FaPencilAlt className="text-white text-lg" />
+                    </div>
+                    <h3 className={`font-semibold text-sm mb-2 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Green Assessment
+                    </h3>
+                    <p className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Evaluasi berbasis proyek lingkungan
+                    </p>
+                  </div>
+
+                  {/* Progress Tracking */}
+                  <div 
+                    className="p-4 rounded-xl border text-center"
+                    style={{ 
+                      backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div 
+                      className="p-3 rounded-full mx-auto mb-3 w-fit"
+                      style={{ backgroundColor: currentColor }}
+                    >
+                      <FaChartLine className="text-white text-lg" />
+                    </div>
+                    <h3 className={`font-semibold text-sm mb-2 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Progress Tracking
+                    </h3>
+                    <p className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Pelacakan kemajuan real-time
+                    </p>
+                  </div>
+
+                  {/* Eco Community */}
+                  <div 
+                    className="p-4 rounded-xl border text-center"
+                    style={{ 
+                      backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      borderColor: getColorWithOpacity(currentColor, 0.2)
+                    }}
+                  >
+                    <div 
+                      className="p-3 rounded-full mx-auto mb-3 w-fit"
+                      style={{ backgroundColor: currentColor }}
+                    >
+                      <MdEco className="text-white text-lg" />
+                    </div>
+                    <h3 className={`font-semibold text-sm mb-2 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                      Eco Community
+                    </h3>
+                    <p className={`text-xs ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Kolaborasi dalam proyek hijau
+                    </p>
+                  </div>
+                </div>
+
+                {/* Vision Statement */}
+                <div 
+                  className="mt-6 p-4 rounded-xl border"
+                  style={{ 
+                    backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                    borderColor: getColorWithOpacity(currentColor, 0.3)
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <GiPlantSeed style={{ color: currentColor }} className="text-2xl flex-shrink-0" />
+                    <div>
+                      <h4 className={`font-semibold mb-1 ${currentMode === 'Dark' ? 'text-white' : 'text-gray-800'}`}>
+                        Visi GreenSys
+                      </h4>
+                      <p className={`text-sm ${currentMode === 'Dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        "Menciptakan generasi cerdas yang peduli lingkungan melalui pendidikan sains berkelanjutan"
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
 
       {/* Profile Modal */}
