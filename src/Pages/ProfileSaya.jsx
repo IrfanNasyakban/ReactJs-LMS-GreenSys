@@ -14,9 +14,6 @@ import {
   FaGraduationCap,
   FaChalkboardTeacher,
   FaUserCircle,
-  FaLeaf,
-  FaSeedling,
-  FaRecycle,
   FaLightbulb,
   FaBook,
   FaAward,
@@ -390,6 +387,7 @@ const ProfileSaya = () => {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate(user?.role === 'siswa' ? '/certificate' : '/siswa')}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
                       isDark
                         ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
@@ -543,112 +541,6 @@ const ProfileSaya = () => {
                     <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
                     {alamat || 'Belum diisi'}
                   </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Green Science Achievements */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="rounded-2xl shadow-xl overflow-hidden"
-              style={{
-                backgroundColor: isDark ? "#1f2937" : "#ffffff",
-                border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
-              }}
-            >
-              <div
-                className="py-4 px-6"
-                style={{
-                  backgroundColor: getColorWithOpacity(currentColor, 0.1),
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <FaLeaf style={{ color: currentColor }} />
-                  <h3 className={`font-semibold text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
-                    Pencapaian Green Science
-                  </h3>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div
-                    className="p-4 rounded-xl text-center"
-                    style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
-                  >
-                    <FaSeedling className="text-3xl mx-auto mb-2" style={{ color: currentColor }} />
-                    <h4 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {user?.role === 'siswa' ? '15' : '45'}
-                    </h4>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {user?.role === 'siswa' ? 'Proyek Selesai' : 'Proyek Dibimbing'}
-                    </p>
-                  </div>
-                  
-                  <div
-                    className="p-4 rounded-xl text-center"
-                    style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
-                  >
-                    <FaRecycle className="text-3xl mx-auto mb-2" style={{ color: currentColor }} />
-                    <h4 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {user?.role === 'siswa' ? '8' : '120'}
-                    </h4>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {user?.role === 'siswa' ? 'Kontribusi Hijau' : 'Impact Points'}
-                    </p>
-                  </div>
-                  
-                  <div
-                    className="p-4 rounded-xl text-center"
-                    style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
-                  >
-                    <FaLightbulb className="text-3xl mx-auto mb-2" style={{ color: currentColor }} />
-                    <h4 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {user?.role === 'siswa' ? '3' : '12'}
-                    </h4>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {user?.role === 'siswa' ? 'Inovasi Hijau' : 'Workshop'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div className="mt-6">
-                  <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    Aktivitas Terbaru
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                        <FaLeaf className="text-green-600 text-sm" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-green-800">
-                          {user?.role === 'siswa' 
-                            ? 'Menyelesaikan modul "Energi Terbarukan"' 
-                            : 'Membuat modul baru "Teknologi Hijau"'
-                          }
-                        </p>
-                        <p className="text-xs text-green-600">2 jam yang lalu</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <FaBook className="text-blue-600 text-sm" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-blue-800">
-                          {user?.role === 'siswa' 
-                            ? 'Mengikuti kuis "Sustainable Living"' 
-                            : 'Mengoreksi tugas kelas XII IPA'
-                          }
-                        </p>
-                        <p className="text-xs text-blue-600">1 hari yang lalu</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

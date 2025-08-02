@@ -84,7 +84,7 @@ const Footer = () => {
           <div className="mt-4">
             <div className="text-center py-6 border-t-2 border-green-600/20">
               <span className="text-sm text-green-200">
-                © 2024 GreenSys - Green Science Learning Management System | SMA 1 Lhokseumawe
+                © 2025 GreenSys - Green Science Learning Management System
               </span>
             </div>
           </div>

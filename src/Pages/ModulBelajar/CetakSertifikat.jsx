@@ -251,12 +251,10 @@ const CetakSertifikat = () => {
     // Draw judul modul (below nama)
     ctx.font = "italic 54px Times, serif";
     ctx.fillStyle = "#374151"; // gray-700
-    ctx.fillText(`"${modulData.judul}"`, canvas.width / 2, canvas.height * 0.52);
+    ctx.fillText(`"telah menyelesaikan modul ${modulData.judul}"`, canvas.width / 2, canvas.height * 0.51);
 
     // ✅ Draw score details (enhanced)
-    const score = parseFloat(nilaiData.skor).toFixed(1);
-    const correctAnswers = nilaiData.jumlahJawabanBenar;
-    const totalQuestions = nilaiData.jumlahSoal;
+    const score = parseFloat(nilaiData.skor).toFixed(0);
     
     // Main score
     ctx.font = "bold 48px Arial, sans-serif";
@@ -264,42 +262,8 @@ const CetakSertifikat = () => {
     ctx.fillText(
       `dengan nilai: ${score}`,
       canvas.width / 2,
-      canvas.height * 0.58
+      canvas.height * 0.56
     );
-
-    // Score details
-    ctx.font = "36px Arial, sans-serif";
-    ctx.fillStyle = "#6b7280"; // gray-500
-    ctx.fillText(
-      `(${correctAnswers}/${totalQuestions} jawaban benar)`,
-      canvas.width / 2,
-      canvas.height * 0.63
-    );
-
-    // ✅ Grade/Predikat
-    let grade = "";
-    let gradeColor = "#6b7280";
-    
-    if (nilaiData.skor >= 90) {
-      grade = "EXCELLENT";
-      gradeColor = "#059669"; // green-600
-    } else if (nilaiData.skor >= 80) {
-      grade = "VERY GOOD";
-      gradeColor = "#16a34a"; // green-600
-    } else if (nilaiData.skor >= 70) {
-      grade = "GOOD";
-      gradeColor = "#ca8a04"; // yellow-600
-    } else if (nilaiData.skor >= 60) {
-      grade = "SATISFACTORY";
-      gradeColor = "#ea580c"; // orange-600
-    } else {
-      grade = "NEEDS IMPROVEMENT";
-      gradeColor = "#dc2626"; // red-600
-    }
-
-    ctx.font = "bold 42px Arial, sans-serif";
-    ctx.fillStyle = gradeColor;
-    ctx.fillText(grade, canvas.width / 2, canvas.height * 0.68);
 
     // ✅ Enhanced bottom section
     ctx.textAlign = "left";

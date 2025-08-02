@@ -1,7 +1,6 @@
 import React from "react";
 import LogoSMA from "../../../assets/logo2.png";
 import { MdMenu, MdScience } from "react-icons/md";
-import { FaLeaf } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -13,13 +12,26 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  // Function untuk smooth scroll ke section tertentu
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+    // Tutup mobile menu jika terbuka
+    setIsOpen(false);
+  };
+
   return (
     <>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-green-100"
+        className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-green-100 sticky top-0 z-50"
       >
         <div className="container flex justify-between items-center py-4">
           {/* Logo section */}
@@ -41,18 +53,30 @@ const Navbar = () => {
           {/* Navigation Menu - Hidden on mobile, shown on desktop */}
           <div className="hidden lg:flex items-center gap-8">
             <nav className="flex items-center gap-6">
-              <a href="#" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300">
+              <button 
+                onClick={() => scrollToSection('hero')}
+                className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300 cursor-pointer"
+              >
                 Beranda
-              </a>
-              <a href="#" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300">
+              </button>
+              <button 
+                onClick={() => scrollToSection('about')}
+                className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300 cursor-pointer"
+              >
                 Komunitas
-              </a>
-              <a href="#" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300">
+              </button>
+              <button 
+                onClick={() => scrollToSection('features')}
+                className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300 cursor-pointer"
+              >
                 Fitur GreenSys
-              </a>
-              <a href="#" className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300">
+              </button>
+              <button 
+                onClick={() => scrollToSection('footer')}
+                className="text-gray-600 hover:text-emerald-600 font-medium transition-colors duration-300 cursor-pointer"
+              >
                 Tentang
-              </a>
+              </button>
             </nav>
           </div>
 
@@ -83,18 +107,30 @@ const Navbar = () => {
             className="lg:hidden bg-white border-t border-green-100"
           >
             <div className="container py-4 space-y-4">
-              <a href="#" className="block text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300">
+              <button 
+                onClick={() => scrollToSection('hero')}
+                className="block w-full text-left text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300"
+              >
                 Beranda
-              </a>
-              <a href="#" className="block text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300">
+              </button>
+              <button 
+                onClick={() => scrollToSection('about')}
+                className="block w-full text-left text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300"
+              >
                 Komunitas
-              </a>
-              <a href="#" className="block text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300">
+              </button>
+              <button 
+                onClick={() => scrollToSection('features')}
+                className="block w-full text-left text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300"
+              >
                 Fitur GreenSys
-              </a>
-              <a href="#" className="block text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300">
+              </button>
+              <button 
+                onClick={() => scrollToSection('footer')}
+                className="block w-full text-left text-gray-600 hover:text-emerald-600 font-medium py-2 transition-colors duration-300"
+              >
                 Tentang
-              </a>
+              </button>
               <button 
                 className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-full px-6 py-3 mt-4"
                 onClick={handleSignIn}
