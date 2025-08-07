@@ -2,13 +2,23 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaLeaf, FaLock, FaEye, FaEyeSlash, FaRecycle, FaInfoCircle, FaCheckCircle, FaExclamationTriangle, FaTimes } from "react-icons/fa";
+import {
+  FaLeaf,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaRecycle,
+  FaInfoCircle,
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaTimes,
+} from "react-icons/fa";
 import { MdScience, MdEco } from "react-icons/md";
 import { GiPlantSeed } from "react-icons/gi";
 
 const ResetPasswordViaEmail = () => {
   const { token } = useParams();
-  
+
   const [newPassword, setNewPassword] = useState("");
   const [confNewPassword, setConfNewPassword] = useState("");
   const [msg, setMsg] = useState("");
@@ -41,14 +51,11 @@ const ResetPasswordViaEmail = () => {
 
     try {
       const apiUrl = process.env.REACT_APP_URL_API;
-      const response = await axios.post(
-        `${apiUrl}/reset-password`,
-        {
-          token,
-          newPassword,
-          confNewPassword,
-        }
-      );
+      const response = await axios.post(`${apiUrl}/reset-password`, {
+        token,
+        newPassword,
+        confNewPassword,
+      });
 
       setNewPassword("");
       setConfNewPassword("");
@@ -84,8 +91,10 @@ const ResetPasswordViaEmail = () => {
     }
   };
 
-  const toggleNewPasswordVisibility = () => setShowNewPassword(!showNewPassword);
-  const toggleConfPasswordVisibility = () => setShowConfPassword(!showConfPassword);
+  const toggleNewPasswordVisibility = () =>
+    setShowNewPassword(!showNewPassword);
+  const toggleConfPasswordVisibility = () =>
+    setShowConfPassword(!showConfPassword);
 
   const getModalIcon = () => {
     switch (modalType) {
@@ -136,7 +145,9 @@ const ResetPasswordViaEmail = () => {
               <h1 className="text-3xl font-bold text-gray-800">
                 Green<span className="text-emerald-600">Sys</span>
               </h1>
-              <p className="text-sm text-gray-600">Green Science Learning Management System</p>
+              <p className="text-sm text-gray-600">
+                Green Science Learning Management System
+              </p>
             </div>
           </div>
         </motion.div>
@@ -160,8 +171,12 @@ const ResetPasswordViaEmail = () => {
                   <FaLock className="text-white text-xl" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-white">Reset Password</h1>
-                  <p className="text-green-100 text-sm">Buat password baru untuk akun GreenSys Anda</p>
+                  <h1 className="text-xl font-bold text-white">
+                    Reset Password
+                  </h1>
+                  <p className="text-green-100 text-sm">
+                    Buat password baru untuk akun GreenSys Anda
+                  </p>
                 </div>
               </div>
             </div>
@@ -197,7 +212,8 @@ const ResetPasswordViaEmail = () => {
                     </div>
                     <p className="mt-2 text-sm text-gray-600 flex items-center gap-2">
                       <FaLeaf className="text-green-500 text-xs" />
-                      Password minimal 6 karakter dengan kombinasi huruf dan angka
+                      Password minimal 6 karakter dengan kombinasi huruf dan
+                      angka
                     </p>
                   </div>
 
@@ -276,7 +292,9 @@ const ResetPasswordViaEmail = () => {
                 <FaInfoCircle className="text-emerald-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800 mb-2">Tips Keamanan Password</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">
+                  Tips Keamanan Password
+                </h3>
                 <div className="space-y-2 text-sm text-gray-600">
                   <p className="flex items-center gap-2">
                     <FaLeaf className="text-green-500 text-xs" />
@@ -312,47 +330,52 @@ const ResetPasswordViaEmail = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-gray-500/75 backdrop-blur-sm"
-                onClick={modalType === "success" ? handleSuccessModalClose : handleErrorModalClose}
+                className="fixed inset-0 bg-gray-500/75"
+                onClick={
+                  modalType === "success"
+                    ? handleSuccessModalClose
+                    : handleErrorModalClose
+                }
               />
 
-              {/* Modal */}
+              {/* Modal - Hapus backdrop-blur dari sini */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-green-200"
+                className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-green-200 relative z-10"
               >
                 <div className="px-6 pt-6 pb-4">
                   <div className="flex flex-col items-center text-center">
                     {/* Icon */}
-                    <div className="mb-4">
-                      {getModalIcon()}
-                    </div>
+                    <div className="mb-4">{getModalIcon()}</div>
 
                     {/* Content */}
                     <div>
                       <h3 className="text-xl font-bold text-gray-900 mb-3">
                         {getModalTitle()}
                       </h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        {msg}
-                      </p>
+                      <p className="text-gray-600 leading-relaxed">{msg}</p>
                       {modalType === "success" && (
                         <p className="text-sm text-gray-500 mt-2">
-                          Anda akan diarahkan ke halaman login untuk masuk dengan password baru.
+                          Anda akan diarahkan ke halaman login untuk masuk
+                          dengan password baru.
                         </p>
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* Modal footer */}
-                <div className="bg-gray-50 px-6 py-4 flex justify-center">
+                {/* Modal footer - Tambahkan bg-white untuk memastikan tidak blur */}
+                <div className="bg-white px-6 py-4 flex justify-center border-t border-gray-100">
                   <button
                     type="button"
-                    onClick={modalType === "success" ? handleSuccessModalClose : handleErrorModalClose}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium px-8 py-2 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    onClick={
+                      modalType === "success"
+                        ? handleSuccessModalClose
+                        : handleErrorModalClose
+                    }
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-medium px-8 py-2 rounded-lg transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-300 focus:ring-offset-2"
                   >
                     {modalType === "success" ? "Lanjut ke Login" : "OK"}
                   </button>
