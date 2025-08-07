@@ -443,23 +443,23 @@ const CetakSertifikat = () => {
   // Access denied for non-students
   if (!isSiswa) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
+      <div className="min-h-screen p-4 sm:p-6 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center"
+          className="text-center w-full max-w-md"
         >
-          <div className="p-6 bg-red-50 border border-red-200 rounded-xl max-w-md">
-            <FaExclamationTriangle className="text-red-500 text-4xl mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-red-800 mb-2">
+          <div className="p-4 sm:p-6 bg-red-50 border border-red-200 rounded-xl">
+            <FaExclamationTriangle className="text-red-500 text-3xl sm:text-4xl mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-semibold text-red-800 mb-2">
               Akses Ditolak
             </h3>
-            <p className="text-red-700 mb-4">
+            <p className="text-sm sm:text-base text-red-700 mb-3 sm:mb-4">
               Halaman ini hanya dapat diakses oleh siswa
             </p>
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base"
             >
               Kembali ke Dashboard
             </button>
@@ -471,19 +471,19 @@ const CetakSertifikat = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
+      <div className="min-h-screen p-4 sm:p-6 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
           <div
-            className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+            className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-3 sm:mb-4"
             style={{
               borderColor: `${greenTheme.primary} transparent ${greenTheme.primary} ${greenTheme.primary}`,
             }}
           />
-          <p className={`text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
+          <p className={`text-base sm:text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
             Memuat data sertifikat...
           </p>
         </motion.div>
@@ -494,28 +494,28 @@ const CetakSertifikat = () => {
   // ✅ Error state for missing data
   if (error && (!siswaData || !modulData || !nilaiData)) {
     return (
-      <div className="min-h-screen p-6 flex items-center justify-center">
+      <div className="min-h-screen p-4 sm:p-6 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center"
+          className="text-center w-full max-w-md"
         >
-          <div className="p-6 bg-red-50 border border-red-200 rounded-xl max-w-md">
-            <FaExclamationTriangle className="text-red-500 text-4xl mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-red-800 mb-2">
+          <div className="p-4 sm:p-6 bg-red-50 border border-red-200 rounded-xl">
+            <FaExclamationTriangle className="text-red-500 text-3xl sm:text-4xl mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-semibold text-red-800 mb-2">
               Data Tidak Lengkap
             </h3>
-            <p className="text-red-700 mb-4">{error}</p>
-            <div className="flex gap-2 justify-center">
+            <p className="text-sm sm:text-base text-red-700 mb-3 sm:mb-4">{error}</p>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm sm:text-base"
               >
                 Kembali
               </button>
               <button
                 onClick={() => loadAllData()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base"
               >
                 Coba Lagi
               </button>
@@ -529,9 +529,9 @@ const CetakSertifikat = () => {
   const gradeInfo = nilaiData ? getGradeInfo(nilaiData.skor) : null;
 
   return (
-    <div className="min-h-screen p-6">
-      {/* Background Pattern */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+    <div className="min-h-screen p-3 sm:p-6">
+      {/* Background Pattern - Hidden on mobile for better performance */}
+      <div className="hidden lg:block fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-5">
           <FaLeaf className="absolute top-20 left-10 text-8xl animate-pulse text-green-500" />
           <MdEco className="absolute top-40 right-20 text-6xl animate-bounce text-green-400" />
@@ -546,18 +546,19 @@ const CetakSertifikat = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
           <button
             onClick={() => navigate("/dashboard")}
-            className={`flex items-center gap-2 px-3 py-1 rounded-lg transition-colors duration-300 ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors duration-300 text-sm sm:text-base ${
               isDark
                 ? "text-gray-300 hover:text-white hover:bg-gray-700"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
             }`}
           >
-            <FaArrowLeft />
-            Kembali ke Dashboard
+            <FaArrowLeft className="text-sm" />
+            <span className="hidden sm:inline">Kembali ke Dashboard</span>
+            <span className="sm:hidden">Kembali</span>
           </button>
         </motion.div>
 
@@ -566,49 +567,52 @@ const CetakSertifikat = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <div
-            className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
+            className="p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm border"
             style={{
               backgroundColor: getColorWithOpacity(greenTheme.primary, 0.1),
               borderColor: getColorWithOpacity(greenTheme.primary, 0.2),
             }}
           >
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <div
-                className="p-3 rounded-full"
+                className="p-2 sm:p-3 rounded-full"
                 style={{ backgroundColor: greenTheme.primary }}
               >
-                <FaCertificate className="text-white text-2xl" />
+                <FaCertificate className="text-white text-xl sm:text-2xl" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h1
-                  className={`text-3xl font-bold ${
+                  className={`text-xl sm:text-2xl lg:text-3xl font-bold break-words ${
                     isDark ? "text-white" : "text-gray-800"
                   }`}
                 >
                   <span style={{ color: greenTheme.primary }}>Cetak</span>{" "}
                   Sertifikat
                 </h1>
-                <p className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                  GreenSys Learning Certificate - {modulData?.judul}
+                <p className={`text-sm sm:text-base break-words ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                  GreenSys Learning Certificate
+                </p>
+                <p className={`text-xs sm:text-sm mt-1 break-words ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                  {modulData?.judul}
                 </p>
                 {gradeInfo && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <span style={{ color: gradeInfo.color }} className="font-semibold">
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
+                    <span style={{ color: gradeInfo.color }} className="font-semibold text-sm sm:text-base">
                       {gradeInfo.icon} {gradeInfo.grade}
                     </span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs sm:text-sm text-gray-500">
                       ({nilaiData?.skor}/100)
                     </span>
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-2">
-                <FaImage className="text-green-500 text-2xl" />
+              <div className="hidden sm:flex items-center gap-2">
+                <FaImage className="text-green-500 text-xl sm:text-2xl" />
                 <FaRecycle
-                  className="text-blue-500 text-xl animate-spin"
+                  className="text-blue-500 text-lg sm:text-xl animate-spin"
                   style={{ animationDuration: "3s" }}
                 />
               </div>
@@ -616,14 +620,14 @@ const CetakSertifikat = () => {
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Main Content - Certificate Preview */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 order-2 lg:order-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="rounded-2xl shadow-xl overflow-hidden mb-6"
+              className="rounded-xl sm:rounded-2xl shadow-xl overflow-hidden mb-4 sm:mb-6"
               style={{
                 backgroundColor: isDark ? "#1f2937" : "#ffffff",
                 border: `1px solid ${getColorWithOpacity(
@@ -633,16 +637,17 @@ const CetakSertifikat = () => {
               }}
             >
               <div
-                className="py-4 px-6"
+                className="py-3 sm:py-4 px-4 sm:px-6"
                 style={{
                   background: `linear-gradient(135deg, ${greenTheme.primary} 0%, ${greenTheme.secondary} 100%)`,
                 }}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FaEye className="text-white text-xl" />
-                    <h2 className="text-xl font-bold text-white">
-                      Preview Sertifikat Real-time
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <FaEye className="text-white text-lg sm:text-xl flex-shrink-0" />
+                    <h2 className="text-base sm:text-lg lg:text-xl font-bold text-white truncate">
+                      <span className="hidden sm:inline">Preview Sertifikat Real-time</span>
+                      <span className="sm:hidden">Preview Sertifikat</span>
                     </h2>
                   </div>
                   <div className="flex items-center gap-2">
@@ -656,7 +661,7 @@ const CetakSertifikat = () => {
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 {/* Certificate Preview Container */}
                 <div
                   className={`relative bg-gray-100 rounded-lg overflow-hidden ${
@@ -664,24 +669,25 @@ const CetakSertifikat = () => {
                   }`}
                 >
                   {imageLoading && (
-                    <div className="flex items-center justify-center h-96">
+                    <div className="flex items-center justify-center h-48 sm:h-64 lg:h-96">
                       <div className="text-center">
-                        <FaSpinner className="text-4xl text-gray-400 animate-spin mx-auto mb-4" />
-                        <p className="text-gray-600">
-                          Memuat template certificate...
+                        <FaSpinner className="text-2xl sm:text-3xl lg:text-4xl text-gray-400 animate-spin mx-auto mb-3 sm:mb-4" />
+                        <p className="text-gray-600 text-sm sm:text-base">
+                          <span className="hidden sm:inline">Memuat template certificate...</span>
+                          <span className="sm:hidden">Memuat template...</span>
                         </p>
                       </div>
                     </div>
                   )}
 
                   {imageError && (
-                    <div className="flex items-center justify-center h-96">
-                      <div className="text-center p-8 bg-red-50 rounded-lg max-w-md">
-                        <FaExclamationTriangle className="text-4xl text-red-500 mx-auto mb-4" />
-                        <p className="text-red-700 mb-2 font-medium">
+                    <div className="flex items-center justify-center min-h-[200px] sm:h-64 lg:h-96 p-4">
+                      <div className="text-center p-4 sm:p-8 bg-red-50 rounded-lg max-w-md w-full">
+                        <FaExclamationTriangle className="text-2xl sm:text-3xl lg:text-4xl text-red-500 mx-auto mb-3 sm:mb-4" />
+                        <p className="text-red-700 mb-2 font-medium text-sm sm:text-base">
                           Error Loading Template
                         </p>
-                        <p className="text-red-600 text-sm mb-4">
+                        <p className="text-red-600 text-xs sm:text-sm mb-3 sm:mb-4 break-words">
                           {imageError}
                         </p>
                         <div className="space-y-2">
@@ -694,7 +700,7 @@ const CetakSertifikat = () => {
                                   templateUrl + "?t=" + Date.now();
                               }
                             }}
-                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm mr-2"
+                            className="w-full sm:w-auto px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs sm:text-sm"
                           >
                             Coba Lagi
                           </button>
@@ -741,25 +747,26 @@ const CetakSertifikat = () => {
                 </div>
 
                 {/* ✅ Enhanced Certificate Info */}
-                <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center gap-2 mb-3">
                     <FaCheckCircle className="text-green-600" />
-                    <span className="font-medium text-green-800">
-                      Preview Real-time Certificate
+                    <span className="font-medium text-green-800 text-sm sm:text-base">
+                      <span className="hidden sm:inline">Preview Real-time Certificate</span>
+                      <span className="sm:hidden">Preview Certificate</span>
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
                       <p className="text-gray-600">Nama Siswa:</p>
-                      <p className="font-medium text-gray-800">{siswaData?.nama || "Loading..."}</p>
+                      <p className="font-medium text-gray-800 break-words">{siswaData?.nama || "Loading..."}</p>
                     </div>
                     <div>
                       <p className="text-gray-600">NIS:</p>
                       <p className="font-medium text-gray-800">{siswaData?.nis || "Loading..."}</p>
                     </div>
-                    <div>
+                    <div className="sm:col-span-2">
                       <p className="text-gray-600">Modul:</p>
-                      <p className="font-medium text-gray-800">{modulData?.judul || "Loading..."}</p>
+                      <p className="font-medium text-gray-800 break-words">{modulData?.judul || "Loading..."}</p>
                     </div>
                     <div>
                       <p className="text-gray-600">Skor:</p>
@@ -775,7 +782,7 @@ const CetakSertifikat = () => {
                     </div>
                     <div>
                       <p className="text-gray-600">Grade:</p>
-                      <p className="font-medium" style={{ color: gradeInfo?.color || "#6b7280" }}>
+                      <p className="font-medium break-words" style={{ color: gradeInfo?.color || "#6b7280" }}>
                         {gradeInfo ? `${gradeInfo.icon} ${gradeInfo.grade}` : "Loading..."}
                       </p>
                     </div>
@@ -801,7 +808,7 @@ const CetakSertifikat = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-wrap gap-4"
+              className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
             >
               {!certificateData ? (
                 <motion.button
@@ -809,7 +816,7 @@ const CetakSertifikat = () => {
                   disabled={generating || !siswaData || !modulData || !nilaiData || !canvasReady}
                   whileHover={{ scale: generating ? 1 : 1.02 }}
                   whileTap={{ scale: generating ? 1 : 0.98 }}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-white transition-all duration-300 shadow-lg hover:shadow-xl ${
+                  className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg sm:rounded-xl font-medium text-white transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto ${
                     generating || !canvasReady
                       ? "opacity-70 cursor-not-allowed"
                       : ""
@@ -832,7 +839,7 @@ const CetakSertifikat = () => {
                     disabled={!canvasReady}
                     whileHover={{ scale: canvasReady ? 1.02 : 1 }}
                     whileTap={{ scale: canvasReady ? 0.98 : 1 }}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium text-white transition-all duration-300 shadow-lg hover:shadow-xl ${
+                    className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg sm:rounded-xl font-medium text-white transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto ${
                       !canvasReady ? "opacity-70 cursor-not-allowed" : ""
                     }`}
                     style={{
@@ -848,7 +855,7 @@ const CetakSertifikat = () => {
                     disabled={!canvasReady}
                     whileHover={{ scale: canvasReady ? 1.02 : 1 }}
                     whileTap={{ scale: canvasReady ? 0.98 : 1 }}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 border-2 ${
+                    className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 border-2 text-sm sm:text-base w-full sm:w-auto ${
                       !canvasReady ? "opacity-70 cursor-not-allowed" : ""
                     } ${
                       isDark
@@ -865,13 +872,13 @@ const CetakSertifikat = () => {
           </div>
 
           {/* Sidebar - Info panels */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6 order-1 lg:order-2">
             {/* Student Info */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="rounded-xl shadow-lg overflow-hidden"
+              className="rounded-lg sm:rounded-xl shadow-lg overflow-hidden"
               style={{
                 backgroundColor: isDark ? "#1f2937" : "#ffffff",
                 border: `1px solid ${getColorWithOpacity(
@@ -881,7 +888,7 @@ const CetakSertifikat = () => {
               }}
             >
               <div
-                className="p-4"
+                className="p-3 sm:p-4"
                 style={{
                   backgroundColor: getColorWithOpacity(greenTheme.primary, 0.1),
                 }}
@@ -889,7 +896,7 @@ const CetakSertifikat = () => {
                 <div className="flex items-center gap-2">
                   <FaUser style={{ color: greenTheme.primary }} />
                   <h3
-                    className={`font-semibold ${
+                    className={`font-semibold text-sm sm:text-base ${
                       isDark ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -897,7 +904,7 @@ const CetakSertifikat = () => {
                   </h3>
                 </div>
               </div>
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 <div className="space-y-3">
                   <div>
                     <p
@@ -908,7 +915,7 @@ const CetakSertifikat = () => {
                       Nama Lengkap:
                     </p>
                     <p
-                      className={`font-medium ${
+                      className={`font-medium text-sm sm:text-base break-words ${
                         isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
@@ -924,7 +931,7 @@ const CetakSertifikat = () => {
                       NIS:
                     </p>
                     <p
-                      className={`font-medium ${
+                      className={`font-medium text-sm sm:text-base ${
                         isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
@@ -942,7 +949,7 @@ const CetakSertifikat = () => {
                     <div className="flex items-center gap-2">
                       <FaGraduationCap className="text-blue-500" />
                       <p
-                        className={`font-medium ${
+                        className={`font-medium text-sm sm:text-base ${
                           isDark ? "text-white" : "text-gray-800"
                         }`}
                       >
@@ -959,7 +966,7 @@ const CetakSertifikat = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
-              className="rounded-xl shadow-lg overflow-hidden"
+              className="rounded-lg sm:rounded-xl shadow-lg overflow-hidden"
               style={{
                 backgroundColor: isDark ? "#1f2937" : "#ffffff",
                 border: `1px solid ${getColorWithOpacity(
@@ -969,7 +976,7 @@ const CetakSertifikat = () => {
               }}
             >
               <div
-                className="p-4"
+                className="p-3 sm:p-4"
                 style={{
                   backgroundColor: getColorWithOpacity(greenTheme.primary, 0.1),
                 }}
@@ -977,7 +984,7 @@ const CetakSertifikat = () => {
                 <div className="flex items-center gap-2">
                   <MdQuiz style={{ color: greenTheme.primary }} />
                   <h3
-                    className={`font-semibold ${
+                    className={`font-semibold text-sm sm:text-base ${
                       isDark ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -985,7 +992,7 @@ const CetakSertifikat = () => {
                   </h3>
                 </div>
               </div>
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 <div className="space-y-3">
                   <div>
                     <p
@@ -996,7 +1003,7 @@ const CetakSertifikat = () => {
                       Modul:
                     </p>
                     <p
-                      className={`font-medium ${
+                      className={`font-medium text-sm sm:text-base break-words ${
                         isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
@@ -1014,7 +1021,7 @@ const CetakSertifikat = () => {
                     <div className="flex items-center gap-2">
                       <FaTrophy className="text-yellow-500" />
                       <p
-                        className={`font-medium text-lg ${
+                        className={`font-medium text-base sm:text-lg ${
                           isDark ? "text-white" : "text-gray-800"
                         }`}
                       >
@@ -1031,7 +1038,7 @@ const CetakSertifikat = () => {
                       Jawaban Benar:
                     </p>
                     <p
-                      className={`font-medium ${
+                      className={`font-medium text-sm sm:text-base ${
                         isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
@@ -1049,9 +1056,9 @@ const CetakSertifikat = () => {
                     <div className="flex items-center gap-2">
                       {gradeInfo && (
                         <>
-                          <span className="text-lg">{gradeInfo.icon}</span>
+                          <span className="text-base sm:text-lg">{gradeInfo.icon}</span>
                           <p
-                            className="font-medium"
+                            className="font-medium text-sm sm:text-base break-words"
                             style={{ color: gradeInfo.color }}
                           >
                             {gradeInfo.grade}
@@ -1069,7 +1076,7 @@ const CetakSertifikat = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 1.0 }}
-              className="rounded-xl shadow-lg overflow-hidden"
+              className="rounded-lg sm:rounded-xl shadow-lg overflow-hidden"
               style={{
                 backgroundColor: isDark ? "#1f2937" : "#ffffff",
                 border: `1px solid ${getColorWithOpacity(
@@ -1079,7 +1086,7 @@ const CetakSertifikat = () => {
               }}
             >
               <div
-                className="p-4"
+                className="p-3 sm:p-4"
                 style={{
                   backgroundColor: getColorWithOpacity(greenTheme.primary, 0.1),
                 }}
@@ -1087,7 +1094,7 @@ const CetakSertifikat = () => {
                 <div className="flex items-center gap-2">
                   <FaImage style={{ color: greenTheme.primary }} />
                   <h3
-                    className={`font-semibold ${
+                    className={`font-semibold text-sm sm:text-base ${
                       isDark ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -1095,7 +1102,7 @@ const CetakSertifikat = () => {
                   </h3>
                 </div>
               </div>
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 <div className="space-y-3">
                   <div className="flex items-start gap-2">
                     <FaImage className="text-green-500 text-sm mt-1 flex-shrink-0" />
@@ -1148,13 +1155,13 @@ const CetakSertifikat = () => {
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            className="fixed bottom-20 right-4 z-[9998] max-w-sm md:max-w-md"
+            className="fixed bottom-4 sm:bottom-20 left-4 right-4 sm:right-4 sm:left-auto z-[9998] max-w-sm sm:max-w-md sm:ml-auto"
             style={{
               zIndex: 9998,
             }}
           >
             <div
-              className={`p-4 rounded-xl shadow-2xl border backdrop-blur-sm ${
+              className={`p-3 sm:p-4 rounded-xl shadow-2xl border backdrop-blur-sm ${
                 error
                   ? "bg-red-50/95 border-red-200 text-red-800"
                   : "bg-green-50/95 border-green-200 text-green-800"
@@ -1164,9 +1171,9 @@ const CetakSertifikat = () => {
               }}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                   <div
-                    className={`p-1 rounded-full ${
+                    className={`p-1 rounded-full flex-shrink-0 ${
                       error ? "bg-red-100" : "bg-green-100"
                     }`}
                   >
@@ -1176,11 +1183,11 @@ const CetakSertifikat = () => {
                       <FaCheckCircle className="text-green-600 text-sm" />
                     )}
                   </div>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm">
                       {error ? "Error!" : "Success!"}
                     </p>
-                    <p className="text-xs mt-1">{error || success}</p>
+                    <p className="text-xs mt-1 break-words">{error || success}</p>
                   </div>
                 </div>
                 <button
@@ -1188,7 +1195,7 @@ const CetakSertifikat = () => {
                     setError("");
                     setSuccess("");
                   }}
-                  className={`p-1 rounded-full hover:bg-opacity-20 transition-colors ${
+                  className={`p-1 rounded-full hover:bg-opacity-20 transition-colors flex-shrink-0 ml-2 ${
                     error
                       ? "hover:bg-red-600 text-red-600"
                       : "hover:bg-green-600 text-green-600"

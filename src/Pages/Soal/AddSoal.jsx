@@ -11,16 +11,17 @@ import {
   FaTimes,
   FaArrowLeft,
   FaLightbulb,
-  FaCheck,
-  FaEye,
   FaPlus,
+  FaBook,
+  FaUpload,
 } from "react-icons/fa";
-import { 
-  MdQuiz, 
+import {
+  MdQuiz,
   MdLibraryBooks,
   MdRadioButtonChecked,
   MdRadioButtonUnchecked,
   MdTipsAndUpdates,
+  MdAutoStories,
 } from "react-icons/md";
 import { BsQuestionSquare, BsCheckCircle } from "react-icons/bs";
 import { GiPlantSeed } from "react-icons/gi";
@@ -37,8 +38,15 @@ const AddSoal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [showPreview, setShowPreview] = useState(false);
 
+  // Story feature states
+  const [showStory, setShowStory] = useState(false);
+  const [storyImage, setStoryImage] = useState(null);
+  const [storyImagePreview, setStoryImagePreview] = useState("");
+  const [storyText, setStoryText] = useState("");
+  const [judul, setJudul] = useState("");
+
+  const fileInputRef = useRef(null);
   const { currentColor, currentMode } = useStateContext();
 
   const { id } = useParams(); // groupSoalId
@@ -75,7 +83,7 @@ const AddSoal = () => {
       const token = localStorage.getItem("accessToken");
       const apiUrl = process.env.REACT_APP_URL_API;
       const response = await axios.get(`${apiUrl}/group-soal/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setGroupSoal(response.data);
       setError("");
@@ -84,6 +92,39 @@ const AddSoal = () => {
       setError("Gagal memuat data grup soal");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        setError("Ukuran file terlalu besar. Maksimal 10MB.");
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        setError("File harus berupa gambar (PNG, JPG, GIF).");
+        return;
+      }
+
+      setStoryImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setStoryImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setError(""); // Clear any previous errors
+    }
+  };
+
+  const removeImage = () => {
+    setStoryImage(null);
+    setStoryImagePreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -101,18 +142,26 @@ const AddSoal = () => {
     formData.append("correctAnswer", correctAnswer);
     formData.append("groupSoalId", id);
 
-    const jsonData = {};
-    formData.forEach((value, key) => {
-      jsonData[key] = value;
-    });
+    // Add story data if exists
+    if (showStory) {
+      if (judul) {
+        formData.append("judul", judul);
+      }
+      if (storyImage) {
+        formData.append("file", storyImage);
+      }
+      if (storyText) {
+        formData.append("cerita", storyText);
+      }
+    }
 
     try {
       const token = localStorage.getItem("accessToken");
       const apiUrl = process.env.REACT_APP_URL_API;
-      await axios.post(`${apiUrl}/soal`, jsonData, {
+      await axios.post(`${apiUrl}/soal`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
       });
       navigate("/data-soal");
@@ -150,9 +199,11 @@ const AddSoal = () => {
         <div className="text-center">
           <div
             className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
-            style={{ borderColor: `${currentColor} transparent ${currentColor} ${currentColor}` }}
+            style={{
+              borderColor: `${currentColor} transparent ${currentColor} ${currentColor}`,
+            }}
           />
-          <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
+          <p className={`text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
             Memuat data grup soal...
           </p>
         </div>
@@ -167,10 +218,14 @@ const AddSoal = () => {
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <FaTimes className="text-red-500 text-2xl" />
           </div>
-          <h3 className={`text-xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+          <h3
+            className={`text-xl font-semibold mb-2 ${
+              isDark ? "text-white" : "text-gray-800"
+            }`}
+          >
             Terjadi Kesalahan
           </h3>
-          <p className={`mb-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p className={`mb-4 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
             {error}
           </p>
           <button
@@ -225,7 +280,9 @@ const AddSoal = () => {
                 onClick={() => navigate("/data-soal")}
                 className="p-2 rounded-lg hover:bg-white/20 transition-colors"
               >
-                <FaArrowLeft className={isDark ? "text-white" : "text-gray-800"} />
+                <FaArrowLeft
+                  className={isDark ? "text-white" : "text-gray-800"}
+                />
               </button>
               <div
                 className="p-3 rounded-full"
@@ -239,11 +296,11 @@ const AddSoal = () => {
                     isDark ? "text-white" : "text-gray-800"
                   }`}
                 >
-                  Tambah{" "}
-                  <span style={{ color: currentColor }}>Soal Baru</span>
+                  Tambah <span style={{ color: currentColor }}>Soal Baru</span>
                 </h1>
                 <p className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                  {groupSoal?.judul} • {groupSoal?.kelas?.namaKelas} • {formatDuration(groupSoal?.durasi)}
+                  {groupSoal?.judul} • {groupSoal?.kelas?.namaKelas} •{" "}
+                  {formatDuration(groupSoal?.durasi)}
                 </p>
               </div>
             </div>
@@ -296,6 +353,246 @@ const AddSoal = () => {
               {/* Form Content */}
               <div className="p-8">
                 <form onSubmit={saveSoal} className="space-y-8">
+                  {/* Story Section */}
+                  <div
+                    className="p-6 rounded-xl border"
+                    style={{
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2),
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <MdAutoStories style={{ color: currentColor }} />
+                        <h3
+                          className={`font-semibold text-lg ${
+                            isDark ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          Cerita Soal (Opsional)
+                        </h3>
+                      </div>
+
+                      <motion.button
+                        type="button"
+                        onClick={() => setShowStory(!showStory)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                          showStory
+                            ? "text-white border-transparent"
+                            : `${
+                                isDark
+                                  ? "border-gray-600 text-gray-200 bg-gray-700 hover:bg-gray-600"
+                                  : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                              } border`
+                        }`}
+                        style={
+                          showStory
+                            ? {
+                                background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                                  currentColor,
+                                  0.8
+                                )} 100%)`,
+                              }
+                            : {}
+                        }
+                      >
+                        <FaBook />
+                        {showStory ? "Sembunyikan Cerita" : "Tambahkan Cerita"}
+                      </motion.button>
+                    </div>
+
+                    {showStory && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="space-y-6"
+                      >
+                        {/* Image Upload */}
+                        <div>
+                          <label
+                            className={`block text-sm font-medium mb-3 ${
+                              isDark ? "text-gray-200" : "text-gray-700"
+                            }`}
+                          >
+                            Judul
+                          </label>
+
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="judul"
+                              required
+                              placeholder="Masukan Judul"
+                              className={`mb-3 block w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
+                                isDark
+                                  ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
+                                  : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
+                              }`}
+                              style={{
+                                borderColor: getColorWithOpacity(
+                                  currentColor,
+                                  0.3
+                                ),
+                                boxShadow: `0 0 0 1px ${getColorWithOpacity(
+                                  currentColor,
+                                  0.1
+                                )}`,
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = currentColor;
+                                e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(
+                                  currentColor,
+                                  0.1
+                                )}`;
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor =
+                                  getColorWithOpacity(currentColor, 0.3);
+                                e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(
+                                  currentColor,
+                                  0.1
+                                )}`;
+                              }}
+                              value={judul}
+                              onChange={(e) => setJudul(e.target.value)}
+                            />
+                          </div>
+
+                          <label
+                            className={`block text-sm font-medium mb-3 ${
+                              isDark ? "text-gray-200" : "text-gray-700"
+                            }`}
+                          >
+                            Gambar Cerita
+                          </label>
+
+                          {!storyImagePreview ? (
+                            <div
+                              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-300 hover:border-opacity-80 ${
+                                isDark
+                                  ? "border-gray-600 bg-gray-800 hover:bg-gray-700"
+                                  : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                              }`}
+                              style={{
+                                borderColor: getColorWithOpacity(
+                                  currentColor,
+                                  0.3
+                                ),
+                              }}
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              <FaUpload
+                                className="mx-auto mb-3 text-3xl"
+                                style={{ color: currentColor }}
+                              />
+                              <p
+                                className={`text-lg font-medium ${
+                                  isDark ? "text-gray-200" : "text-gray-700"
+                                }`}
+                              >
+                                Klik untuk upload gambar
+                              </p>
+                              <p
+                                className={`text-sm ${
+                                  isDark ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              >
+                                PNG, JPG, GIF hingga 10MB
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="relative">
+                              <img
+                                src={storyImagePreview}
+                                alt="Story preview"
+                                className="w-full h-64 object-cover rounded-lg"
+                              />
+                              <button
+                                type="button"
+                                onClick={removeImage}
+                                className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                              >
+                                <FaTimes />
+                              </button>
+                            </div>
+                          )}
+
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+                        </div>
+
+                        {/* Story Text Editor */}
+                        <div>
+                          <label
+                            className={`block text-sm font-medium mb-3 ${
+                              isDark ? "text-gray-200" : "text-gray-700"
+                            }`}
+                          >
+                            Teks Cerita
+                          </label>
+
+                          <textarea
+                            rows="16"
+                            placeholder="Tulis cerita yang menarik untuk memberikan konteks soal..."
+                            className={`block w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none resize-none ${
+                              isDark
+                                ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:border-blue-500"
+                                : "bg-white text-gray-900 border-gray-300 placeholder-gray-500 focus:border-blue-500"
+                            }`}
+                            style={{
+                              borderColor: getColorWithOpacity(
+                                currentColor,
+                                0.3
+                              ),
+                              boxShadow: `0 0 0 1px ${getColorWithOpacity(
+                                currentColor,
+                                0.1
+                              )}`,
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.borderColor = currentColor;
+                              e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(
+                                currentColor,
+                                0.1
+                              )}`;
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = getColorWithOpacity(
+                                currentColor,
+                                0.3
+                              );
+                              e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(
+                                currentColor,
+                                0.1
+                              )}`;
+                            }}
+                            value={storyText}
+                            onChange={(e) => setStoryText(e.target.value)}
+                          />
+
+                          <p
+                            className={`mt-2 text-sm ${
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          >
+                            Cerita dapat membantu siswa memahami konteks soal
+                            dengan lebih baik. Gunakan bahasa yang menarik dan
+                            mudah dipahami.
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+
                   {/* Pertanyaan Section */}
                   <div
                     className="p-6 rounded-xl border"
@@ -364,7 +661,8 @@ const AddSoal = () => {
                         isDark ? "text-gray-400" : "text-gray-500"
                       }`}
                     >
-                      Pastikan pertanyaan jelas dan sesuai dengan materi Green Science
+                      Pastikan pertanyaan jelas dan sesuai dengan materi Green
+                      Science
                     </p>
                   </div>
 
@@ -393,13 +691,20 @@ const AddSoal = () => {
                         <div className="flex items-center gap-3 mb-2">
                           <button
                             type="button"
-                            onClick={() => handleCorrectAnswerChange('A')}
+                            onClick={() => handleCorrectAnswerChange("A")}
                             className="flex items-center gap-2"
                           >
-                            {correctAnswer === 'A' ? (
-                              <MdRadioButtonChecked style={{ color: currentColor }} className="text-xl" />
+                            {correctAnswer === "A" ? (
+                              <MdRadioButtonChecked
+                                style={{ color: currentColor }}
+                                className="text-xl"
+                              />
                             ) : (
-                              <MdRadioButtonUnchecked className={`text-xl ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                              <MdRadioButtonUnchecked
+                                className={`text-xl ${
+                                  isDark ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              />
                             )}
                           </button>
                           <label
@@ -407,7 +712,12 @@ const AddSoal = () => {
                               isDark ? "text-gray-200" : "text-gray-700"
                             }`}
                           >
-                            Opsi A {correctAnswer === 'A' && <span style={{ color: currentColor }}>(Jawaban Benar)</span>}
+                            Opsi A{" "}
+                            {correctAnswer === "A" && (
+                              <span style={{ color: currentColor }}>
+                                (Jawaban Benar)
+                              </span>
+                            )}
                           </label>
                         </div>
                         <input
@@ -418,11 +728,18 @@ const AddSoal = () => {
                             isDark
                               ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                               : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
-                          } ${correctAnswer === 'A' ? 'ring-2' : ''}`}
-                          style={correctAnswer === 'A' ? {
-                            borderColor: currentColor,
-                            ringColor: getColorWithOpacity(currentColor, 0.3)
-                          } : {}}
+                          } ${correctAnswer === "A" ? "ring-2" : ""}`}
+                          style={
+                            correctAnswer === "A"
+                              ? {
+                                  borderColor: currentColor,
+                                  ringColor: getColorWithOpacity(
+                                    currentColor,
+                                    0.3
+                                  ),
+                                }
+                              : {}
+                          }
                           value={optionA}
                           onChange={(e) => setOptionA(e.target.value)}
                         />
@@ -433,13 +750,20 @@ const AddSoal = () => {
                         <div className="flex items-center gap-3 mb-2">
                           <button
                             type="button"
-                            onClick={() => handleCorrectAnswerChange('B')}
+                            onClick={() => handleCorrectAnswerChange("B")}
                             className="flex items-center gap-2"
                           >
-                            {correctAnswer === 'B' ? (
-                              <MdRadioButtonChecked style={{ color: currentColor }} className="text-xl" />
+                            {correctAnswer === "B" ? (
+                              <MdRadioButtonChecked
+                                style={{ color: currentColor }}
+                                className="text-xl"
+                              />
                             ) : (
-                              <MdRadioButtonUnchecked className={`text-xl ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                              <MdRadioButtonUnchecked
+                                className={`text-xl ${
+                                  isDark ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              />
                             )}
                           </button>
                           <label
@@ -447,7 +771,12 @@ const AddSoal = () => {
                               isDark ? "text-gray-200" : "text-gray-700"
                             }`}
                           >
-                            Opsi B {correctAnswer === 'B' && <span style={{ color: currentColor }}>(Jawaban Benar)</span>}
+                            Opsi B{" "}
+                            {correctAnswer === "B" && (
+                              <span style={{ color: currentColor }}>
+                                (Jawaban Benar)
+                              </span>
+                            )}
                           </label>
                         </div>
                         <input
@@ -458,11 +787,18 @@ const AddSoal = () => {
                             isDark
                               ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                               : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
-                          } ${correctAnswer === 'B' ? 'ring-2' : ''}`}
-                          style={correctAnswer === 'B' ? {
-                            borderColor: currentColor,
-                            ringColor: getColorWithOpacity(currentColor, 0.3)
-                          } : {}}
+                          } ${correctAnswer === "B" ? "ring-2" : ""}`}
+                          style={
+                            correctAnswer === "B"
+                              ? {
+                                  borderColor: currentColor,
+                                  ringColor: getColorWithOpacity(
+                                    currentColor,
+                                    0.3
+                                  ),
+                                }
+                              : {}
+                          }
                           value={optionB}
                           onChange={(e) => setOptionB(e.target.value)}
                         />
@@ -473,13 +809,20 @@ const AddSoal = () => {
                         <div className="flex items-center gap-3 mb-2">
                           <button
                             type="button"
-                            onClick={() => handleCorrectAnswerChange('C')}
+                            onClick={() => handleCorrectAnswerChange("C")}
                             className="flex items-center gap-2"
                           >
-                            {correctAnswer === 'C' ? (
-                              <MdRadioButtonChecked style={{ color: currentColor }} className="text-xl" />
+                            {correctAnswer === "C" ? (
+                              <MdRadioButtonChecked
+                                style={{ color: currentColor }}
+                                className="text-xl"
+                              />
                             ) : (
-                              <MdRadioButtonUnchecked className={`text-xl ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                              <MdRadioButtonUnchecked
+                                className={`text-xl ${
+                                  isDark ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              />
                             )}
                           </button>
                           <label
@@ -487,7 +830,12 @@ const AddSoal = () => {
                               isDark ? "text-gray-200" : "text-gray-700"
                             }`}
                           >
-                            Opsi C {correctAnswer === 'C' && <span style={{ color: currentColor }}>(Jawaban Benar)</span>}
+                            Opsi C{" "}
+                            {correctAnswer === "C" && (
+                              <span style={{ color: currentColor }}>
+                                (Jawaban Benar)
+                              </span>
+                            )}
                           </label>
                         </div>
                         <input
@@ -498,11 +846,18 @@ const AddSoal = () => {
                             isDark
                               ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                               : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
-                          } ${correctAnswer === 'C' ? 'ring-2' : ''}`}
-                          style={correctAnswer === 'C' ? {
-                            borderColor: currentColor,
-                            ringColor: getColorWithOpacity(currentColor, 0.3)
-                          } : {}}
+                          } ${correctAnswer === "C" ? "ring-2" : ""}`}
+                          style={
+                            correctAnswer === "C"
+                              ? {
+                                  borderColor: currentColor,
+                                  ringColor: getColorWithOpacity(
+                                    currentColor,
+                                    0.3
+                                  ),
+                                }
+                              : {}
+                          }
                           value={optionC}
                           onChange={(e) => setOptionC(e.target.value)}
                         />
@@ -513,13 +868,20 @@ const AddSoal = () => {
                         <div className="flex items-center gap-3 mb-2">
                           <button
                             type="button"
-                            onClick={() => handleCorrectAnswerChange('D')}
+                            onClick={() => handleCorrectAnswerChange("D")}
                             className="flex items-center gap-2"
                           >
-                            {correctAnswer === 'D' ? (
-                              <MdRadioButtonChecked style={{ color: currentColor }} className="text-xl" />
+                            {correctAnswer === "D" ? (
+                              <MdRadioButtonChecked
+                                style={{ color: currentColor }}
+                                className="text-xl"
+                              />
                             ) : (
-                              <MdRadioButtonUnchecked className={`text-xl ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                              <MdRadioButtonUnchecked
+                                className={`text-xl ${
+                                  isDark ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              />
                             )}
                           </button>
                           <label
@@ -527,7 +889,12 @@ const AddSoal = () => {
                               isDark ? "text-gray-200" : "text-gray-700"
                             }`}
                           >
-                            Opsi D {correctAnswer === 'D' && <span style={{ color: currentColor }}>(Jawaban Benar)</span>}
+                            Opsi D{" "}
+                            {correctAnswer === "D" && (
+                              <span style={{ color: currentColor }}>
+                                (Jawaban Benar)
+                              </span>
+                            )}
                           </label>
                         </div>
                         <input
@@ -538,11 +905,18 @@ const AddSoal = () => {
                             isDark
                               ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                               : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
-                          } ${correctAnswer === 'D' ? 'ring-2' : ''}`}
-                          style={correctAnswer === 'D' ? {
-                            borderColor: currentColor,
-                            ringColor: getColorWithOpacity(currentColor, 0.3)
-                          } : {}}
+                          } ${correctAnswer === "D" ? "ring-2" : ""}`}
+                          style={
+                            correctAnswer === "D"
+                              ? {
+                                  borderColor: currentColor,
+                                  ringColor: getColorWithOpacity(
+                                    currentColor,
+                                    0.3
+                                  ),
+                                }
+                              : {}
+                          }
                           value={optionD}
                           onChange={(e) => setOptionD(e.target.value)}
                         />
@@ -553,13 +927,20 @@ const AddSoal = () => {
                         <div className="flex items-center gap-3 mb-2">
                           <button
                             type="button"
-                            onClick={() => handleCorrectAnswerChange('E')}
+                            onClick={() => handleCorrectAnswerChange("E")}
                             className="flex items-center gap-2"
                           >
-                            {correctAnswer === 'E' ? (
-                              <MdRadioButtonChecked style={{ color: currentColor }} className="text-xl" />
+                            {correctAnswer === "E" ? (
+                              <MdRadioButtonChecked
+                                style={{ color: currentColor }}
+                                className="text-xl"
+                              />
                             ) : (
-                              <MdRadioButtonUnchecked className={`text-xl ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
+                              <MdRadioButtonUnchecked
+                                className={`text-xl ${
+                                  isDark ? "text-gray-400" : "text-gray-500"
+                                }`}
+                              />
                             )}
                           </button>
                           <label
@@ -567,8 +948,20 @@ const AddSoal = () => {
                               isDark ? "text-gray-200" : "text-gray-700"
                             }`}
                           >
-                            Opsi E {correctAnswer === 'E' && <span style={{ color: currentColor }}>(Jawaban Benar)</span>} 
-                            <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}> (Opsional)</span>
+                            Opsi E{" "}
+                            {correctAnswer === "E" && (
+                              <span style={{ color: currentColor }}>
+                                (Jawaban Benar)
+                              </span>
+                            )}
+                            <span
+                              className={`text-xs ${
+                                isDark ? "text-gray-400" : "text-gray-500"
+                              }`}
+                            >
+                              {" "}
+                              (Opsional)
+                            </span>
                           </label>
                         </div>
                         <input
@@ -578,11 +971,18 @@ const AddSoal = () => {
                             isDark
                               ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                               : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
-                          } ${correctAnswer === 'E' ? 'ring-2' : ''}`}
-                          style={correctAnswer === 'E' ? {
-                            borderColor: currentColor,
-                            ringColor: getColorWithOpacity(currentColor, 0.3)
-                          } : {}}
+                          } ${correctAnswer === "E" ? "ring-2" : ""}`}
+                          style={
+                            correctAnswer === "E"
+                              ? {
+                                  borderColor: currentColor,
+                                  ringColor: getColorWithOpacity(
+                                    currentColor,
+                                    0.3
+                                  ),
+                                }
+                              : {}
+                          }
                           value={optionE}
                           onChange={(e) => setOptionE(e.target.value)}
                         />
@@ -594,7 +994,8 @@ const AddSoal = () => {
                         isDark ? "text-gray-400" : "text-gray-500"
                       }`}
                     >
-                      Klik radio button di sebelah opsi untuk menandai sebagai jawaban yang benar
+                      Klik radio button di sebelah opsi untuk menandai sebagai
+                      jawaban yang benar
                     </p>
                   </div>
 
@@ -617,28 +1018,14 @@ const AddSoal = () => {
 
                     <div className="flex gap-3">
                       <motion.button
-                        type="button"
-                        onClick={() => setShowPreview(!showPreview)}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={`flex items-center gap-2 px-6 py-3 border rounded-xl text-sm font-medium transition-all duration-300 ${
-                          showPreview
-                            ? 'border-transparent text-white'
-                            : `${isDark ? 'border-gray-600 text-gray-200 bg-gray-700 hover:bg-gray-600' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`
-                        }`}
-                        style={showPreview ? {
-                          background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
-                        } : {}}
-                      >
-                        <FaEye />
-                        {showPreview ? 'Sembunyikan' : 'Preview'}
-                      </motion.button>
-
-                      <motion.button
                         type="submit"
                         disabled={isSubmitting || !validateForm()}
-                        whileHover={{ scale: isSubmitting || !validateForm() ? 1 : 1.02 }}
-                        whileTap={{ scale: isSubmitting || !validateForm() ? 1 : 0.98 }}
+                        whileHover={{
+                          scale: isSubmitting || !validateForm() ? 1 : 1.02,
+                        }}
+                        whileTap={{
+                          scale: isSubmitting || !validateForm() ? 1 : 0.98,
+                        }}
                         className={`flex items-center gap-2 px-8 py-3 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ${
                           isSubmitting || !validateForm()
                             ? "opacity-70 cursor-not-allowed"
@@ -651,10 +1038,10 @@ const AddSoal = () => {
                           )} 100%)`,
                         }}
                       >
-                        <FaSave className={isSubmitting ? "animate-spin" : ""} />
-                        {isSubmitting
-                          ? "Menyimpan..."
-                          : "Simpan Soal"}
+                        <FaSave
+                          className={isSubmitting ? "animate-spin" : ""}
+                        />
+                        {isSubmitting ? "Menyimpan..." : "Simpan Soal"}
                       </motion.button>
                     </div>
                   </div>
@@ -763,82 +1150,6 @@ const AddSoal = () => {
               </div>
             </motion.div>
 
-            {/* Preview Soal */}
-            {showPreview && validateForm() && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.8 }}
-                className="rounded-xl shadow-lg overflow-hidden"
-                style={{
-                  backgroundColor: isDark ? "#1f2937" : "#ffffff",
-                  border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
-                }}
-              >
-                <div
-                  className="p-4"
-                  style={{
-                    backgroundColor: getColorWithOpacity(currentColor, 0.1),
-                  }}
-                >
-                  <div className="flex items-center gap-2">
-                    <FaEye style={{ color: currentColor }} />
-                    <h3
-                      className={`font-semibold ${
-                        isDark ? "text-white" : "text-gray-800"
-                      }`}
-                    >
-                      Preview Soal
-                    </h3>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className={`mb-4 p-4 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                    <p className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
-                      {soal}
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    {['A', 'B', 'C', 'D', 'E'].map((option) => {
-                      const optionValue = eval(`option${option}`);
-                      const isCorrect = correctAnswer === option;
-                      if (!optionValue) return null;
-                      
-                      return (
-                        <div
-                          key={option}
-                          className={`p-3 rounded-lg border ${
-                            isCorrect
-                              ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                              : `border-gray-200 dark:border-gray-600 ${isDark ? 'bg-gray-800' : 'bg-white'}`
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold ${
-                                isCorrect
-                                  ? 'bg-green-500 text-white'
-                                  : `${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'}`
-                              }`}
-                            >
-                              {option}
-                            </span>
-                            <span className={`text-sm ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
-                              {optionValue}
-                            </span>
-                            {isCorrect && (
-                              <FaCheck className="text-green-500 text-sm ml-auto" />
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
             {/* Tips */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
@@ -921,7 +1232,7 @@ const AddSoal = () => {
                             isDark ? "text-gray-400" : "text-gray-500"
                           }`}
                         >
-                          Gunakan preview untuk mengecek tampilan soal
+                          Tambahkan cerita untuk konteks yang menarik
                         </span>
                       </div>
                     </div>

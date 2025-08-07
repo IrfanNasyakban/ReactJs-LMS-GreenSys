@@ -141,23 +141,23 @@ const About = () => {
         </motion.div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-16 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-start">
-          {/* Left Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-start">
+          {/* Left Content - Mobile Optimized */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-10"
+            className="space-y-6 lg:space-y-10"
           >
-            <div className="space-y-8">
+            <div className="space-y-4 lg:space-y-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="space-y-4"
+                className="space-y-3 lg:space-y-4"
               >
-                <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
                   Revolusi{' '}
                   <span className="bg-gradient-to-r from-green-300 to-emerald-400 bg-clip-text text-transparent">
                     Literasi Sains
@@ -170,7 +170,7 @@ const About = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="text-xl text-green-100 leading-relaxed"
+                className="text-base sm:text-lg lg:text-xl text-green-100 leading-relaxed"
               >
                 Bergabunglah dengan <span className="text-green-200 font-semibold">1,084+</span> siswa 
                 yang telah merasakan pengalaman belajar IPA terintegrasi <span className="bg-gradient-to-r from-green-300 to-emerald-400 bg-clip-text text-transparent font-semibold">Green Economy</span> melalui 
@@ -178,72 +178,72 @@ const About = () => {
               </motion.p>
             </div>
 
-            {/* Enhanced Stats */}
+            {/* Enhanced Stats - Mobile Responsive */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-8"
+              className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-8"
             >
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 text-center shadow-xl hover:shadow-green-400/20 transition-all duration-300"
+                className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-green-400/20 transition-all duration-300"
               >
-                <div className="flex items-center justify-center mb-3">
-                  <FaUsers className="text-green-300 text-xl" />
+                <div className="flex items-center justify-center mb-2 lg:mb-3">
+                  <FaUsers className="text-green-300 text-sm sm:text-lg lg:text-xl" />
                 </div>
-                <div className="text-3xl font-bold bg-gradient-to-r from-green-300 to-emerald-400 bg-clip-text text-transparent">1,084+</div>
-                <div className="text-green-100 text-sm font-medium">Siswa Aktif</div>
+                <div className="text-lg sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-green-300 to-emerald-400 bg-clip-text text-transparent">1,084+</div>
+                <div className="text-green-100 text-xs sm:text-sm font-medium">Siswa Aktif</div>
               </motion.div>
               
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 text-center shadow-xl hover:shadow-emerald-400/20 transition-all duration-300"
+                className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-emerald-400/20 transition-all duration-300"
               >
-                <div className="flex items-center justify-center mb-3">
-                  <FaVideo className="text-emerald-300 text-xl" />
+                <div className="flex items-center justify-center mb-2 lg:mb-3">
+                  <FaVideo className="text-emerald-300 text-sm sm:text-lg lg:text-xl" />
                 </div>
-                <div className="text-3xl font-bold bg-gradient-to-r from-emerald-300 to-green-400 bg-clip-text text-transparent">76+</div>
-                <div className="text-green-100 text-sm font-medium">Guru IPA</div>
+                <div className="text-lg sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-emerald-300 to-green-400 bg-clip-text text-transparent">76+</div>
+                <div className="text-green-100 text-xs sm:text-sm font-medium">Guru IPA</div>
               </motion.div>
               
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 text-center shadow-xl hover:shadow-green-300/20 transition-all duration-300"
+                className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-green-300/20 transition-all duration-300"
               >
-                <div className="flex items-center justify-center mb-3">
-                  <FaStar className="text-green-200 text-xl" />
+                <div className="flex items-center justify-center mb-2 lg:mb-3">
+                  <FaStar className="text-green-200 text-sm sm:text-lg lg:text-xl" />
                 </div>
-                <div className="text-3xl font-bold bg-gradient-to-r from-green-200 to-green-400 bg-clip-text text-transparent">31+</div>
-                <div className="text-green-100 text-sm font-medium">Rombel</div>
+                <div className="text-lg sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-green-200 to-green-400 bg-clip-text text-transparent">31+</div>
+                <div className="text-green-100 text-xs sm:text-sm font-medium">Rombel</div>
               </motion.div>
             </motion.div>
 
-            {/* Enhanced Description */}
+            {/* Enhanced Description - Mobile Responsive */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
-              className="bg-white/10 backdrop-blur-xl rounded-2xl p-8 border border-white/20 shadow-xl"
+              className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-8 border border-white/20 shadow-xl"
             >
-              <div className="flex items-start space-x-4">
-                <div className="bg-gradient-to-br from-green-300 to-emerald-400 p-3 rounded-xl">
-                  <FaPlay className="text-green-800 text-xl" />
+              <div className="flex items-start space-x-3 lg:space-x-4">
+                <div className="bg-gradient-to-br from-green-300 to-emerald-400 p-2 lg:p-3 rounded-lg lg:rounded-xl flex-shrink-0">
+                  <FaPlay className="text-green-800 text-lg lg:text-xl" />
                 </div>
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-bold text-white">Testimoni Pembelajaran Berkelanjutan</h3>
-                  <p className="text-green-100 leading-relaxed">
+                <div className="space-y-2 lg:space-y-3 min-w-0 flex-1">
+                  <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">Testimoni Pembelajaran Berkelanjutan</h3>
+                  <p className="text-green-100 leading-relaxed text-sm sm:text-base">
                     Saksikan bagaimana GreenSys mengubah cara siswa memahami sains melalui 
                     praktik pengolahan limbah organik dan penerapan konsep Green Economy dalam pembelajaran.
                   </p>
-                  <div className="flex items-center space-x-4 pt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0 pt-2">
                     <div className="flex items-center space-x-1">
-                      <FaCheck className="text-green-300 text-sm" />
-                      <span className="text-green-200 text-sm">Eco-friendly learning</span>
+                      <FaCheck className="text-green-300 text-xs sm:text-sm" />
+                      <span className="text-green-200 text-xs sm:text-sm">Eco-friendly learning</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <FaCheck className="text-green-300 text-sm" />
-                      <span className="text-green-200 text-sm">Verified impact</span>
+                      <FaCheck className="text-green-300 text-xs sm:text-sm" />
+                      <span className="text-green-200 text-xs sm:text-sm">Verified impact</span>
                     </div>
                   </div>
                 </div>

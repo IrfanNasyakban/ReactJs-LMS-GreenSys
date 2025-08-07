@@ -49,11 +49,11 @@ const ProfileSaya = () => {
   const { user } = useSelector((state) => state.auth);
   const { currentColor, currentMode } = useStateContext();
 
-  const isDark = currentMode === 'Dark';
+  const isDark = currentMode === "Dark";
 
   // Helper function for colors with opacity
   const getColorWithOpacity = (color, opacity) => {
-    const hex = color.replace('#', '');
+    const hex = color.replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
@@ -110,7 +110,6 @@ const ProfileSaya = () => {
         setAlamat(profileData.alamat);
         setPreview(profileData.url);
         console.log(profileData.gender);
-        
 
         // Mengakses username dari nested object 'user'
         if (profileData.user) {
@@ -178,7 +177,10 @@ const ProfileSaya = () => {
     const birth = new Date(birthDate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birth.getDate())
+    ) {
       age--;
     }
     return age;
@@ -192,11 +194,13 @@ const ProfileSaya = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <div 
+          <div
             className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
-            style={{ borderColor: `${currentColor} transparent ${currentColor} ${currentColor}` }}
+            style={{
+              borderColor: `${currentColor} transparent ${currentColor} ${currentColor}`,
+            }}
           />
-          <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
+          <p className={`text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
             Memuat profil...
           </p>
         </motion.div>
@@ -209,17 +213,17 @@ const ProfileSaya = () => {
       {/* Background Pattern */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-5">
-          <FaUser 
-            className="absolute top-20 left-10 text-8xl animate-pulse" 
-            style={{ color: currentColor }} 
+          <FaUser
+            className="absolute top-20 left-10 text-8xl animate-pulse"
+            style={{ color: currentColor }}
           />
-          <FaLightbulb 
-            className="absolute top-40 right-20 text-6xl animate-bounce" 
-            style={{ color: currentColor, animationDelay: '1s' }} 
+          <FaLightbulb
+            className="absolute top-40 right-20 text-6xl animate-bounce"
+            style={{ color: currentColor, animationDelay: "1s" }}
           />
-          <MdLibraryBooks 
-            className="absolute bottom-40 left-20 text-7xl animate-pulse" 
-            style={{ color: currentColor, animationDelay: '0.5s' }} 
+          <MdLibraryBooks
+            className="absolute bottom-40 left-20 text-7xl animate-pulse"
+            style={{ color: currentColor, animationDelay: "0.5s" }}
           />
         </div>
       </div>
@@ -230,50 +234,69 @@ const ProfileSaya = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <div
-            className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
+            className="p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm border"
             style={{
               backgroundColor: getColorWithOpacity(currentColor, 0.1),
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <div
-                className="p-3 rounded-full"
+                className="p-2 sm:p-3 rounded-full flex-shrink-0"
                 style={{ backgroundColor: currentColor }}
               >
-                {user?.role === 'siswa' ? (
-                  <FaGraduationCap className="text-white text-2xl" />
+                {user?.role === "siswa" ? (
+                  <FaGraduationCap className="text-white text-xl sm:text-2xl" />
                 ) : (
-                  <FaChalkboardTeacher className="text-white text-2xl" />
+                  <FaChalkboardTeacher className="text-white text-xl sm:text-2xl" />
                 )}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h1
-                  className={`text-3xl font-bold ${
+                  className={`text-xl sm:text-2xl lg:text-3xl font-bold break-words ${
                     isDark ? "text-white" : "text-gray-800"
                   }`}
                 >
                   Profil <span style={{ color: currentColor }}>Saya</span>
                 </h1>
-                <p className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                  GreenSys - Green Science Learning Management System
+                <p
+                  className={`text-sm sm:text-base break-words ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  <span className="hidden sm:inline">
+                    GreenSys - Green Science Learning Management System
+                  </span>
+                  <span className="sm:hidden">
+                    GreenSys - Learning Management
+                  </span>
                 </p>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate(user?.role === 'siswa' ? `/siswa/${siswaId}` : `/guru/${guruId}`)}
-                  className="flex items-center gap-2 px-4 py-2 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 hover:shadow-xl"
+                  onClick={() =>
+                    navigate(
+                      user?.role === "siswa"
+                        ? `/siswa/${siswaId}`
+                        : `/guru/${guruId}`
+                    )
+                  }
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-transparent rounded-lg sm:rounded-xl shadow-lg text-xs sm:text-sm font-medium text-white transition-all duration-300 hover:shadow-xl w-full sm:w-auto"
                   style={{
-                    background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
+                    background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                      currentColor,
+                      0.8
+                    )} 100%)`,
                   }}
                 >
-                  <FaEdit />
-                  Edit Profil
+                  <FaEdit className="text-sm sm:text-base" />
+                  <span className="hidden xs:inline">Edit Profil</span>
+                  <span className="xs:hidden">Edit</span>
                 </motion.button>
               </div>
             </div>
@@ -297,11 +320,16 @@ const ProfileSaya = () => {
               <div
                 className="py-8 px-6 text-center"
                 style={{
-                  background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
+                  background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                    currentColor,
+                    0.8
+                  )} 100%)`,
                 }}
               >
                 <div className="relative inline-block">
-                  {preview && preview !== "http://localhost:5000/images/null" && preview !== `${process.env.REACT_APP_URL_API}/images/null` ? (
+                  {preview &&
+                  preview !== "http://localhost:5000/images/null" &&
+                  preview !== `${process.env.REACT_APP_URL_API}/images/null` ? (
                     <img
                       src={preview}
                       alt="Profile"
@@ -310,7 +338,9 @@ const ProfileSaya = () => {
                   ) : (
                     <div
                       className="w-24 h-24 rounded-full border-4 border-white shadow-lg flex items-center justify-center text-2xl font-bold"
-                      style={{ backgroundColor: getColorWithOpacity(currentColor, 0.2) }}
+                      style={{
+                        backgroundColor: getColorWithOpacity(currentColor, 0.2),
+                      }}
                     >
                       <span className="text-white">{getInitials(nama)}</span>
                     </div>
@@ -319,17 +349,21 @@ const ProfileSaya = () => {
                     <FaCamera className="text-gray-600 text-sm" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-white mt-4">{nama || 'Nama Belum Diisi'}</h3>
+                <h3 className="text-xl font-bold text-white mt-4">
+                  {nama || "Nama Belum Diisi"}
+                </h3>
                 <p className="text-white opacity-90 text-sm">@{username}</p>
                 <div className="flex items-center justify-center gap-2 mt-2">
                   <div className="px-3 py-1 bg-white bg-opacity-20 rounded-full">
                     <span className="text-white text-xs font-medium">
-                      {user?.role === 'siswa' ? 'Siswa' : 'Guru'}
+                      {user?.role === "siswa" ? "Siswa" : "Guru"}
                     </span>
                   </div>
-                  {user?.role === 'siswa' && kelas && (
+                  {user?.role === "siswa" && kelas && (
                     <div className="px-3 py-1 bg-white bg-opacity-20 rounded-full">
-                      <span className="text-white text-xs font-medium">{kelas}</span>
+                      <span className="text-white text-xs font-medium">
+                        {kelas}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -341,29 +375,51 @@ const ProfileSaya = () => {
                   <div className="text-center">
                     <div
                       className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center"
-                      style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
+                      style={{
+                        backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      }}
                     >
                       <FaBook style={{ color: currentColor }} />
                     </div>
-                    <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {user?.role === 'siswa' ? '12' : '5'}
+                    <p
+                      className={`text-2xl font-bold ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {user?.role === "siswa" ? "12" : "5"}
                     </p>
-                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {user?.role === 'siswa' ? 'Modul Selesai' : 'Modul Dibuat'}
+                    <p
+                      className={`text-xs ${
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
+                      {user?.role === "siswa"
+                        ? "Modul Selesai"
+                        : "Modul Dibuat"}
                     </p>
                   </div>
                   <div className="text-center">
                     <div
                       className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center"
-                      style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
+                      style={{
+                        backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      }}
                     >
                       <FaAward style={{ color: currentColor }} />
                     </div>
-                    <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {user?.role === 'siswa' ? '8' : '25'}
+                    <p
+                      className={`text-2xl font-bold ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {user?.role === "siswa" ? "8" : "25"}
                     </p>
-                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {user?.role === 'siswa' ? 'Sertifikat' : 'Siswa Aktif'}
+                    <p
+                      className={`text-xs ${
+                        isDark ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
+                      {user?.role === "siswa" ? "Sertifikat" : "Siswa Aktif"}
                     </p>
                   </div>
                 </div>
@@ -373,7 +429,7 @@ const ProfileSaya = () => {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate('/modul-belajar')}
+                    onClick={() => navigate("/modul-belajar")}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
                       isDark
                         ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
@@ -383,11 +439,15 @@ const ProfileSaya = () => {
                     <FaBook style={{ color: currentColor }} />
                     <span className="font-medium">Lihat Modul Belajar</span>
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate(user?.role === 'siswa' ? '/certificate' : '/siswa')}
+                    onClick={() =>
+                      navigate(
+                        user?.role === "siswa" ? "/certificate" : "/siswa"
+                      )
+                    }
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-300 ${
                       isDark
                         ? "bg-gray-700 hover:bg-gray-600 text-gray-200"
@@ -396,7 +456,9 @@ const ProfileSaya = () => {
                   >
                     <FaAward style={{ color: currentColor }} />
                     <span className="font-medium">
-                      {user?.role === 'siswa' ? 'Sertifikat Saya' : 'Kelola Siswa'}
+                      {user?.role === "siswa"
+                        ? "Sertifikat Saya"
+                        : "Kelola Siswa"}
                     </span>
                   </motion.button>
                 </div>
@@ -425,7 +487,11 @@ const ProfileSaya = () => {
               >
                 <div className="flex items-center gap-2">
                   <MdPerson style={{ color: currentColor }} />
-                  <h3 className={`font-semibold text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
+                  <h3
+                    className={`font-semibold text-lg ${
+                      isDark ? "text-white" : "text-gray-800"
+                    }`}
+                  >
                     Informasi Personal
                   </h3>
                 </div>
@@ -435,66 +501,128 @@ const ProfileSaya = () => {
                   {/* Username */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <FaUserCircle className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <FaUserCircle
+                        className={`text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <label
+                        className={`text-sm font-medium ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
                         Username
                       </label>
                     </div>
-                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {username || 'Belum diisi'}
+                    <p
+                      className={`text-lg ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {username || "Belum diisi"}
                     </p>
                   </div>
 
                   {/* NIS/NIP */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <BsPersonBadge className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {user?.role === 'siswa' ? 'NIS' : 'NIP'}
+                      <BsPersonBadge
+                        className={`text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <label
+                        className={`text-sm font-medium ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        {user?.role === "siswa" ? "NIS" : "NIP"}
                       </label>
                     </div>
-                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {user?.role === 'siswa' ? (nis || 'Belum diisi') : (nip || 'Belum diisi')}
+                    <p
+                      className={`text-lg ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {user?.role === "siswa"
+                        ? nis || "Belum diisi"
+                        : nip || "Belum diisi"}
                     </p>
                   </div>
 
                   {/* Email */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <MdEmail className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <MdEmail
+                        className={`text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <label
+                        className={`text-sm font-medium ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
                         Email
                       </label>
                     </div>
-                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {email || 'Belum diisi'}
+                    <p
+                      className={`text-lg ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {email || "Belum diisi"}
                     </p>
                   </div>
 
                   {/* No Hp */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <FaPhone className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <FaPhone
+                        className={`text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <label
+                        className={`text-sm font-medium ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
                         No Hp/WhatsApp
                       </label>
                     </div>
-                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {noHp || 'Belum diisi'}
+                    <p
+                      className={`text-lg ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {noHp || "Belum diisi"}
                     </p>
                   </div>
 
                   {/* Kelas (hanya untuk siswa) */}
-                  {user?.role === 'siswa' && (
+                  {user?.role === "siswa" && (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <MdSchool className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                        <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <MdSchool
+                          className={`text-sm ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        />
+                        <label
+                          className={`text-sm font-medium ${
+                            isDark ? "text-gray-300" : "text-gray-700"
+                          }`}
+                        >
                           Kelas
                         </label>
                       </div>
-                      <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                        {kelas || 'Belum diisi'}
+                      <p
+                        className={`text-lg ${
+                          isDark ? "text-white" : "text-gray-800"
+                        }`}
+                      >
+                        {kelas || "Belum diisi"}
                       </p>
                     </div>
                   )}
@@ -502,28 +630,60 @@ const ProfileSaya = () => {
                   {/* Gender */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <FaVenusMars className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <FaVenusMars
+                        className={`text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <label
+                        className={`text-sm font-medium ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
                         Jenis Kelamin
                       </label>
                     </div>
-                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {gender === 'L' || gender === 'Laki-laki' ? 'Laki-laki' : gender === 'P' || gender === 'Perempuan' ? 'Perempuan' : 'Belum diisi'}
+                    <p
+                      className={`text-lg ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {gender === "L" || gender === "Laki-laki"
+                        ? "Laki-laki"
+                        : gender === "P" || gender === "Perempuan"
+                        ? "Perempuan"
+                        : "Belum diisi"}
                     </p>
                   </div>
 
                   {/* Tanggal Lahir */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <MdCake className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <MdCake
+                        className={`text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <label
+                        className={`text-sm font-medium ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
                         Tanggal Lahir
                       </label>
                     </div>
-                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                      {formatDateForDisplay(tanggalLahir) || 'Belum diisi'}
+                    <p
+                      className={`text-lg ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {formatDateForDisplay(tanggalLahir) || "Belum diisi"}
                       {tanggalLahir && (
-                        <span className={`text-sm ml-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <span
+                          className={`text-sm ml-2 ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
                           ({calculateAge(tanggalLahir)} tahun)
                         </span>
                       )}
@@ -533,14 +693,26 @@ const ProfileSaya = () => {
                   {/* Alamat */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <MdLocationOn className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`} />
-                      <label className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Alamat
+                      <MdLocationOn
+                        className={`text-sm ${
+                          isDark ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      />
+                      <label
+                        className={`text-sm font-medium ${
+                          isDark ? "text-gray-300" : "text-gray-700"
+                        }`}
+                      >
+                        Alamat
                       </label>
                     </div>
-                    <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
-                    {alamat || 'Belum diisi'}
-                  </p>
+                    <p
+                      className={`text-lg ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      {alamat || "Belum diisi"}
+                    </p>
                   </div>
                 </div>
               </div>

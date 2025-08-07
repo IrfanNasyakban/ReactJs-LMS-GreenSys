@@ -507,9 +507,19 @@ const EditDataSiswa = () => {
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Gender:</span>
-                        <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
-                          {gender === 'Laki-laki' ? 'Laki-laki' : gender === 'Perempuan' ? 'Perempuan' : 'Belum dipilih'}
+                        <span
+                          className={isDark ? "text-gray-400" : "text-gray-500"}
+                        >
+                          Gender:
+                        </span>
+                        <span
+                          className={isDark ? "text-gray-300" : "text-gray-700"}
+                        >
+                          {gender === "Laki-laki"
+                            ? "Laki-laki"
+                            : gender === "Perempuan"
+                            ? "Perempuan"
+                            : "Belum dipilih"}
                         </span>
                       </div>
                       {tanggalLahir && (
@@ -569,14 +579,14 @@ const EditDataSiswa = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="rounded-2xl shadow-xl overflow-hidden"
+              className="rounded-xl sm:rounded-2xl shadow-xl overflow-hidden"
               style={{
                 backgroundColor: isDark ? "#1f2937" : "#ffffff",
                 border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
               }}
             >
               <div
-                className="py-6 px-8"
+                className="py-4 sm:py-6 px-4 sm:px-8"
                 style={{
                   background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
                     currentColor,
@@ -584,17 +594,17 @@ const EditDataSiswa = () => {
                   )} 100%)`,
                 }}
               >
-                <div className="flex items-center gap-3">
-                  <FaEdit className="text-white text-xl" />
-                  <h2 className="text-xl font-bold text-white">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <FaEdit className="text-white text-lg sm:text-xl" />
+                  <h2 className="text-lg sm:text-xl font-bold text-white">
                     Form {isOwnProfile ? "Edit Profil" : "Edit Data Siswa"}
                   </h2>
-                  <FaLeaf className="text-white text-lg animate-pulse ml-auto" />
+                  <FaLeaf className="text-white text-base sm:text-lg animate-pulse ml-auto" />
                 </div>
               </div>
 
-              <div className="p-8">
-                <form onSubmit={updateSiswa} className="space-y-6">
+              <div className="p-4 sm:p-6 lg:p-8">
+                <form onSubmit={updateSiswa} className="space-y-4 sm:space-y-6">
                   {/* Hidden file input */}
                   <input
                     ref={fileInputRef}
@@ -605,9 +615,9 @@ const EditDataSiswa = () => {
                   />
 
                   {/* NIS & Nama */}
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -616,10 +626,13 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <BsPersonBadge style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <BsPersonBadge
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
@@ -631,7 +644,7 @@ const EditDataSiswa = () => {
                         value={nis}
                         onChange={(e) => setNis(e.target.value)}
                         placeholder="Masukkan NIS"
-                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
                           isDark
                             ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                             : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
@@ -664,7 +677,7 @@ const EditDataSiswa = () => {
                     </div>
 
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -673,10 +686,13 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <MdPerson style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <MdPerson
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
@@ -689,7 +705,7 @@ const EditDataSiswa = () => {
                         value={nama}
                         onChange={(e) => setNama(e.target.value)}
                         placeholder="Masukkan nama lengkap"
-                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
                           isDark
                             ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                             : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
@@ -723,9 +739,9 @@ const EditDataSiswa = () => {
                   </div>
 
                   {/* Email & Kelas */}
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -734,10 +750,13 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <MdEmail style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <MdEmail
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
@@ -750,7 +769,7 @@ const EditDataSiswa = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Masukkan email"
-                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
                           isDark
                             ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                             : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
@@ -783,7 +802,7 @@ const EditDataSiswa = () => {
                     </div>
 
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -792,10 +811,13 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <MdSchool style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <MdSchool
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
@@ -806,7 +828,7 @@ const EditDataSiswa = () => {
                         required
                         value={kelasId}
                         onChange={(e) => setKelasId(e.target.value)}
-                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
                           isDark
                             ? "bg-gray-700 text-white border-gray-600"
                             : "bg-white text-gray-900 border-gray-300"
@@ -847,9 +869,9 @@ const EditDataSiswa = () => {
                   </div>
 
                   {/* Gender & Tanggal Lahir */}
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -858,19 +880,22 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <FaVenusMars style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <FaVenusMars
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
                           Jenis Kelamin
                         </label>
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         <label
-                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                          className={`flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-3 rounded-lg border cursor-pointer transition-all ${
                             gender === "Laki-laki"
                               ? `border-transparent text-white`
                               : isDark
@@ -896,10 +921,12 @@ const EditDataSiswa = () => {
                             onChange={(e) => setGender(e.target.value)}
                             className="hidden"
                           />
-                          <span className="text-sm font-medium">Laki-laki</span>
+                          <span className="text-xs sm:text-sm font-medium">
+                            Laki-laki
+                          </span>
                         </label>
                         <label
-                          className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                          className={`flex items-center justify-center gap-1 sm:gap-2 p-2 sm:p-3 rounded-lg border cursor-pointer transition-all ${
                             gender === "Perempuan"
                               ? `border-transparent text-white`
                               : isDark
@@ -925,13 +952,15 @@ const EditDataSiswa = () => {
                             onChange={(e) => setGender(e.target.value)}
                             className="hidden"
                           />
-                          <span className="text-sm font-medium">Perempuan</span>
+                          <span className="text-xs sm:text-sm font-medium">
+                            Perempuan
+                          </span>
                         </label>
                       </div>
                     </div>
 
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -940,10 +969,13 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <MdCake style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <MdCake
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
@@ -954,7 +986,7 @@ const EditDataSiswa = () => {
                         type="date"
                         value={tanggalLahir}
                         onChange={(e) => setTanggalLahir(e.target.value)}
-                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
                           isDark
                             ? "bg-gray-700 text-white border-gray-600"
                             : "bg-white text-gray-900 border-gray-300"
@@ -988,9 +1020,9 @@ const EditDataSiswa = () => {
                   </div>
 
                   {/* Alamat & No HP */}
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -999,10 +1031,13 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <MdLocationOn style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <MdLocationOn
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
@@ -1014,7 +1049,7 @@ const EditDataSiswa = () => {
                         onChange={(e) => setAlamat(e.target.value)}
                         placeholder="Masukkan alamat lengkap"
                         rows={3}
-                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none resize-none ${
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none resize-none text-sm sm:text-base ${
                           isDark
                             ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                             : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
@@ -1047,7 +1082,7 @@ const EditDataSiswa = () => {
                     </div>
 
                     <div
-                      className="p-4 rounded-xl border"
+                      className="p-3 sm:p-4 rounded-lg sm:rounded-xl border"
                       style={{
                         backgroundColor: getColorWithOpacity(
                           currentColor,
@@ -1056,10 +1091,13 @@ const EditDataSiswa = () => {
                         borderColor: getColorWithOpacity(currentColor, 0.2),
                       }}
                     >
-                      <div className="flex items-center gap-2 mb-3">
-                        <FaPhone style={{ color: currentColor }} />
+                      <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                        <FaPhone
+                          style={{ color: currentColor }}
+                          className="text-sm sm:text-base"
+                        />
                         <label
-                          className={`font-medium ${
+                          className={`font-medium text-sm sm:text-base ${
                             isDark ? "text-white" : "text-gray-800"
                           }`}
                         >
@@ -1071,7 +1109,7 @@ const EditDataSiswa = () => {
                         value={noHp}
                         onChange={(e) => setNoHp(e.target.value)}
                         placeholder="Masukkan nomor HP"
-                        className={`w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none ${
+                        className={`w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
                           isDark
                             ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
                             : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
@@ -1105,7 +1143,7 @@ const EditDataSiswa = () => {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex items-center justify-between pt-6">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 pt-4 sm:pt-6">
                     <motion.button
                       type="button"
                       onClick={() =>
@@ -1113,13 +1151,13 @@ const EditDataSiswa = () => {
                       }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className={`flex items-center gap-2 px-6 py-3 border rounded-xl text-sm font-medium transition-all duration-300 ${
+                      className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 border rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 ${
                         isDark
                           ? "border-gray-600 text-gray-200 bg-gray-700 hover:bg-gray-600"
                           : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
                       }`}
                     >
-                      <FaTimes />
+                      <FaTimes className="text-sm" />
                       Batal
                     </motion.button>
 
@@ -1128,7 +1166,7 @@ const EditDataSiswa = () => {
                       disabled={isSubmitting}
                       whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                       whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                      className={`flex items-center gap-2 px-8 py-3 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ${
+                      className={`w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-2 sm:py-3 border border-transparent rounded-lg sm:rounded-xl shadow-lg text-xs sm:text-sm font-medium text-white transition-all duration-300 ${
                         isSubmitting
                           ? "opacity-70 cursor-not-allowed"
                           : "hover:shadow-xl"
@@ -1140,7 +1178,11 @@ const EditDataSiswa = () => {
                         )} 100%)`,
                       }}
                     >
-                      <FaSave className={isSubmitting ? "animate-spin" : ""} />
+                      <FaSave
+                        className={`text-sm ${
+                          isSubmitting ? "animate-spin" : ""
+                        }`}
+                      />
                       {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
                     </motion.button>
                   </div>

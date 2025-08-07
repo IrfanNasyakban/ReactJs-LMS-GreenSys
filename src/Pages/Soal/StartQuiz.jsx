@@ -251,18 +251,18 @@ const StartQuiz = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6">
         <div className="text-center">
           <div
-            className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+            className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
             style={{
               borderColor: `${currentColor} transparent ${currentColor} ${currentColor}`,
             }}
           />
-          <h3 className={`text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
+          <h3 className={`text-lg sm:text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
             Memuat Kuis
           </h3>
-          <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          <p className={`text-sm sm:text-base ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             Menyiapkan soal untuk Anda...
           </p>
         </div>
@@ -272,18 +272,18 @@ const StartQuiz = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6">
         <div className="text-center">
-          <FaTimes className="text-6xl text-red-500 mx-auto mb-4" />
-          <h3 className={`text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
+          <FaTimes className="text-4xl sm:text-6xl text-red-500 mx-auto mb-4" />
+          <h3 className={`text-lg sm:text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
             Terjadi Kesalahan
           </h3>
-          <p className={`mb-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          <p className={`mb-4 text-sm sm:text-base ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             {error}
           </p>
           <button
             onClick={() => navigate("/quiz")}
-            className="px-6 py-2 rounded-lg text-white font-medium"
+            className="px-4 sm:px-6 py-2 rounded-lg text-white font-medium text-sm sm:text-base"
             style={{ backgroundColor: currentColor }}
           >
             Kembali ke Daftar Kuis
@@ -296,7 +296,7 @@ const StartQuiz = () => {
   // Instructions Screen
   if (showInstructions) {
     return (
-      <div className="min-h-screen p-6">
+      <div className="min-h-screen p-3 sm:p-6">
         {/* Background Pattern */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
           <div className="absolute inset-0 opacity-5">
@@ -319,7 +319,7 @@ const StartQuiz = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl shadow-2xl overflow-hidden"
+            className="rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden"
             style={{
               backgroundColor: isDark ? "#1f2937" : "#ffffff",
               border: `2px solid ${getColorWithOpacity(currentColor, 0.2)}`,
@@ -327,42 +327,42 @@ const StartQuiz = () => {
           >
             {/* Header */}
             <div
-              className="p-8 text-white relative overflow-hidden"
+              className="p-4 sm:p-8 text-white relative overflow-hidden"
               style={{
                 background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
               }}
             >
-              <div className="absolute top-0 right-0 w-32 h-32 opacity-20">
+              <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 opacity-20">
                 <MdQuiz className="w-full h-full" />
               </div>
               <div className="relative">
-                <div className="flex items-center gap-4 mb-4">
-                  <FaBookOpen className="text-3xl" />
+                <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <FaBookOpen className="text-xl sm:text-3xl" />
                   <div>
-                    <h1 className="text-3xl font-bold">{quizData?.modul?.judul}</h1>
-                    <p className="text-xl opacity-90">Instruksi Kuis Green Science</p>
+                    <h1 className="text-xl sm:text-3xl font-bold">{quizData?.modul?.judul}</h1>
+                    <p className="text-base sm:text-xl opacity-90">Instruksi Kuis Green Science</p>
                   </div>
                 </div>
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div className="flex items-center gap-3">
-                    <FaClock className="text-2xl" />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <FaClock className="text-lg sm:text-2xl" />
                     <div>
-                      <p className="font-semibold">Durasi</p>
-                      <p className="opacity-90">{quizData?.durasi} menit</p>
+                      <p className="font-semibold text-sm sm:text-base">Durasi</p>
+                      <p className="opacity-90 text-sm sm:text-base">{quizData?.durasi} menit</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <FaQuestionCircle className="text-2xl" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <FaQuestionCircle className="text-lg sm:text-2xl" />
                     <div>
-                      <p className="font-semibold">Jumlah Soal</p>
-                      <p className="opacity-90">{questions.length} pertanyaan</p>
+                      <p className="font-semibold text-sm sm:text-base">Jumlah Soal</p>
+                      <p className="opacity-90 text-sm sm:text-base">{questions.length} pertanyaan</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <FaGraduationCap className="text-2xl" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <FaGraduationCap className="text-lg sm:text-2xl" />
                     <div>
-                      <p className="font-semibold">Kelas</p>
-                      <p className="opacity-90">{quizData?.kelas?.namaKelas || "Umum"}</p>
+                      <p className="font-semibold text-sm sm:text-base">Kelas</p>
+                      <p className="opacity-90 text-sm sm:text-base">{quizData?.kelas?.namaKelas || "Umum"}</p>
                     </div>
                   </div>
                 </div>
@@ -370,63 +370,63 @@ const StartQuiz = () => {
             </div>
 
             {/* Instructions Content */}
-            <div className="p-8">
-              <div className="grid md:grid-cols-2 gap-8 mb-8">
+            <div className="p-4 sm:p-8">
+              <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
                 {/* Left Column - Instructions */}
                 <div>
-                  <h2 className={`text-2xl font-bold mb-6 ${isDark ? "text-white" : "text-gray-800"}`}>
+                  <h2 className={`text-lg sm:text-2xl font-bold mb-4 sm:mb-6 ${isDark ? "text-white" : "text-gray-800"}`}>
                     Petunjuk Pengerjaan
                   </h2>
                   
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-4">
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       <div
-                        className="p-2 rounded-full flex-shrink-0"
+                        className="p-1.5 sm:p-2 rounded-full flex-shrink-0"
                         style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
                       >
-                        <FaClock style={{ color: currentColor }} />
+                        <FaClock style={{ color: currentColor }} className="text-sm sm:text-base" />
                       </div>
                       <div>
-                        <h3 className={`font-semibold ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <h3 className={`font-semibold text-sm sm:text-base ${isDark ? "text-white" : "text-gray-800"}`}>
                           Waktu Pengerjaan
                         </h3>
-                        <p className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Anda memiliki waktu {quizData?.durasi} menit untuk menyelesaikan seluruh soal. 
                           Timer akan berjalan otomatis setelah kuis dimulai.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       <div
-                        className="p-2 rounded-full flex-shrink-0"
+                        className="p-1.5 sm:p-2 rounded-full flex-shrink-0"
                         style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
                       >
-                        <FaCheckCircle style={{ color: currentColor }} />
+                        <FaCheckCircle style={{ color: currentColor }} className="text-sm sm:text-base" />
                       </div>
                       <div>
-                        <h3 className={`font-semibold ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <h3 className={`font-semibold text-sm sm:text-base ${isDark ? "text-white" : "text-gray-800"}`}>
                           Cara Menjawab
                         </h3>
-                        <p className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Pilih satu jawaban yang paling tepat untuk setiap pertanyaan. 
                           Anda dapat mengubah jawaban sebelum mengirim hasil.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-3 sm:gap-4">
                       <div
-                        className="p-2 rounded-full flex-shrink-0"
+                        className="p-1.5 sm:p-2 rounded-full flex-shrink-0"
                         style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
                       >
-                        <FaExclamationTriangle style={{ color: currentColor }} />
+                        <FaExclamationTriangle style={{ color: currentColor }} className="text-sm sm:text-base" />
                       </div>
                       <div>
-                        <h3 className={`font-semibold ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <h3 className={`font-semibold text-sm sm:text-base ${isDark ? "text-white" : "text-gray-800"}`}>
                           Perhatian Penting
                         </h3>
-                        <p className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Pastikan koneksi internet stabil. Jika waktu habis, jawaban akan 
                           otomatis terkirim. Kuis hanya dapat dikerjakan sekali.
                         </p>
@@ -438,67 +438,67 @@ const StartQuiz = () => {
                 {/* Right Column - Quiz Info */}
                 <div>
                   <div
-                    className="p-6 rounded-xl border-2"
+                    className="p-4 sm:p-6 rounded-xl border-2"
                     style={{
                       backgroundColor: getColorWithOpacity(currentColor, 0.05),
                       borderColor: getColorWithOpacity(currentColor, 0.2),
                     }}
                   >
-                    <h3 className={`text-xl font-bold mb-4 ${isDark ? "text-white" : "text-gray-800"}`}>
+                    <h3 className={`text-base sm:text-xl font-bold mb-3 sm:mb-4 ${isDark ? "text-white" : "text-gray-800"}`}>
                       Informasi Kuis
                     </h3>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2 sm:space-y-3">
                       <li className="flex justify-between">
-                        <span className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <span className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Module Pembelajaran:
                         </span>
-                        <span className={`font-medium ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <span className={`font-medium text-xs sm:text-sm ${isDark ? "text-white" : "text-gray-800"}`}>
                           {quizData?.modul?.judul || "Green Science"}
                         </span>
                       </li>
                       <li className="flex justify-between">
-                        <span className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <span className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Tingkat:
                         </span>
-                        <span className={`font-medium ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <span className={`font-medium text-xs sm:text-sm ${isDark ? "text-white" : "text-gray-800"}`}>
                           {quizData?.kelas?.namaKelas || "Umum"}
                         </span>
                       </li>
                       <li className="flex justify-between">
-                        <span className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <span className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Jumlah Soal:
                         </span>
-                        <span className={`font-medium ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <span className={`font-medium text-xs sm:text-sm ${isDark ? "text-white" : "text-gray-800"}`}>
                           {questions.length} soal
                         </span>
                       </li>
                       <li className="flex justify-between">
-                        <span className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <span className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Jenis Soal:
                         </span>
-                        <span className={`font-medium ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <span className={`font-medium text-xs sm:text-sm ${isDark ? "text-white" : "text-gray-800"}`}>
                           Pilihan Ganda
                         </span>
                       </li>
                       <li className="flex justify-between">
-                        <span className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                        <span className={`text-xs sm:text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Waktu:
                         </span>
-                        <span className={`font-medium ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <span className={`font-medium text-xs sm:text-sm ${isDark ? "text-white" : "text-gray-800"}`}>
                           {quizData?.durasi} menit
                         </span>
                       </li>
                     </ul>
                   </div>
 
-                  <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <FaLightbulb className="text-yellow-600 dark:text-yellow-400" />
-                      <h4 className="font-semibold text-yellow-800 dark:text-yellow-200">
+                      <FaLightbulb className="text-yellow-600 dark:text-yellow-400 text-sm" />
+                      <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 text-sm">
                         Tips Sukses
                       </h4>
                     </div>
-                    <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                    <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
                       <li>• Baca setiap pertanyaan dengan teliti</li>
                       <li>• Kelola waktu dengan bijak</li>
                       <li>• Jawab semua soal yang Anda yakini terlebih dahulu</li>
@@ -514,7 +514,7 @@ const StartQuiz = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={startQuiz}
-                  className="flex items-center gap-3 mx-auto px-8 py-4 rounded-xl text-white font-bold text-lg shadow-lg transition-all duration-300"
+                  className="flex items-center gap-2 sm:gap-3 mx-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-white font-bold text-sm sm:text-lg shadow-lg transition-all duration-300"
                   style={{
                     background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
                   }}
@@ -522,7 +522,7 @@ const StartQuiz = () => {
                   <FaPlay />
                   Mulai Kuis Sekarang
                 </motion.button>
-                <p className={`mt-3 text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                <p className={`mt-2 sm:mt-3 text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                   Klik tombol di atas untuk memulai kuis
                 </p>
               </div>
@@ -537,7 +537,7 @@ const StartQuiz = () => {
   const currentQuestionData = questions[currentQuestion];
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-3 sm:p-6">
       {/* Background Pattern */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-5">
@@ -557,16 +557,53 @@ const StartQuiz = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
           <div
-            className="p-6 rounded-2xl shadow-lg border"
+            className="p-3 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg border"
             style={{
               backgroundColor: isDark ? "#1f2937" : "#ffffff",
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
-            <div className="flex items-center justify-between mb-4">
+            {/* Mobile Layout */}
+            <div className="sm:hidden">
+              <div className="flex items-center justify-between mb-3">
+                <button
+                  onClick={() => navigate("/quiz")}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <FaArrowLeft className={`${isDark ? "text-white" : "text-gray-800"} text-sm`} />
+                </button>
+                <div className="text-center">
+                  <div className={`text-lg font-bold ${timeLeft < 300 ? "text-red-500" : isDark ? "text-white" : "text-gray-800"}`}>
+                    {formatTime(timeLeft)}
+                  </div>
+                  <div className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                    Waktu Tersisa
+                  </div>
+                </div>
+                <div className="text-center">
+                  <div className={`text-lg font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+                    {currentQuestion + 1}/{questions.length}
+                  </div>
+                  <div className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                    Soal
+                  </div>
+                </div>
+              </div>
+              <div className="mb-3">
+                <h1 className={`text-base font-bold ${isDark ? "text-white" : "text-gray-800"} truncate`}>
+                  {quizData?.judul}
+                </h1>
+                <p className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                  {quizData?.kelas?.namaKelas}
+                </p>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden sm:flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => navigate("/quiz")}
@@ -607,8 +644,8 @@ const StartQuiz = () => {
             </div>
 
             {/* Progress Bar */}
-            <div className="mb-4">
-              <div className="flex justify-between text-sm mb-2">
+            <div className="mb-3 sm:mb-4">
+              <div className="flex justify-between text-xs sm:text-sm mb-2">
                 <span className={isDark ? "text-gray-300" : "text-gray-600"}>
                   Progress: {getAnsweredCount()}/{questions.length} dijawab
                 </span>
@@ -616,9 +653,9 @@ const StartQuiz = () => {
                   {getProgressPercentage()}%
                 </span>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2">
                 <div
-                  className="h-2 rounded-full transition-all duration-300"
+                  className="h-1.5 sm:h-2 rounded-full transition-all duration-300"
                   style={{
                     backgroundColor: currentColor,
                     width: `${((currentQuestion + 1) / questions.length) * 100}%`,
@@ -635,7 +672,7 @@ const StartQuiz = () => {
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
-          className="rounded-2xl shadow-lg border overflow-hidden"
+          className="rounded-xl sm:rounded-2xl shadow-lg border overflow-hidden"
           style={{
             backgroundColor: isDark ? "#1f2937" : "#ffffff",
             borderColor: getColorWithOpacity(currentColor, 0.2),
@@ -643,31 +680,104 @@ const StartQuiz = () => {
         >
           {/* Question Header */}
           <div
-            className="p-6 text-white"
+            className="p-3 sm:p-6 text-white"
             style={{
               background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
             }}
           >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <span className="font-bold">{currentQuestion + 1}</span>
+            <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <span className="font-bold text-sm sm:text-base">{currentQuestion + 1}</span>
               </div>
-              <h3 className="text-lg font-semibold">
+              <h3 className="text-sm sm:text-lg font-semibold">
                 Pertanyaan {currentQuestion + 1} dari {questions.length}
               </h3>
             </div>
           </div>
 
           {/* Question Content */}
-          <div className="p-6">
-            <div className="mb-6">
-              <p className={`text-lg leading-relaxed ${isDark ? "text-white" : "text-gray-800"}`}>
-                {currentQuestionData?.soal}
-              </p>
+          <div className="p-3 sm:p-6">
+            {/* Header Section - Judul, Image, Cerita */}
+            {(currentQuestionData?.judul || currentQuestionData?.image || currentQuestionData?.cerita) && (
+              <div className="mb-4 sm:mb-6 p-4 sm:p-6 rounded-lg border text-center"
+                style={{
+                  backgroundColor: isDark ? "#374151" : "#f9fafb",
+                  borderColor: getColorWithOpacity(currentColor, 0.2),
+                }}
+              >
+                {/* Judul - Centered */}
+                {currentQuestionData?.judul && (
+                  <div className="mb-4 sm:mb-6">
+                    <h4 className={`text-lg sm:text-xl font-bold ${
+                      isDark ? "text-white" : "text-gray-800"
+                    }`}>
+                      {currentQuestionData.judul}
+                    </h4>
+                  </div>
+                )}
+
+                {/* Image - Centered */}
+                {currentQuestionData?.image && currentQuestionData?.url && (
+                  <div className="mb-4 sm:mb-6 flex justify-center">
+                    <div className="relative rounded-lg overflow-hidden max-w-lg w-full">
+                      <img
+                        src={currentQuestionData.url}
+                        alt={currentQuestionData.judul || `Gambar soal ${currentQuestion + 1}`}
+                        className="w-full h-auto max-h-60 sm:max-h-80 object-contain rounded-lg shadow-md"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Cerita/Konten - Justified Text */}
+                {currentQuestionData?.cerita && (
+                  <div className="mb-4">
+                    <div className={`p-3 sm:p-4 rounded-lg text-left ${
+                      isDark ? "bg-gray-700" : "bg-white"
+                    }`}>
+                      <div className={`text-sm sm:text-base leading-relaxed whitespace-pre-line text-justify ${
+                        isDark ? "text-gray-300" : "text-gray-800"
+                      }`}>
+                        {currentQuestionData.cerita}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Question Text */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-start gap-2 sm:gap-3 mb-3">
+                <div
+                  className="p-1.5 sm:p-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
+                >
+                  <FaQuestionCircle style={{ color: currentColor }} className="text-sm" />
+                </div>
+                <div className="flex-1">
+                  <h5 className={`text-xs sm:text-sm font-medium mb-2 ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}>
+                    Pertanyaan:
+                  </h5>
+                  <p className={`text-sm sm:text-lg leading-relaxed ${isDark ? "text-white" : "text-gray-800"}`}>
+                    {currentQuestionData?.soal}
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Answer Options */}
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
+              <h5 className={`text-xs sm:text-sm font-medium mb-3 ${
+                isDark ? "text-gray-300" : "text-gray-600"
+              }`}>
+                Pilih jawaban yang tepat:
+              </h5>
               {["A", "B", "C", "D", "E"].map((option) => {
                 const optionText = currentQuestionData?.[`option${option}`];
                 if (!optionText) return null;
@@ -680,10 +790,10 @@ const StartQuiz = () => {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => handleAnswerSelect(currentQuestionData?.id, option)}
-                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                    className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 cursor-pointer transition-all duration-300 ${
                       isSelected
-                        ? `border-transparent text-white`
-                        : `border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 ${
+                        ? `border-transparent text-white shadow-lg`
+                        : `border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-md ${
                             isDark ? "bg-gray-800 text-gray-200" : "bg-white text-gray-800"
                           }`
                     }`}
@@ -691,9 +801,9 @@ const StartQuiz = () => {
                       background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
                     } : {}}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                        className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
                           isSelected
                             ? "bg-white/20 text-white"
                             : `${isDark ? "bg-gray-700 text-gray-300" : "bg-gray-100 text-gray-700"}`
@@ -701,8 +811,12 @@ const StartQuiz = () => {
                       >
                         {option}
                       </div>
-                      <span className="flex-1">{optionText}</span>
-                      {isSelected && <BsCheckLg className="text-white" />}
+                      <span className="flex-1 text-sm sm:text-base leading-relaxed">{optionText}</span>
+                      {isSelected && (
+                        <div className="flex-shrink-0">
+                          <BsCheckLg className="text-white text-sm sm:text-base" />
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 );
@@ -711,41 +825,43 @@ const StartQuiz = () => {
           </div>
 
           {/* Navigation */}
-          <div className="p-6 border-t border-gray-200 dark:border-gray-600">
+          <div className="p-3 sm:p-6 border-t border-gray-200 dark:border-gray-600">
             <div className="flex justify-between items-center">
               <button
                 onClick={handlePrevQuestion}
                 disabled={currentQuestion === 0}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all text-sm ${
                   currentQuestion === 0
                     ? "opacity-50 cursor-not-allowed"
                     : `hover:bg-gray-100 dark:hover:bg-gray-700`
                 } ${isDark ? "text-gray-300" : "text-gray-700"}`}
               >
-                <FaArrowLeft />
-                Sebelumnya
+                <FaArrowLeft className="text-sm" />
+                <span className="hidden sm:inline">Sebelumnya</span>
+                <span className="sm:hidden">Prev</span>
               </button>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {currentQuestion === questions.length - 1 ? (
                   <button
                     onClick={() => setShowConfirmModal(true)}
-                    className="flex items-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 hover:shadow-lg"
+                    className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-white font-medium transition-all duration-300 hover:shadow-lg text-sm"
                     style={{
                       background: `linear-gradient(135deg, #10b981 0%, #059669 100%)`,
                     }}
                   >
-                    <FaFlag />
+                    <FaFlag className="text-sm" />
                     Selesai
                   </button>
                 ) : (
                   <button
                     onClick={handleNextQuestion}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg transition-all hover:bg-gray-100 dark:hover:bg-gray-700 text-sm"
                     style={{ color: currentColor }}
                   >
-                    Selanjutnya
-                    <FaArrowRight />
+                    <span className="hidden sm:inline">Selanjutnya</span>
+                    <span className="sm:hidden">Next</span>
+                    <FaArrowRight className="text-sm" />
                   </button>
                 )}
               </div>
@@ -757,24 +873,24 @@ const StartQuiz = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-6"
+          className="mt-4 sm:mt-6"
         >
           <div
-            className="p-4 rounded-xl border"
+            className="p-3 sm:p-4 rounded-xl border"
             style={{
               backgroundColor: isDark ? "#1f2937" : "#ffffff",
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
-            <h4 className={`text-sm font-medium mb-3 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+            <h4 className={`text-xs sm:text-sm font-medium mb-2 sm:mb-3 ${isDark ? "text-gray-300" : "text-gray-600"}`}>
               Navigator Soal
             </h4>
-            <div className="grid grid-cols-10 gap-2">
+            <div className="grid grid-cols-8 sm:grid-cols-10 gap-1 sm:gap-2">
               {questions.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentQuestion(index)}
-                  className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
+                  className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     currentQuestion === index
                       ? "text-white"
                       : userAnswers[questions[index]?.id]
@@ -804,18 +920,18 @@ const StartQuiz = () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className={`max-w-md w-full rounded-xl shadow-2xl p-6 ${
+              className={`max-w-md w-full rounded-xl shadow-2xl p-4 sm:p-6 ${
                 isDark ? "bg-gray-800" : "bg-white"
               }`}
             >
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FaExclamationTriangle className="text-yellow-600 dark:text-yellow-400 text-2xl" />
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <FaExclamationTriangle className="text-yellow-600 dark:text-yellow-400 text-lg sm:text-2xl" />
                 </div>
-                <h3 className={`text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
+                <h3 className={`text-lg sm:text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
                   Konfirmasi Pengiriman
                 </h3>
-                <p className={`${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                <p className={`text-sm sm:text-base ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                   Apakah Anda yakin ingin mengakhiri kuis? Anda telah menjawab{" "}
                   <span className="font-semibold">{getAnsweredCount()}</span> dari{" "}
                   <span className="font-semibold">{questions.length}</span> soal.
@@ -825,7 +941,7 @@ const StartQuiz = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowConfirmModal(false)}
-                  className={`flex-1 py-3 px-4 rounded-lg border transition-all ${
+                  className={`flex-1 py-2.5 sm:py-3 px-4 rounded-lg border transition-all text-sm ${
                     isDark
                       ? "border-gray-600 text-gray-300 hover:bg-gray-700"
                       : "border-gray-300 text-gray-700 hover:bg-gray-50"
@@ -835,7 +951,7 @@ const StartQuiz = () => {
                 </button>
                 <button
                   onClick={handleSubmitQuiz}
-                  className="flex-1 py-3 px-4 rounded-lg text-white transition-all hover:opacity-90"
+                  className="flex-1 py-2.5 sm:py-3 px-4 rounded-lg text-white transition-all hover:opacity-90 text-sm"
                   style={{
                     background: `linear-gradient(135deg, #10b981 0%, #059669 100%)`,
                   }}

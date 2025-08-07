@@ -140,34 +140,34 @@ const HasilAkhir = () => {
   if (score >= 85) return { 
     level: "Sangat Baik", 
     color: "#10b981", 
-    icon: <FaTree className="w-8 h-8" />,
-    badgeIcon: <FaTrophy className="w-6 h-6" style={{ color: "#10b981" }} />,
+    icon: <FaTree className="w-6 h-6 sm:w-8 sm:h-8" />,
+    badgeIcon: <FaTrophy className="w-4 h-4 sm:w-6 sm:h-6" style={{ color: "#10b981" }} />,
     description: "Luar biasa! Pemahaman Anda tentang konsep green science sangat mendalam!",
-    bgPattern: <GiEcology className="text-9xl opacity-10" />
+    bgPattern: <GiEcology className="text-6xl sm:text-9xl opacity-10" />
   };
   if (score >= 70) return { 
     level: "Baik", 
     color: "#059669", 
-    icon: <FaSeedling className="w-8 h-8" />,
-    badgeIcon: <FaAward className="w-6 h-6" style={{ color: "#059669" }} />,
+    icon: <FaSeedling className="w-6 h-6 sm:w-8 sm:h-8" />,
+    badgeIcon: <FaAward className="w-4 h-4 sm:w-6 sm:h-6" style={{ color: "#059669" }} />,
     description: "Bagus! Pemahaman yang solid, terus kembangkan pengetahuan hijau Anda!",
-    bgPattern: <GiPlantSeed className="text-9xl opacity-10" />
+    bgPattern: <GiPlantSeed className="text-6xl sm:text-9xl opacity-10" />
   };
   if (score >= 55) return { 
     level: "Cukup", 
     color: "#f59e0b", 
-    icon: <FaLeaf className="w-8 h-8" />,
-    badgeIcon: <MdEco className="w-6 h-6" style={{ color: "#f59e0b" }} />,
+    icon: <FaLeaf className="w-6 h-6 sm:w-8 sm:h-8" />,
+    badgeIcon: <MdEco className="w-4 h-4 sm:w-6 sm:h-6" style={{ color: "#f59e0b" }} />,
     description: "Tidak buruk! Masih ada ruang untuk meningkatkan pemahaman sustainability.",
-    bgPattern: <FaLeaf className="text-9xl opacity-10" />
+    bgPattern: <FaLeaf className="text-6xl sm:text-9xl opacity-10" />
   };
   return { 
     level: "Perlu Peningkatan", 
     color: "#ef4444", 
-    icon: <FaRecycle className="w-8 h-8" />,
-    badgeIcon: <FaRedo className="w-6 h-6" style={{ color: "#ef4444" }} />,
+    icon: <FaRecycle className="w-6 h-6 sm:w-8 sm:h-8" />,
+    badgeIcon: <FaRedo className="w-4 h-4 sm:w-6 sm:h-6" style={{ color: "#ef4444" }} />,
     description: "Jangan menyerah! Terus belajar dan praktikkan konsep green science.",
-    bgPattern: <FaRecycle className="text-9xl opacity-10" />
+    bgPattern: <FaRecycle className="text-6xl sm:text-9xl opacity-10" />
   };
 };
 
@@ -216,18 +216,18 @@ const HasilAkhir = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6">
         <div className="text-center">
           <div
-            className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+            className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
             style={{
               borderColor: `${currentColor} transparent ${currentColor} ${currentColor}`,
             }}
           />
-          <h3 className={`text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
+          <h3 className={`text-lg sm:text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-gray-800"}`}>
             Memuat Hasil Quiz
           </h3>
-          <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
+          <p className={`text-sm sm:text-base ${isDark ? "text-gray-400" : "text-gray-600"}`}>
             Mengkalkulasi skor Anda...
           </p>
         </div>
@@ -236,7 +236,7 @@ const HasilAkhir = () => {
   }
 
   return (
-    <div className="min-h-screen p-6" style={{
+    <div className="min-h-screen p-3 sm:p-6" style={{
       backgroundColor: isDark ? "#111827" : "#f8fafc"
     }}>
       {/* Background Pattern */}
@@ -266,49 +266,84 @@ const HasilAkhir = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
           <div
-            className="p-6 rounded-2xl shadow-lg border overflow-hidden relative"
+            className="p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg border overflow-hidden relative"
             style={{
               backgroundColor: isDark ? "#1f2937" : "#ffffff",
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
             {/* Background Pattern */}
-            <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+            <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 opacity-10">
               <MdQuiz className="w-full h-full" style={{ color: currentColor }} />
             </div>
             
-            <div className="relative flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleBackToQuiz}
-                  className="p-2 rounded-lg transition-colors"
-                  style={{
-                    backgroundColor: getColorWithOpacity(currentColor, 0.1),
-                    color: currentColor
-                  }}
-                >
-                  <FaArrowLeft />
-                </button>
-                <div>
-                  <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
-                    Hasil Quiz GreenSys
-                  </h1>
-                  <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
-                    Quiz Green Science telah selesai
-                  </p>
+            <div className="relative">
+              {/* Mobile Layout */}
+              <div className="sm:hidden">
+                <div className="flex items-center gap-3 mb-3">
+                  <button
+                    onClick={handleBackToQuiz}
+                    className="p-2 rounded-lg transition-colors"
+                    style={{
+                      backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      color: currentColor
+                    }}
+                  >
+                    <FaArrowLeft className="text-sm" />
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <h1 className={`text-lg font-bold ${isDark ? "text-white" : "text-gray-800"} truncate`}>
+                      Hasil Quiz GreenSys
+                    </h1>
+                    <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                      Quiz selesai
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className={`text-base font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+                      {jumlahJawabanBenar}/{jumlahSoal}
+                    </div>
+                    <div className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                      Benar
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="text-center">
-                  <div className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
-                    {jumlahJawabanBenar}/{jumlahSoal}
+              {/* Desktop Layout */}
+              <div className="hidden sm:flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={handleBackToQuiz}
+                    className="p-2 rounded-lg transition-colors"
+                    style={{
+                      backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                      color: currentColor
+                    }}
+                  >
+                    <FaArrowLeft />
+                  </button>
+                  <div>
+                    <h1 className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+                      Hasil Quiz GreenSys
+                    </h1>
+                    <p className={`${isDark ? "text-gray-400" : "text-gray-600"}`}>
+                      Quiz Green Science telah selesai
+                    </p>
                   </div>
-                  <div className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-                    Benar
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-center">
+                    <div className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-800"}`}>
+                      {jumlahJawabanBenar}/{jumlahSoal}
+                    </div>
+                    <div className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                      Benar
+                    </div>
                   </div>
                 </div>
               </div>
@@ -320,7 +355,7 @@ const HasilAkhir = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl shadow-2xl overflow-hidden border"
+          className="rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden border"
           style={{
             backgroundColor: isDark ? "#1f2937" : "#ffffff",
             borderColor: getColorWithOpacity(currentColor, 0.2),
@@ -328,50 +363,93 @@ const HasilAkhir = () => {
         >
           {/* Header with Gradient */}
           <div
-            className="p-8 text-white relative overflow-hidden"
+            className="p-4 sm:p-8 text-white relative overflow-hidden"
             style={{
               background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
             }}
           >
             {/* Background Pattern */}
-            <div className="absolute top-0 right-0 w-40 h-40 opacity-20">
+            <div className="absolute top-0 right-0 w-24 h-24 sm:w-40 sm:h-40 opacity-20">
               {gradeInfo.bgPattern}
             </div>
             
             <div className="relative">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <FaGraduationCap className="w-8 h-8" />
-                </div>
-                <div>
-                  <h2 className="text-3xl font-bold">{nama}</h2>
-                  <p className="text-xl opacity-90">Kelas {kelas}</p>
-                </div>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="text-lg font-semibold mb-2 opacity-90">Quiz Information</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <FiBookOpen className="w-4 h-4" />
-                      <span className="text-sm">{judulGroupSoal}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MdScience className="w-4 h-4" />
-                      <span className="text-sm">{judulModul}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FiClock className="w-4 h-4" />
-                      <span className="text-sm">{updatedAt}</span>
-                    </div>
+              {/* Mobile Layout */}
+              <div className="sm:hidden">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <FaGraduationCap className="w-6 h-6" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-lg font-bold truncate">{nama}</h2>
+                    <p className="text-sm opacity-90">Kelas {kelas}</p>
                   </div>
                 </div>
                 
-                <div className="text-right">
-                  <div className="inline-flex items-center gap-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
-                    {gradeInfo.badgeIcon}
-                    <span className="font-semibold">{gradeInfo.level}</span>
+                <div className="space-y-3">
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2 opacity-90">Quiz Information</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <FiBookOpen className="w-3 h-3" />
+                        <span className="text-xs truncate">{judulGroupSoal}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MdScience className="w-3 h-3" />
+                        <span className="text-xs truncate">{judulModul}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FiClock className="w-3 h-3" />
+                        <span className="text-xs">{updatedAt}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="inline-flex items-center gap-2 bg-white bg-opacity-20 px-3 py-1.5 rounded-full">
+                      {gradeInfo.badgeIcon}
+                      <span className="font-semibold text-sm">{gradeInfo.level}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop Layout */}
+              <div className="hidden sm:block">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <FaGraduationCap className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold">{nama}</h2>
+                    <p className="text-xl opacity-90">Kelas {kelas}</p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2 opacity-90">Quiz Information</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <FiBookOpen className="w-4 h-4" />
+                        <span className="text-sm">{judulGroupSoal}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MdScience className="w-4 h-4" />
+                        <span className="text-sm">{judulModul}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FiClock className="w-4 h-4" />
+                        <span className="text-sm">{updatedAt}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-right">
+                    <div className="inline-flex items-center gap-2 bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                      {gradeInfo.badgeIcon}
+                      <span className="font-semibold">{gradeInfo.level}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -379,9 +457,9 @@ const HasilAkhir = () => {
           </div>
 
           {/* Score Section */}
-          <div className="p-8">
+          <div className="p-4 sm:p-8">
             {/* Large Score Display */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-6 sm:mb-8">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -389,7 +467,7 @@ const HasilAkhir = () => {
                 className="relative inline-block"
               >
                 <div 
-                  className="w-64 h-64 rounded-full border-8 flex items-center justify-center relative mx-auto mb-6"
+                  className="w-48 h-48 sm:w-64 sm:h-64 rounded-full border-4 sm:border-8 flex items-center justify-center relative mx-auto mb-4 sm:mb-6"
                   style={{ borderColor: gradeInfo.color }}
                 >
                   {/* Animated background */}
@@ -399,13 +477,13 @@ const HasilAkhir = () => {
                   />
                   
                   <div className="text-center z-10">
-                    <div className="mb-4 flex justify-center" style={{ color: gradeInfo.color }}>
+                    <div className="mb-2 sm:mb-4 flex justify-center" style={{ color: gradeInfo.color }}>
                       {gradeInfo.icon}
                     </div>
-                    <h2 className="text-6xl font-bold mb-2" style={{ color: gradeInfo.color }}>
+                    <h2 className="text-4xl sm:text-6xl font-bold mb-1 sm:mb-2" style={{ color: gradeInfo.color }}>
                       <Counter value={skor} />%
                     </h2>
-                    <p className={`text-lg font-medium ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`text-sm sm:text-lg font-medium ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       Skor Anda
                     </p>
                   </div>
@@ -417,21 +495,21 @@ const HasilAkhir = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="p-6 rounded-xl border-l-4 max-w-2xl mx-auto"
+                className="p-4 sm:p-6 rounded-xl border-l-4 max-w-2xl mx-auto"
                 style={{
                   backgroundColor: getColorWithOpacity(gradeInfo.color, 0.05),
                   borderColor: gradeInfo.color
                 }}
               >
-                <div className="flex items-center justify-center mb-4">
-                  <div className="p-3 rounded-full" style={{ backgroundColor: getColorWithOpacity(gradeInfo.color, 0.1) }}>
-                    <FaChartLine className="w-6 h-6" style={{ color: gradeInfo.color }} />
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
+                  <div className="p-2 sm:p-3 rounded-full" style={{ backgroundColor: getColorWithOpacity(gradeInfo.color, 0.1) }}>
+                    <FaChartLine className="w-4 h-4 sm:w-6 sm:h-6" style={{ color: gradeInfo.color }} />
                   </div>
                 </div>
-                <h3 className={`text-xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                <h3 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-3 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                   {gradeInfo.level}
                 </h3>
-                <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+                <p className={`text-sm sm:text-base ${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
                   {gradeInfo.description}
                 </p>
               </motion.div>
@@ -442,79 +520,78 @@ const HasilAkhir = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8"
             >
               {/* Correct Answers */}
               <div
-                className="p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 border"
+                className="p-4 sm:p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 border"
                 style={{
                   backgroundColor: isDark ? "#374151" : "#ffffff",
                   borderColor: getColorWithOpacity(currentColor, 0.2),
                 }}
               >
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
                   <div
-                    className="p-3 rounded-full"
+                    className="p-2 sm:p-3 rounded-full"
                     style={{ backgroundColor: getColorWithOpacity("#10b981", 0.1) }}
                   >
-                    <FiCheckCircle className="w-6 h-6 text-green-600" />
+                    <FiCheckCircle className="w-4 h-4 sm:w-6 sm:h-6 text-green-600" />
                   </div>
                 </div>
-                <h4 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                <h4 className={`text-lg sm:text-2xl font-bold mb-1 sm:mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                   <Counter value={jumlahJawabanBenar} duration={1500} /> / {jumlahSoal}
                 </h4>
-                <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} font-medium`}>
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} font-medium`}>
                   Jawaban Benar
                 </p>
               </div>
 
               {/* Score Percentage */}
               <div
-                className="p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 border"
+                className="p-4 sm:p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 border"
                 style={{
                   backgroundColor: isDark ? "#374151" : "#ffffff",
                   borderColor: getColorWithOpacity(currentColor, 0.2),
                 }}
               >
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
                   <div
-                    className="p-3 rounded-full"
+                    className="p-2 sm:p-3 rounded-full"
                     style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
                   >
-                    <FiBarChart2 className="w-6 h-6" style={{ color: currentColor }} />
+                    <FiBarChart2 className="w-4 h-4 sm:w-6 sm:h-6" style={{ color: currentColor }} />
                   </div>
                 </div>
-                <h4 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
+                <h4 className={`text-lg sm:text-2xl font-bold mb-1 sm:mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}>
                   <Counter value={skor} duration={1500} />%
                 </h4>
-                <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} font-medium`}>
+                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} font-medium`}>
                   Persentase Skor
                 </p>
               </div>
 
               {/* Achievement Badge */}
               <div
-                className="p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 border"
+                className="p-4 sm:p-6 rounded-xl text-center shadow-lg hover:shadow-xl transition-all duration-300 border"
                 style={{
                     backgroundColor: isDark ? "#374151" : "#ffffff",
                     borderColor: getColorWithOpacity(currentColor, 0.2),
                 }}
                 >
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
                     <div
-                    className="p-3 rounded-full"
+                    className="p-2 sm:p-3 rounded-full"
                     style={{ backgroundColor: getColorWithOpacity(gradeInfo.color, 0.1) }}
                     >
-                    {/* Tambahkan style color pada badgeIcon */}
                     <div style={{ color: gradeInfo.color }}>
                         {gradeInfo.badgeIcon}
                     </div>
                     </div>
                     </div>
-                    <h4 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`} style={{ color: gradeInfo.color }}>
+                    <h4 className={`text-lg sm:text-2xl font-bold mb-1 sm:mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`} style={{ color: gradeInfo.color }}>
                         {gradeInfo.level}
                     </h4>
-                    <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} font-medium`}>
+                    <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} font-medium`}>
                         Tingkat Pencapaian
                     </p>
                 </div>
@@ -525,39 +602,42 @@ const HasilAkhir = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
-              className="flex flex-col sm:flex-row justify-center gap-4"
+              className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4"
             >
               <button
                 onClick={handleBackToHome}
-                className="flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg transform hover:scale-105"
+                className="flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg transform hover:scale-105 text-sm sm:text-base"
                 style={{
                   background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(currentColor, 0.8)} 100%)`,
                 }}
               >
-                <FiHome className="w-5 h-5" />
-                Kembali ke Dashboard
+                <FiHome className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">Kembali ke Dashboard</span>
+                <span className="sm:hidden">Dashboard</span>
               </button>
 
               {/* Conditional Button: Cetak Sertifikat (skor >= 70) atau Kerjakan Ulang (skor < 70) */}
               {parseFloat(skor) >= 70 ? (
                 <button
                   onClick={handleCetakSertifikat}
-                  className={`flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-semibold transition-all duration-300 border-2 hover:shadow-lg transform hover:scale-105 ${
+                  className={`flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold transition-all duration-300 border-2 hover:shadow-lg transform hover:scale-105 text-sm sm:text-base ${
                     isDark
                       ? "border-gray-600 text-gray-200 hover:bg-gray-700"
                       : "border-gray-300 text-gray-700 hover:bg-gray-50"
                   }`}
                 >
-                  <FaCertificate className="w-5 h-5" />
-                  Cetak Sertifikat
+                  <FaCertificate className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="hidden sm:inline">Cetak Sertifikat</span>
+                  <span className="sm:hidden">Sertifikat</span>
                 </button>
               ) : (
                 <button
                   onClick={handleKerjakanUlang}
-                  className="flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg transform hover:scale-105 bg-orange-500 hover:bg-orange-600"
+                  className="flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-white font-semibold transition-all duration-300 hover:shadow-lg transform hover:scale-105 bg-orange-500 hover:bg-orange-600 text-sm sm:text-base"
                 >
-                  <FaRedo className="w-5 h-5" />
-                  Kerjakan Ulang
+                  <FaRedo className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="hidden sm:inline">Kerjakan Ulang</span>
+                  <span className="sm:hidden">Ulang</span>
                 </button>
               )}
             </motion.div>
@@ -569,41 +649,41 @@ const HasilAkhir = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1 }}
-          className="mt-8 text-center"
+          className="mt-6 sm:mt-8 text-center"
         >
           <div
-            className="p-6 rounded-xl shadow-lg border"
+            className="p-4 sm:p-6 rounded-xl shadow-lg border"
             style={{
               backgroundColor: isDark ? "#1f2937" : "#ffffff",
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
-            <div className="flex items-center justify-center mb-4">
+            <div className="flex items-center justify-center mb-3 sm:mb-4">
               <div
-                className="p-3 rounded-full mr-3"
+                className="p-2 sm:p-3 rounded-full mr-2 sm:mr-3"
                 style={{ backgroundColor: getColorWithOpacity(currentColor, 0.1) }}
               >
-                <FaSeedling className="w-6 h-6" style={{ color: currentColor }} />
+                <FaSeedling className="w-4 h-4 sm:w-6 sm:h-6" style={{ color: currentColor }} />
               </div>
-              <span className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
+              <span className={`text-lg sm:text-xl font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>
                 GreenSys Learning Platform
               </span>
             </div>
-            <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed max-w-3xl mx-auto`}>
+            <p className={`text-sm sm:text-base ${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed max-w-3xl mx-auto`}>
               Terima kasih telah berpartisipasi dalam pembelajaran green science! Setiap pengetahuan yang Anda peroleh 
               adalah langkah kecil menuju dunia yang lebih berkelanjutan. Terus belajar, terus berkarya untuk bumi yang lebih hijau.
             </p>
             
-            <div className="flex justify-center items-center gap-6 mt-6 text-sm">
-              <div className="flex items-center gap-2" style={{ color: currentColor }}>
+            <div className="flex justify-center items-center gap-4 sm:gap-6 mt-4 sm:mt-6 text-xs sm:text-sm">
+              <div className="flex items-center gap-1 sm:gap-2" style={{ color: currentColor }}>
                 <MdEco />
                 <span>Sustainable Learning</span>
               </div>
-              <div className="flex items-center gap-2" style={{ color: currentColor }}>
+              <div className="flex items-center gap-1 sm:gap-2" style={{ color: currentColor }}>
                 <GiPlantSeed />
                 <span>Green Future</span>
               </div>
-              <div className="flex items-center gap-2" style={{ color: currentColor }}>
+              <div className="flex items-center gap-1 sm:gap-2" style={{ color: currentColor }}>
                 <GiEcology />
                 <span>Eco Education</span>
               </div>

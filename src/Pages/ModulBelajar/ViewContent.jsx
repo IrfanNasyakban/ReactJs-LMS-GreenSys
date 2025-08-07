@@ -845,28 +845,28 @@ const ViewContent = () => {
   const currentIndex = getCurrentSubModuleIndex();
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-3 sm:p-6">
       {/* Complete Modal */}
       {showCompleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className={`p-6 rounded-xl max-w-md w-full mx-4 ${
+            className={`p-4 sm:p-6 rounded-xl max-w-md w-full ${
               isDark ? "bg-gray-800" : "bg-white"
             }`}
           >
             <div className="text-center">
-              <FaCheck className="text-green-500 text-4xl mx-auto mb-4" />
+              <FaCheck className="text-green-500 text-3xl sm:text-4xl mx-auto mb-4" />
               <h3
-                className={`text-xl font-bold mb-2 ${
+                className={`text-lg sm:text-xl font-bold mb-2 ${
                   isDark ? "text-white" : "text-gray-800"
                 }`}
               >
                 Selamat! 🎉
               </h3>
               <p
-                className={`mb-6 ${isDark ? "text-gray-300" : "text-gray-600"}`}
+                className={`mb-6 text-sm sm:text-base ${isDark ? "text-gray-300" : "text-gray-600"}`}
               >
                 Anda telah menonton{" "}
                 {Math.round(currentProgress.completionPercentage)}% dari video
@@ -875,13 +875,13 @@ const ViewContent = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowCompleteModal(false)}
-                  className="flex-1 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+                  className="flex-1 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 text-sm"
                 >
                   Nanti Saja
                 </button>
                 <button
                   onClick={markAsCompleted}
-                  className="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                  className="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm"
                 >
                   Tandai Selesai
                 </button>
@@ -915,39 +915,41 @@ const ViewContent = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm overflow-x-auto">
             <button
               onClick={() => navigate("/modul-belajar")}
-              className={`flex items-center gap-1 px-3 py-1 rounded-lg transition-colors duration-300 ${
+              className={`flex items-center gap-1 px-2 sm:px-3 py-1 rounded-lg transition-colors duration-300 whitespace-nowrap ${
                 isDark
                   ? "text-gray-300 hover:text-white hover:bg-gray-700"
                   : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
               }`}
             >
-              <FaArrowLeft />
-              Modul Belajar
+              <FaArrowLeft className="text-xs" />
+              <span className="hidden sm:inline">Modul Belajar</span>
+              <span className="sm:hidden">Modul</span>
             </button>
             <FaChevronRight
-              className={isDark ? "text-gray-500" : "text-gray-400"}
+              className={`${isDark ? "text-gray-500" : "text-gray-400"} text-xs`}
             />
             <button
               onClick={() =>
                 navigate(`/modul-belajar/detail/${subModuleData.modulId}`)
               }
-              className={`px-3 py-1 rounded-lg transition-colors duration-300 ${
+              className={`px-2 sm:px-3 py-1 rounded-lg transition-colors duration-300 truncate max-w-24 sm:max-w-none ${
                 isDark
                   ? "text-gray-300 hover:text-white hover:bg-gray-700"
                   : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"
               }`}
+              title={subModuleData.modul?.judul}
             >
               {subModuleData.modul?.judul}
             </button>
             <FaChevronRight
-              className={isDark ? "text-gray-500" : "text-gray-400"}
+              className={`${isDark ? "text-gray-500" : "text-gray-400"} text-xs`}
             />
-            <span style={{ color: currentColor }} className="font-medium">
+            <span style={{ color: currentColor }} className="font-medium truncate">
               {subModuleData.subJudul}
             </span>
           </div>
@@ -958,16 +960,125 @@ const ViewContent = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <div
-            className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
+            className="p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm border"
             style={{
               backgroundColor: getColorWithOpacity(currentColor, 0.1),
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
-            <div className="flex items-center gap-4">
+            {/* Mobile Layout */}
+            <div className="sm:hidden">
+              <div className="flex items-start gap-3 mb-3">
+                <div
+                  className="p-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: currentColor }}
+                >
+                  <MdOndemandVideo className="text-white text-lg" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h1
+                    className={`text-lg font-bold leading-tight ${
+                      isDark ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    <span style={{ color: currentColor }}>Pembelajaran</span>{" "}
+                    Interactive
+                  </h1>
+                  <p className={`text-xs ${isDark ? "text-gray-300" : "text-gray-600"} mt-1`}>
+                    Green Science Learning
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`p-1.5 rounded-lg border transition-colors ${
+                      isDark
+                        ? "border-gray-600 bg-gray-700 hover:bg-gray-600"
+                        : "border-gray-300 bg-white hover:bg-gray-50"
+                    }`}
+                  >
+                    <FaBookmark
+                      className={`${isDark ? "text-gray-300" : "text-gray-600"} text-sm`}
+                    />
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`p-1.5 rounded-lg border transition-colors ${
+                      isDark
+                        ? "border-gray-600 bg-gray-700 hover:bg-gray-600"
+                        : "border-gray-300 bg-white hover:bg-gray-50"
+                    }`}
+                  >
+                    <FaShare
+                      className={`${isDark ? "text-gray-300" : "text-gray-600"} text-sm`}
+                    />
+                  </motion.button>
+                </div>
+              </div>
+              
+              {/* Sub module info and progress */}
+              <div className="space-y-2">
+                {subModuleDataByModulId && (
+                  <p
+                    className={`text-xs ${
+                      isDark ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
+                    Sub Modul {currentIndex + 1} dari{" "}
+                    {subModuleDataByModulId.length}
+                  </p>
+                )}
+                
+                {/* Progress and complete button */}
+                <div className="flex items-center justify-between">
+                  {isSiswa && (
+                    <div className="flex items-center gap-2 flex-1">
+                      {currentProgress.isCompleted ? (
+                        <div className="flex items-center gap-1 text-green-500">
+                          <FaCheckCircle className="text-sm" />
+                          <span className="text-xs">Selesai</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2 flex-1">
+                          <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full transition-all duration-300"
+                              style={{
+                                width: `${currentProgress.completionPercentage}%`,
+                                backgroundColor: currentColor,
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {Math.round(currentProgress.completionPercentage)}%
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {isSiswa && !currentProgress.isCompleted && (
+                    <motion.button
+                      onClick={() => setShowCompleteModal(true)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-xs ml-2"
+                    >
+                      <FaCheck className="inline mr-1" />
+                      Selesai
+                    </motion.button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden sm:flex items-center gap-4">
               <div
                 className="p-3 rounded-full"
                 style={{ backgroundColor: currentColor }}
@@ -1074,15 +1185,15 @@ const ViewContent = () => {
           </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="grid lg:grid-cols-4 gap-4 sm:gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
+          <div className="lg:col-span-3 space-y-4 sm:space-y-6">
             {/* Video Player Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="rounded-2xl shadow-xl overflow-hidden"
+              className="rounded-xl sm:rounded-2xl shadow-xl overflow-hidden"
               style={{
                 backgroundColor: isDark ? "#1f2937" : "#ffffff",
                 border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
@@ -1090,7 +1201,7 @@ const ViewContent = () => {
             >
               {/* Video Header */}
               <div
-                className="py-4 px-6"
+                className="py-3 sm:py-4 px-4 sm:px-6"
                 style={{
                   background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
                     currentColor,
@@ -1098,12 +1209,12 @@ const ViewContent = () => {
                   )} 100%)`,
                 }}
               >
-                <div className="flex items-center gap-3">
-                  <FaYoutube className="text-white text-xl" />
-                  <h2 className="text-xl font-bold text-white">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <FaYoutube className="text-white text-lg sm:text-xl" />
+                  <h2 className="text-base sm:text-xl font-bold text-white truncate flex-1">
                     {subModuleData.subJudul}
                   </h2>
-                  <div className="ml-auto flex items-center gap-2 text-white text-sm">
+                  <div className="hidden sm:flex items-center gap-2 text-white text-sm">
                     {isSiswa && currentProgress.isCompleted && (
                       <FaCheckCircle className="text-green-300" />
                     )}
@@ -1114,23 +1225,23 @@ const ViewContent = () => {
               </div>
 
               {/* Video Content */}
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 {videoId ? (
                   <div className="relative">
                     <div
-                      className="relative w-full rounded-xl overflow-hidden shadow-lg"
+                      className="relative w-full rounded-lg sm:rounded-xl overflow-hidden shadow-lg"
                       style={{ paddingBottom: "56.25%", height: 0 }}
                     >
                       {!isVideoLoaded && (
                         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
                           <div className="text-center">
                             <div
-                              className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+                              className="w-8 h-8 sm:w-12 sm:h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-2 sm:mb-4"
                               style={{
                                 borderColor: `${currentColor} transparent ${currentColor} ${currentColor}`,
                               }}
                             />
-                            <p className="text-gray-600">Memuat video...</p>
+                            <p className="text-gray-600 text-sm sm:text-base">Memuat video...</p>
                           </div>
                         </div>
                       )}
@@ -1146,9 +1257,9 @@ const ViewContent = () => {
                     </div>
 
                     {/* Video Controls Info */}
-                    <div className="mt-4 flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1">
+                    <div className="mt-3 sm:mt-4 flex items-center justify-between">
+                      <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                        <div className="hidden sm:flex items-center gap-1">
                           <FaVolumeUp style={{ color: currentColor }} />
                           <span
                             className={
@@ -1158,7 +1269,7 @@ const ViewContent = () => {
                             Audio
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="hidden sm:flex items-center gap-1">
                           <FaExpand style={{ color: currentColor }} />
                           <span
                             className={
@@ -1190,18 +1301,19 @@ const ViewContent = () => {
                         href={subModuleData.urlYoutube}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-sm text-red-500 hover:text-red-600 transition-colors"
+                        className="flex items-center gap-1 text-xs sm:text-sm text-red-500 hover:text-red-600 transition-colors"
                       >
                         <FaYoutube />
-                        Buka di YouTube
+                        <span className="hidden sm:inline">Buka di YouTube</span>
+                        <span className="sm:hidden">YouTube</span>
                       </a>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <FaYoutube className="text-gray-400 text-6xl mx-auto mb-4" />
+                  <div className="text-center py-8 sm:py-12">
+                    <FaYoutube className="text-gray-400 text-4xl sm:text-6xl mx-auto mb-4" />
                     <p
-                      className={`text-lg ${
+                      className={`text-base sm:text-lg ${
                         isDark ? "text-gray-300" : "text-gray-600"
                       }`}
                     >
@@ -1225,14 +1337,14 @@ const ViewContent = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex justify-between items-center"
+                className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0"
               >
                 <motion.button
                   onClick={navigateToPreviousSubModule}
                   disabled={!hasPreviousSubModule()}
                   whileHover={{ scale: hasPreviousSubModule() ? 1.02 : 1 }}
                   whileTap={{ scale: hasPreviousSubModule() ? 0.98 : 1 }}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                  className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-medium transition-all duration-300 text-sm ${
                     hasPreviousSubModule()
                       ? `text-white shadow-lg hover:shadow-xl`
                       : `opacity-50 cursor-not-allowed ${
@@ -1251,10 +1363,11 @@ const ViewContent = () => {
                   }}
                 >
                   <FaChevronLeft />
-                  Sub Modul Sebelumnya
+                  <span className="hidden sm:inline">Sub Modul Sebelumnya</span>
+                  <span className="sm:hidden">Sebelumnya</span>
                 </motion.button>
 
-                <div className="text-center">
+                <div className="text-center order-first sm:order-none">
                   <div
                     className={`text-sm ${
                       isDark ? "text-gray-400" : "text-gray-600"
@@ -1284,7 +1397,7 @@ const ViewContent = () => {
                       whileTap={{
                         scale: !canAccessQuiz() || hasCompletedQuiz ? 1 : 0.98,
                       }}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                      className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-medium transition-all duration-300 text-sm ${
                         !canAccessQuiz() || hasCompletedQuiz
                           ? `opacity-50 cursor-not-allowed ${
                               isDark
@@ -1317,7 +1430,7 @@ const ViewContent = () => {
                     disabled={!hasNextSubModule()}
                     whileHover={{ scale: hasNextSubModule() ? 1.02 : 1 }}
                     whileTap={{ scale: hasNextSubModule() ? 0.98 : 1 }}
-                    className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                    className={`w-full sm:w-auto flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-medium transition-all duration-300 text-sm ${
                       hasNextSubModule()
                         ? `text-white shadow-lg hover:shadow-xl`
                         : `opacity-50 cursor-not-allowed ${
@@ -1335,7 +1448,8 @@ const ViewContent = () => {
                         : undefined,
                     }}
                   >
-                    Sub Modul Selanjutnya
+                    <span className="hidden sm:inline">Sub Modul Selanjutnya</span>
+                    <span className="sm:hidden">Selanjutnya</span>
                     <FaChevronRight />
                   </motion.button>
                 ) : null}
@@ -1347,14 +1461,14 @@ const ViewContent = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="rounded-2xl shadow-xl overflow-hidden"
+              className="rounded-xl sm:rounded-2xl shadow-xl overflow-hidden"
               style={{
                 backgroundColor: isDark ? "#1f2937" : "#ffffff",
                 border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
               }}
             >
               <div
-                className="py-4 px-6"
+                className="py-3 sm:py-4 px-4 sm:px-6"
                 style={{
                   backgroundColor: getColorWithOpacity(currentColor, 0.1),
                 }}
@@ -1362,7 +1476,7 @@ const ViewContent = () => {
                 <div className="flex items-center gap-2">
                   <MdDescription style={{ color: currentColor }} />
                   <h3
-                    className={`font-semibold text-lg ${
+                    className={`font-semibold text-base sm:text-lg ${
                       isDark ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -1370,9 +1484,9 @@ const ViewContent = () => {
                   </h3>
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div
-                  className={`leading-relaxed whitespace-pre-wrap ${
+                  className={`leading-relaxed whitespace-pre-wrap text-sm sm:text-base ${
                     isDark ? "text-gray-300" : "text-gray-700"
                   }`}
                 >
@@ -1387,7 +1501,7 @@ const ViewContent = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.5 }}
-                className="rounded-2xl shadow-xl overflow-hidden"
+                className="rounded-xl sm:rounded-2xl shadow-xl overflow-hidden"
                 style={{
                   backgroundColor: isDark ? "#1f2937" : "#ffffff",
                   border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
@@ -1395,33 +1509,35 @@ const ViewContent = () => {
               >
                 {/* PDF Header */}
                 <div
-                  className="py-4 px-6"
+                  className="py-3 sm:py-4 px-4 sm:px-6"
                   style={{
                     backgroundColor: getColorWithOpacity('#dc2626', 0.1),
                   }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaFilePdf style={{ color: '#dc2626' }} />
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <FaFilePdf style={{ color: '#dc2626' }} className="flex-shrink-0" />
                       <h3
-                        className={`font-semibold text-lg ${
+                        className={`font-semibold text-sm sm:text-lg truncate ${
                           isDark ? "text-white" : "text-gray-800"
                         }`}
+                        title={'Document.pdf'}
                       >
-                        Materi PDF - {subModuleData.namaPdf || 'Document.pdf'}
+                        <span className="hidden sm:inline">Materi PDF - </span>
+                        Document.pdf
                       </h3>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                       <button
                         onClick={downloadPdf}
-                        className="flex items-center gap-1 px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        className="flex items-center gap-1 px-2 sm:px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors whitespace-nowrap"
                       >
                         <FaDownload />
-                        Download
+                        <span className="hidden sm:inline">Download</span>
                       </button>
                       <button
                         onClick={() => setIsPdfExpanded(!isPdfExpanded)}
-                        className="flex items-center gap-1 px-3 py-1 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                        className="flex items-center gap-1 px-2 sm:px-3 py-1 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors whitespace-nowrap"
                       >
                         {isPdfExpanded ? <FaChevronUp /> : <FaChevronDown />}
                         {isPdfExpanded ? 'Tutup' : 'Buka'}
@@ -1432,26 +1548,26 @@ const ViewContent = () => {
 
                 {/* PDF Content */}
                 {isPdfExpanded && (
-                  <div className="p-6">
+                  <div className="p-3 sm:p-6">
                     {isPdfLoading ? (
-                      <div className="text-center py-12">
+                      <div className="text-center py-8 sm:py-12">
                         <div
-                          className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4"
+                          className="w-8 h-8 sm:w-12 sm:h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-2 sm:mb-4"
                           style={{
                             borderColor: `#dc2626 transparent #dc2626 #dc2626`,
                           }}
                         />
-                        <p className={`text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <p className={`text-base sm:text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
                           Memuat PDF...
                         </p>
-                        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
                           Menggunakan proxy server untuk mengakses PDF
                         </p>
                       </div>
                     ) : pdfError ? (
-                      <div className="text-center py-12">
-                        <FaFilePdf className="text-red-400 text-6xl mx-auto mb-4" />
-                        <p className={`text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                      <div className="text-center py-8 sm:py-12">
+                        <FaFilePdf className="text-red-400 text-4xl sm:text-6xl mx-auto mb-4" />
+                        <p className={`text-base sm:text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Gagal memuat PDF
                         </p>
                         <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
@@ -1459,7 +1575,7 @@ const ViewContent = () => {
                         </p>
                         <button
                           onClick={() => convertPdfToImages(subModuleData.urlPdf)}
-                          className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                          className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
                         >
                           Coba Lagi
                         </button>
@@ -1467,44 +1583,44 @@ const ViewContent = () => {
                     ) : pdfPages.length > 0 ? (
                       <div>
                         {/* PDF Controls */}
-                        <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                          <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 mb-4 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                          <div className="flex items-center gap-2 w-full sm:w-auto">
                             <button
                               onClick={prevPage}
                               disabled={currentPdfPage === 0}
-                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <FaChevronLeft />
+                              <FaChevronLeft className="text-sm" />
                             </button>
-                            <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                            <span className={`text-xs sm:text-sm flex-1 text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                               Halaman {currentPdfPage + 1} dari {pdfPages.length}
                             </span>
                             <button
                               onClick={nextPage}
                               disabled={currentPdfPage === pdfPages.length - 1}
-                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <FaChevronRight />
+                              <FaChevronRight className="text-sm" />
                             </button>
                           </div>
                           
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 w-full sm:w-auto justify-center">
                             <button
                               onClick={zoomOut}
                               disabled={pdfZoom <= 0.5}
-                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <FaSearchMinus />
+                              <FaSearchMinus className="text-sm" />
                             </button>
-                            <span className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                            <span className={`text-xs sm:text-sm min-w-[50px] text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                               {Math.round(pdfZoom * 100)}%
                             </span>
                             <button
                               onClick={zoomIn}
                               disabled={pdfZoom >= 3}
-                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <FaSearchPlus />
+                              <FaSearchPlus className="text-sm" />
                             </button>
                           </div>
                         </div>
@@ -1512,8 +1628,8 @@ const ViewContent = () => {
                         {/* PDF Page Display */}
                         <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800">
                           <div 
-                            className="flex justify-center p-4 overflow-auto"
-                            style={{ maxHeight: '180vh' }}
+                            className="flex justify-center p-2 sm:p-4 overflow-auto"
+                            style={{ maxHeight: '70vh' }}
                           >
                             <img
                               src={pdfPages[currentPdfPage]?.imageUrl}
@@ -1521,7 +1637,7 @@ const ViewContent = () => {
                               className="max-w-full h-auto shadow-lg"
                               style={{ 
                                 transform: `scale(${pdfZoom})`,
-                                transformOrigin: 'top center'
+                                transformOrigin: 'center center'
                               }}
                             />
                           </div>
@@ -1529,11 +1645,11 @@ const ViewContent = () => {
 
                         {/* Page Thumbnails */}
                         {pdfPages.length > 1 && (
-                          <div className="mt-4">
+                          <div className="mt-3 sm:mt-4">
                             <h4 className={`text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
                               Halaman Lainnya:
                             </h4>
-                            <div className="flex gap-2 overflow-x-auto pb-2">
+                            <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2">
                               {pdfPages.map((page, index) => (
                                 <button
                                   key={index}
@@ -1547,7 +1663,7 @@ const ViewContent = () => {
                                   <img
                                     src={page.imageUrl}
                                     alt={`Page ${index + 1}`}
-                                    className="w-16 h-20 object-cover rounded"
+                                    className="w-12 h-16 sm:w-16 sm:h-20 object-cover rounded"
                                   />
                                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded-b">
                                     {index + 1}
@@ -1559,9 +1675,9 @@ const ViewContent = () => {
                         )}
                       </div>
                     ) : (
-                      <div className="text-center py-12">
-                        <MdPictureAsPdf className="text-gray-400 text-6xl mx-auto mb-4" />
-                        <p className={`text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                      <div className="text-center py-8 sm:py-12">
+                        <MdPictureAsPdf className="text-gray-400 text-4xl sm:text-6xl mx-auto mb-4" />
+                        <p className={`text-base sm:text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Tidak dapat memuat PDF
                         </p>
                         <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
@@ -1576,7 +1692,7 @@ const ViewContent = () => {
           </div>
 
           {/* Sidebar with Progress Tracking */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* Sub Module List with Progress Indicators */}
             {subModuleDataByModulId && subModuleDataByModulId.length >= 1 && (
               <motion.div
@@ -1590,7 +1706,7 @@ const ViewContent = () => {
                 }}
               >
                 <div
-                  className="p-4"
+                  className="p-3 sm:p-4"
                   style={{
                     backgroundColor: getColorWithOpacity(currentColor, 0.1),
                   }}
@@ -1598,7 +1714,7 @@ const ViewContent = () => {
                   <div className="flex items-center gap-2">
                     <FaListAlt style={{ color: currentColor }} />
                     <h3
-                      className={`font-semibold ${
+                      className={`font-semibold text-sm sm:text-base ${
                         isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
@@ -1606,7 +1722,7 @@ const ViewContent = () => {
                     </h3>
                   </div>
                 </div>
-                <div className="p-4">
+                <div className="p-3 sm:p-4">
                   <div className="space-y-2">
                     {subModuleDataByModulId.map((subModule, index) => {
                       const isCompleted = isSubModuleCompleted(subModule.id);
@@ -1621,7 +1737,7 @@ const ViewContent = () => {
                           onClick={() =>
                             navigateToSubModule(subModule.id, index)
                           }
-                          className={`p-3 rounded-lg transition-all duration-300 ${
+                          className={`p-2.5 sm:p-3 rounded-lg transition-all duration-300 ${
                             !canAccess
                               ? "opacity-50 cursor-not-allowed"
                               : "cursor-pointer hover:shadow-md"
@@ -1643,9 +1759,9 @@ const ViewContent = () => {
                               : undefined,
                           }}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 sm:gap-3">
                             <div
-                              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                              className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
                                 isCurrent
                                   ? "bg-white text-gray-800"
                                   : isCompleted
@@ -1663,8 +1779,8 @@ const ViewContent = () => {
                                 index + 1
                               )}
                             </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium line-clamp-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs sm:text-sm font-medium line-clamp-2">
                                 {subModule.subJudul}
                               </p>
                               {/* Progress indicator for students */}
@@ -1687,7 +1803,7 @@ const ViewContent = () => {
                               )}
                             </div>
                             {isCurrent && (
-                              <FaPlayCircle className="text-white text-sm" />
+                              <FaPlayCircle className="text-white text-sm flex-shrink-0" />
                             )}
                           </div>
                         </motion.div>
@@ -1697,16 +1813,16 @@ const ViewContent = () => {
 
                   {/* Overall progress bar for students */}
                   {isSiswa && progressData && (
-                    <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <div className="mt-3 sm:mt-4 p-2.5 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">
+                        <span className="text-xs sm:text-sm font-medium">
                           Progress Modul
                         </span>
-                        <span className="text-sm">
+                        <span className="text-xs sm:text-sm">
                           {Math.round(progressData.overallProgress)}%
                         </span>
                       </div>
-                      <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
                           className="h-full transition-all duration-300"
                           style={{
@@ -1737,7 +1853,7 @@ const ViewContent = () => {
               }}
             >
               <div
-                className="p-4"
+                className="p-3 sm:p-4"
                 style={{
                   backgroundColor: getColorWithOpacity(currentColor, 0.1),
                 }}
@@ -1745,7 +1861,7 @@ const ViewContent = () => {
                 <div className="flex items-center gap-2">
                   <BsFileEarmarkText style={{ color: currentColor }} />
                   <h3
-                    className={`font-semibold ${
+                    className={`font-semibold text-sm sm:text-base ${
                       isDark ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -1753,17 +1869,17 @@ const ViewContent = () => {
                   </h3>
                 </div>
               </div>
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 {subModuleData.url && (
-                  <div className="mb-4">
+                  <div className="mb-3 sm:mb-4">
                     <img
                       src={subModuleData.url}
                       alt={subModuleData.subJudul}
-                      className="w-full h-32 object-cover rounded-lg"
+                      className="w-full h-24 sm:h-32 object-cover rounded-lg"
                     />
                   </div>
                 )}
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <div>
                     <p
                       className={`text-xs ${
@@ -1773,7 +1889,7 @@ const ViewContent = () => {
                       Sub Modul:
                     </p>
                     <p
-                      className={`font-medium ${
+                      className={`font-medium text-sm ${
                         isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
@@ -1789,7 +1905,7 @@ const ViewContent = () => {
                       Modul Induk:
                     </p>
                     <p
-                      className={`text-sm ${
+                      className={`text-xs sm:text-sm ${
                         isDark ? "text-gray-300" : "text-gray-600"
                       }`}
                     >
@@ -1806,12 +1922,13 @@ const ViewContent = () => {
                       >
                         Materi PDF:
                       </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <FaFilePdf className="text-red-500" />
+                      <div className="flex items-center gap-2 mt-1 min-w-0">
+                        <FaFilePdf className="text-red-500 text-sm flex-shrink-0" />
                         <p
-                          className={`text-sm ${
+                          className={`text-xs sm:text-sm truncate ${
                             isDark ? "text-gray-300" : "text-gray-600"
                           }`}
+                          title={subModuleData.namaPdf || 'Document.pdf'}
                         >
                           {subModuleData.namaPdf || 'Document.pdf'}
                         </p>
@@ -1834,12 +1951,12 @@ const ViewContent = () => {
                       <div className="flex items-center gap-2 mt-1">
                         {currentProgress.isCompleted ? (
                           <div className="flex items-center gap-1 text-green-500">
-                            <FaCheckCircle />
-                            <span className="text-sm">Selesai</span>
+                            <FaCheckCircle className="text-sm" />
+                            <span className="text-xs sm:text-sm">Selesai</span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2">
-                            <div className="w-12 h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div className="flex items-center gap-2 flex-1">
+                            <div className="flex-1 h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div
                                 className="h-full transition-all duration-300"
                                 style={{
@@ -1848,7 +1965,7 @@ const ViewContent = () => {
                                 }}
                               />
                             </div>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-xs sm:text-sm text-gray-500">
                               {Math.round(currentProgress.completionPercentage)}
                               %
                             </span>
@@ -1872,7 +1989,7 @@ const ViewContent = () => {
                         }`}
                       />
                       <p
-                        className={`text-sm ${
+                        className={`text-xs sm:text-sm ${
                           isDark ? "text-gray-300" : "text-gray-600"
                         }`}
                       >
@@ -1896,7 +2013,7 @@ const ViewContent = () => {
                         }`}
                       />
                       <p
-                        className={`text-sm ${
+                        className={`text-xs sm:text-sm ${
                           isDark ? "text-gray-300" : "text-gray-600"
                         }`}
                       >
@@ -1920,7 +2037,7 @@ const ViewContent = () => {
                           }`}
                         />
                         <p
-                          className={`text-sm ${
+                          className={`text-xs sm:text-sm ${
                             isDark ? "text-gray-300" : "text-gray-600"
                           }`}
                         >
@@ -1945,7 +2062,7 @@ const ViewContent = () => {
               }}
             >
               <div
-                className="p-4"
+                className="p-3 sm:p-4"
                 style={{
                   backgroundColor: getColorWithOpacity(currentColor, 0.1),
                 }}
@@ -1953,7 +2070,7 @@ const ViewContent = () => {
                 <div className="flex items-center gap-2">
                   <FaLightbulb style={{ color: currentColor }} />
                   <h3
-                    className={`font-semibold ${
+                    className={`font-semibold text-sm sm:text-base ${
                       isDark ? "text-white" : "text-gray-800"
                     }`}
                   >
@@ -1961,8 +2078,8 @@ const ViewContent = () => {
                   </h3>
                 </div>
               </div>
-              <div className="p-4">
-                <div className="space-y-3">
+              <div className="p-3 sm:p-4">
+                <div className="space-y-2 sm:space-y-3">
                   {isSiswa ? (
                     <>
                       <div className="flex items-start gap-2">
@@ -2086,7 +2203,7 @@ const ViewContent = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 1.0 }}
-              className="space-y-3"
+              className="space-y-2 sm:space-y-3"
             >
               <motion.button
                 onClick={() =>
@@ -2094,7 +2211,7 @@ const ViewContent = () => {
                 }
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-transparent rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 hover:shadow-xl"
+                className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 border border-transparent rounded-xl shadow-lg text-xs sm:text-sm font-medium text-white transition-all duration-300 hover:shadow-xl"
                 style={{
                   background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
                     currentColor,
@@ -2103,21 +2220,23 @@ const ViewContent = () => {
                 }}
               >
                 <BsCollection />
-                Lihat Sub Modul Lainnya
+                <span className="hidden sm:inline">Lihat Sub Modul Lainnya</span>
+                <span className="sm:hidden">Sub Modul Lain</span>
               </motion.button>
 
               <motion.button
                 onClick={() => navigate("/modul-belajar")}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full flex items-center justify-center gap-2 py-3 px-4 border rounded-xl text-sm font-medium transition-all duration-300 ${
+                className={`w-full flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 border rounded-xl text-xs sm:text-sm font-medium transition-all duration-300 ${
                   isDark
                     ? "border-gray-600 text-gray-200 bg-gray-700 hover:bg-gray-600"
                     : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
                 }`}
               >
                 <FaArrowLeft />
-                Kembali ke Modul
+                <span className="hidden sm:inline">Kembali ke Modul</span>
+                <span className="sm:hidden">Kembali</span>
               </motion.button>
             </motion.div>
           </div>

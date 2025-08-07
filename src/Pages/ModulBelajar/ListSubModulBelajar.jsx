@@ -235,7 +235,7 @@ const ListSubModulBelajar = () => {
           <div
             className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
             style={{
-              backgroundColor: getColorWithOpacity(currentColor, 0.1),
+              backgroundColor: getColorWithOpacity(currentColor, 0.4),
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
@@ -265,21 +265,23 @@ const ListSubModulBelajar = () => {
                   </p>
                 </div>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate(`/sub-modul-belajar/add/${modulId}`)}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl shadow-lg text-white font-medium transition-all duration-300 hover:shadow-xl"
-                style={{
-                  background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
-                    currentColor,
-                    0.8
-                  )} 100%)`,
-                }}
-              >
-                <FaPlus />
-                Tambah Sub Modul
-              </motion.button>
+              {user?.role !== "siswa" && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate(`/sub-modul-belajar/add/${modulId}`)}
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl shadow-lg text-white font-medium transition-all duration-300 hover:shadow-xl"
+                  style={{
+                    background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                      currentColor,
+                      0.8
+                    )} 100%)`,
+                  }}
+                >
+                  <FaPlus />
+                  Tambah Sub Modul
+                </motion.button>
+              )}
             </div>
           </div>
         </motion.div>
@@ -319,13 +321,147 @@ const ListSubModulBelajar = () => {
           className="mb-8"
         >
           <div
-            className="p-4 rounded-xl shadow-lg"
+            className="p-3 sm:p-4 lg:p-4 rounded-xl shadow-lg"
             style={{
               backgroundColor: isDark ? "#1f2937" : "#ffffff",
               border: `1px solid ${getColorWithOpacity(currentColor, 0.2)}`,
             }}
           >
-            <div className="flex items-center gap-4">
+            {/* Mobile Layout (Stacked) */}
+            <div className="flex flex-col gap-3 sm:hidden">
+              {/* Search Input */}
+              <div className="relative">
+                <FaSearch
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm"
+                  style={{ color: currentColor }}
+                />
+                <input
+                  type="text"
+                  placeholder="Cari sub modul..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`w-full pl-9 pr-4 py-2.5 text-sm rounded-lg border transition-all duration-300 focus:outline-none ${
+                    isDark
+                      ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
+                      : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
+                  }`}
+                  style={{
+                    borderColor: getColorWithOpacity(currentColor, 0.3),
+                    boxShadow: `0 0 0 1px ${getColorWithOpacity(
+                      currentColor,
+                      0.1
+                    )}`,
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = currentColor;
+                    e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(
+                      currentColor,
+                      0.1
+                    )}`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = getColorWithOpacity(
+                      currentColor,
+                      0.3
+                    );
+                    e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(
+                      currentColor,
+                      0.1
+                    )}`;
+                  }}
+                />
+              </div>
+
+              {/* Results Count and Icon */}
+              <div className="flex items-center justify-between">
+                <span
+                  className={`text-xs ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  {filteredSubModuls.length} sub modul ditemukan
+                </span>
+                <div
+                  className="p-1.5 rounded-lg"
+                  style={{
+                    backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                  }}
+                >
+                  <MdSubdirectoryArrowRight
+                    className="text-sm"
+                    style={{ color: currentColor }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tablet Layout (Single row with wrapped content) */}
+            <div className="hidden sm:flex lg:hidden flex-col gap-3">
+              {/* Search Input */}
+              <div className="relative">
+                <FaSearch
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2"
+                  style={{ color: currentColor }}
+                />
+                <input
+                  type="text"
+                  placeholder="Cari sub modul belajar..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-300 focus:outline-none ${
+                    isDark
+                      ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
+                      : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
+                  }`}
+                  style={{
+                    borderColor: getColorWithOpacity(currentColor, 0.3),
+                    boxShadow: `0 0 0 1px ${getColorWithOpacity(
+                      currentColor,
+                      0.1
+                    )}`,
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = currentColor;
+                    e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(
+                      currentColor,
+                      0.1
+                    )}`;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = getColorWithOpacity(
+                      currentColor,
+                      0.3
+                    );
+                    e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(
+                      currentColor,
+                      0.1
+                    )}`;
+                  }}
+                />
+              </div>
+
+              {/* Results Count and Icon */}
+              <div className="flex items-center justify-center gap-2">
+                <span
+                  className={`text-sm ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
+                  {filteredSubModuls.length} sub modul ditemukan
+                </span>
+                <div
+                  className="p-2 rounded-lg"
+                  style={{
+                    backgroundColor: getColorWithOpacity(currentColor, 0.1),
+                  }}
+                >
+                  <MdSubdirectoryArrowRight style={{ color: currentColor }} />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Layout (Original horizontal layout) */}
+            <div className="hidden lg:flex items-center gap-4">
               <div className="flex-1 relative">
                 <FaSearch
                   className="absolute left-3 top-1/2 transform -translate-y-1/2"

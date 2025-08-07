@@ -29,6 +29,16 @@ const DetailNilai = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const getColorWithOpacity = (color, opacity) => {
+    const hex = color.replace("#", "");
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
+
+  const isDark = currentMode === "Dark";
+
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
@@ -375,6 +385,68 @@ const DetailNilai = () => {
 
                 {/* Question Content */}
                 <div className="p-4">
+
+                  {(item.soal.judul || item.soal.image || item.soal.cerita) && (
+                      <div
+                        className="mb-6 p-3 rounded-lg text-center"
+                        style={{
+                          backgroundColor: isDark ? "#374151" : "#f9fafb",
+                          borderColor: getColorWithOpacity(currentColor, 0.2),
+                        }}
+                      >
+                        {/* Judul - Centered */}
+                        {item.soal.judul && (
+                          <div className="mb-6">
+                            <h4
+                              className={`text-xl font-bold ${
+                                isDark ? "text-white" : "text-gray-800"
+                              }`}
+                            >
+                              {item.soal.judul}
+                            </h4>
+                          </div>
+                        )}
+
+                        {/* Image - Centered */}
+                        {item.soal.image && item.soal.url && (
+                          <div className="mb-6 flex justify-center">
+                            <div className="relative rounded-lg overflow-hidden max-w-lg">
+                              <img
+                                src={item.soal.url}
+                                alt={
+                                  item.soal.judul ||
+                                  `Gambar`
+                                }
+                                className="w-full h-auto max-h-80 object-contain rounded-lg shadow-md"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cerita/Konten - Justified Text */}
+                        {item.soal.cerita && (
+                          <div className="mb-4">
+                            <div
+                              className={`rounded-lg text-left ${
+                                isDark ? "bg-gray-700" : "bg-white"
+                              }`}
+                            >
+                              <div
+                                className={`text-sm sm:text-base leading-relaxed whitespace-pre-line text-justify ${
+                                  isDark ? "text-gray-300" : "text-gray-700"
+                                }`}
+                              >
+                                {item.soal.cerita}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                   {/* Question Text */}
                   <div className="mb-4">
                     <div className="text-gray-800 dark:text-white text-base leading-relaxed">

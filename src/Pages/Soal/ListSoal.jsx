@@ -384,6 +384,71 @@ const ListSoal = () => {
                   }}
                 >
                   <div className="p-6">
+                    {/* Header Section - Judul, Image, Cerita */}
+                    {(soal.judul || soal.image || soal.cerita) && (
+                      <div
+                        className="mb-6 p-6 rounded-lg border text-center"
+                        style={{
+                          backgroundColor: isDark ? "#374151" : "#f9fafb",
+                          borderColor: getColorWithOpacity(currentColor, 0.2),
+                        }}
+                      >
+                        {/* Judul - Centered */}
+                        {soal.judul && (
+                          <div className="mb-6">
+                            <h4
+                              className={`text-xl font-bold ${
+                                isDark ? "text-white" : "text-gray-800"
+                              }`}
+                            >
+                              {soal.judul}
+                            </h4>
+                          </div>
+                        )}
+
+                        {/* Image - Centered */}
+                        {soal.image && soal.url && (
+                          <div className="mb-6 flex justify-center">
+                            <div className="relative rounded-lg overflow-hidden max-w-lg">
+                              <img
+                                src={soal.url}
+                                alt={
+                                  soal.judul ||
+                                  `Gambar soal ${
+                                    indexOfFirstDetail + index + 1
+                                  }`
+                                }
+                                className="w-full h-auto max-h-80 object-contain rounded-lg shadow-md"
+                                onError={(e) => {
+                                  e.target.style.display = "none";
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Cerita/Konten - Justified Text */}
+                        {soal.cerita && (
+                          <div className="mb-4">
+                            <div
+                              className={`p-4 rounded-lg text-left ${
+                                isDark ? "bg-gray-700" : "bg-white"
+                              } border border-gray-200 dark:border-gray-600`}
+                            >
+                              <div
+                                className={`text-sm leading-relaxed whitespace-pre-line text-justify ${
+                                  isDark ? "text-gray-300" : "text-gray-600"
+                                }`}
+                              >
+                                {soal.cerita}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Nomor Soal dan Actions (existing code) */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <div
@@ -418,11 +483,25 @@ const ListSoal = () => {
                       </div>
                     </div>
 
+                    {/* Pertanyaan Soal */}
                     <div
                       className={`mb-4 p-4 rounded-lg ${
                         isDark ? "bg-gray-800" : "bg-gray-50"
                       }`}
                     >
+                      <div className="flex items-start gap-2 mb-2">
+                        <FaQuestionCircle
+                          className="text-sm mt-1 flex-shrink-0"
+                          style={{ color: currentColor }}
+                        />
+                        <span
+                          className={`text-sm font-medium ${
+                            isDark ? "text-gray-200" : "text-gray-700"
+                          }`}
+                        >
+                          Pertanyaan:
+                        </span>
+                      </div>
                       <p
                         className={`${
                           isDark ? "text-gray-200" : "text-gray-700"
@@ -432,6 +511,7 @@ const ListSoal = () => {
                       </p>
                     </div>
 
+                    {/* Pilihan Jawaban (existing code) */}
                     <div className="grid md:grid-cols-2 gap-3 mb-4">
                       {["A", "B", "C", "D", "E"].map((option) => {
                         const optionText = soal[`option${option}`];
@@ -477,6 +557,34 @@ const ListSoal = () => {
                           </div>
                         );
                       })}
+                    </div>
+
+                    {/* Informasi Tambahan */}
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+                      <div className="flex items-center justify-between text-xs">
+                        <div
+                          className={`${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          Dibuat:{" "}
+                          {new Date(soal.createdAt).toLocaleDateString(
+                            "id-ID",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )}
+                        </div>
+                        <div
+                          className={`${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          Oleh: {soal.user?.username || "Unknown"}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -885,151 +993,151 @@ const ListSoal = () => {
             </div>
           </motion.div>
         ) : viewMode === "card" ? (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {currentGroupItems.map((group, index) => (
-                <motion.div
-                  key={group.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.05 }}
-                  whileHover={{ scale: 1.02 }}
-                  className="rounded-xl shadow-lg overflow-hidden border transition-all duration-300 hover:shadow-xl"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {currentGroupItems.map((group, index) => (
+              <motion.div
+                key={group.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                className="rounded-xl shadow-lg overflow-hidden border transition-all duration-300 hover:shadow-xl"
+                style={{
+                  backgroundColor: isDark ? "#1f2937" : "#ffffff",
+                  borderColor: getColorWithOpacity(currentColor, 0.2),
+                }}
+              >
+                {/* Card Header */}
+                <div
+                  className="p-4"
                   style={{
-                    backgroundColor: isDark ? "#1f2937" : "#ffffff",
-                    borderColor: getColorWithOpacity(currentColor, 0.2),
+                    background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                      currentColor,
+                      0.8
+                    )} 100%)`,
                   }}
                 >
-                  {/* Card Header */}
-                  <div
-                    className="p-4"
-                    style={{
-                      background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
-                        currentColor,
-                        0.8
-                      )} 100%)`,
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MdQuiz className="text-white text-lg" />
-                        <span className="text-white font-semibold text-sm">
-                          Green Quiz
-                        </span>
-                      </div>
-                      <FaLayerGroup className="text-white text-lg" />
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <MdQuiz className="text-white text-lg" />
+                      <span className="text-white font-semibold text-sm">
+                        Green Quiz
+                      </span>
                     </div>
+                    <FaLayerGroup className="text-white text-lg" />
                   </div>
+                </div>
 
-                  {/* Card Content */}
-                  <div className="p-4">
-                    <h3
-                      className={`font-bold text-lg mb-2 ${
-                        isDark ? "text-white" : "text-gray-800"
-                      }`}
-                    >
-                      {group.judul}
-                    </h3>
+                {/* Card Content */}
+                <div className="p-4">
+                  <h3
+                    className={`font-bold text-lg mb-2 ${
+                      isDark ? "text-white" : "text-gray-800"
+                    }`}
+                  >
+                    {group.judul}
+                  </h3>
 
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center gap-2">
-                        <MdBook
-                          style={{ color: currentColor }}
-                          className="text-sm"
-                        />
-                        <span
-                          className={`text-sm font-bold ${
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }`}
-                        >
-                          Modul: {group.modul?.judul || "-"}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <MdClass
-                          style={{ color: currentColor }}
-                          className="text-sm"
-                        />
-                        <span
-                          className={`text-sm ${
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }`}
-                        >
-                          {group.kelas?.namaKelas || "Kelas tidak ditemukan"}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <MdAccessTime
-                          style={{ color: currentColor }}
-                          className="text-sm"
-                        />
-                        <span
-                          className={`text-sm ${
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }`}
-                        >
-                          {formatDuration(group.durasi)}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <FaQuestionCircle
-                          style={{ color: currentColor }}
-                          className="text-sm"
-                        />
-                        <span
-                          className={`text-sm ${
-                            isDark ? "text-gray-300" : "text-gray-600"
-                          }`}
-                        >
-                          {group.soals?.length || 0} soal
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-600">
-                      <button
-                        onClick={() => handleViewDetail(group)}
-                        className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-white text-sm font-medium transition-all duration-300 hover:shadow-lg"
-                        style={{
-                          background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
-                            currentColor,
-                            0.8
-                          )} 100%)`,
-                        }}
-                      >
-                        <FaEye />
-                        Detail
-                      </button>
-                      <button
-                        onClick={() => navigate(`/soal/edit-group/${group.id}`)}
-                        className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
-                          isDark
-                            ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-center gap-2">
+                      <MdBook
+                        style={{ color: currentColor }}
+                        className="text-sm"
+                      />
+                      <span
+                        className={`text-sm font-bold ${
+                          isDark ? "text-gray-300" : "text-gray-600"
                         }`}
                       >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => openDeleteModal(group)}
-                        className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all duration-300"
+                        Modul: {group.modul?.judul || "-"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <MdClass
+                        style={{ color: currentColor }}
+                        className="text-sm"
+                      />
+                      <span
+                        className={`text-sm ${
+                          isDark ? "text-gray-300" : "text-gray-600"
+                        }`}
                       >
-                        <FaTrash />
-                      </button>
+                        {group.kelas?.namaKelas || "Kelas tidak ditemukan"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <MdAccessTime
+                        style={{ color: currentColor }}
+                        className="text-sm"
+                      />
+                      <span
+                        className={`text-sm ${
+                          isDark ? "text-gray-300" : "text-gray-600"
+                        }`}
+                      >
+                        {formatDuration(group.durasi)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <FaQuestionCircle
+                        style={{ color: currentColor }}
+                        className="text-sm"
+                      />
+                      <span
+                        className={`text-sm ${
+                          isDark ? "text-gray-300" : "text-gray-600"
+                        }`}
+                      >
+                        {group.soals?.length || 0} soal
+                      </span>
                     </div>
                   </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
+
+                  {/* Actions */}
+                  <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-600">
+                    <button
+                      onClick={() => handleViewDetail(group)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-white text-sm font-medium transition-all duration-300 hover:shadow-lg"
+                      style={{
+                        background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                          currentColor,
+                          0.8
+                        )} 100%)`,
+                      }}
+                    >
+                      <FaEye />
+                      Detail
+                    </button>
+                    <button
+                      onClick={() => navigate(`/soal/edit-group/${group.id}`)}
+                      className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                        isDark
+                          ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      }`}
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(group)}
+                      className="flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-all duration-300"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        ) : (
           /* Table View */
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -7,7 +7,7 @@ import { BiSolidDashboard } from 'react-icons/bi';
 import { BsDoorOpen } from 'react-icons/bs';
 import { GiPlantSeed } from 'react-icons/gi';
 
-import LogoSMA from "../assets/Logo1.png";
+import Logo from "../assets/logo.png";
 import { useStateContext } from '../contexts/ContextProvider'
 
 const Sidebar = () => {
@@ -167,6 +167,12 @@ const Sidebar = () => {
               currentMode === 'Dark' ? 'text-white' : 'text-gray-800'
             }`}
           >
+            {/* Logo Image */}
+            <img 
+              src={Logo} 
+              alt="GreenSys Logo" 
+              className="w-8 h-8 object-contain"
+            />
             <div>
               <div className="flex items-center gap-1">
                 <span style={{ color: currentColor }}>Green</span>

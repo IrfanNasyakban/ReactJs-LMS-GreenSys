@@ -281,7 +281,7 @@ function PDFViewer() {
                 Back
               </button>
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/dashboard')}
                 className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               >
                 <FaHome />
@@ -336,14 +336,14 @@ function PDFViewer() {
       )}
 
       {/* PDF Viewer Container */}
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-0">
         {loading ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center">
-            <FaSpinner className="text-blue-500 text-6xl mx-auto mb-4 animate-spin" />
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 sm:p-12 text-center">
+            <FaSpinner className="text-blue-500 text-4xl sm:text-6xl mx-auto mb-4 animate-spin" />
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Loading PDF...
             </h3>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">
               Menggunakan proxy server untuk mengakses sertifikat
             </p>
           </div>
@@ -355,8 +355,141 @@ function PDFViewer() {
           >
             {/* PDF Controls */}
             {pdfPages.length > 0 && (
-              <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
-                <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="bg-gray-50 dark:bg-gray-700 px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-600">
+                {/* Mobile Layout (Stacked) */}
+                <div className="flex flex-col gap-3 sm:hidden">
+                  {/* Navigation Controls */}
+                  <div className="flex items-center justify-between">
+                    <button
+                      onClick={() => changePage(-1)}
+                      disabled={currentPdfPage <= 0}
+                      className="flex items-center gap-1 px-2 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm"
+                    >
+                      <FaChevronLeft className="text-xs" />
+                      Prev
+                    </button>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-600 dark:text-gray-300">Page</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max={pdfPages.length}
+                        value={currentPdfPage + 1}
+                        onChange={(e) => goToPage(parseInt(e.target.value) || 1)}
+                        className="w-12 px-1 py-1 border border-gray-300 dark:border-gray-600 rounded text-center text-xs dark:bg-gray-600 dark:text-white"
+                      />
+                      <span className="text-xs text-gray-600 dark:text-gray-300">
+                        of {pdfPages.length}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => changePage(1)}
+                      disabled={currentPdfPage >= pdfPages.length - 1}
+                      className="flex items-center gap-1 px-2 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors text-sm"
+                    >
+                      Next
+                      <FaChevronRight className="text-xs" />
+                    </button>
+                  </div>
+
+                  {/* Zoom Controls */}
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={zoomOut}
+                      className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      title="Zoom Out"
+                    >
+                      <FaSearchMinus className="text-sm" />
+                    </button>
+                    <span className="text-sm text-gray-600 dark:text-gray-300 min-w-[50px] text-center">
+                      {Math.round(scale * 100)}%
+                    </span>
+                    <button
+                      onClick={zoomIn}
+                      className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      title="Zoom In"
+                    >
+                      <FaSearchPlus className="text-sm" />
+                    </button>
+                    <button
+                      onClick={resetZoom}
+                      className="px-2 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-xs"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tablet Layout (Stacked but wider) */}
+                <div className="hidden sm:flex lg:hidden flex-col gap-3">
+                  {/* Navigation Controls */}
+                  <div className="flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => changePage(-1)}
+                      disabled={currentPdfPage <= 0}
+                      className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <FaChevronLeft />
+                      Previous
+                    </button>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600 dark:text-gray-300">Page</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max={pdfPages.length}
+                        value={currentPdfPage + 1}
+                        onChange={(e) => goToPage(parseInt(e.target.value) || 1)}
+                        className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-center text-sm dark:bg-gray-600 dark:text-white"
+                      />
+                      <span className="text-sm text-gray-600 dark:text-gray-300">
+                        of {pdfPages.length}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => changePage(1)}
+                      disabled={currentPdfPage >= pdfPages.length - 1}
+                      className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                      <FaChevronRight />
+                    </button>
+                  </div>
+
+                  {/* Zoom Controls */}
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      onClick={zoomOut}
+                      className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      title="Zoom Out"
+                    >
+                      <FaSearchMinus />
+                    </button>
+                    <span className="text-sm text-gray-600 dark:text-gray-300 min-w-[60px] text-center">
+                      {Math.round(scale * 100)}%
+                    </span>
+                    <button
+                      onClick={zoomIn}
+                      className="p-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      title="Zoom In"
+                    >
+                      <FaSearchPlus />
+                    </button>
+                    <button
+                      onClick={resetZoom}
+                      className="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
+                {/* Desktop Layout (Original horizontal layout) */}
+                <div className="hidden lg:flex items-center justify-between flex-wrap gap-4">
                   {/* Navigation Controls */}
                   <div className="flex items-center gap-3">
                     <button
@@ -424,19 +557,20 @@ function PDFViewer() {
             )}
 
             {/* PDF Document Display */}
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               {pdfPages.length > 0 ? (
                 <div>
                   {/* Current Page Display */}
-                  <div className="flex justify-center bg-gray-50 dark:bg-gray-900 min-h-[600px] p-6 rounded-lg">
-                    <div className="shadow-2xl">
+                  <div className="flex justify-center bg-gray-50 dark:bg-gray-900 p-3 sm:p-6 rounded-lg">
+                    <div className="shadow-2xl w-full max-w-full overflow-auto flex justify-center">
                       <img
                         src={pdfPages[currentPdfPage]?.imageUrl}
                         alt={`PDF Page ${currentPdfPage + 1}`}
                         className="max-w-full h-auto shadow-lg rounded-lg"
                         style={{ 
                           transform: `scale(${scale})`,
-                          transformOrigin: 'top center'
+                          transformOrigin: 'center center',
+                          maxHeight: scale > 1 ? 'none' : '80vh'
                         }}
                       />
                     </div>
@@ -444,11 +578,11 @@ function PDFViewer() {
 
                   {/* Page Thumbnails */}
                   {pdfPages.length > 1 && (
-                    <div className="mt-6">
+                    <div className="mt-4 sm:mt-6">
                       <h4 className="text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">
                         Halaman Lainnya:
                       </h4>
-                      <div className="flex gap-3 overflow-x-auto pb-3">
+                      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-3">
                         {pdfPages.map((page, index) => (
                           <button
                             key={index}
@@ -462,9 +596,9 @@ function PDFViewer() {
                             <img
                               src={page.imageUrl}
                               alt={`Page ${index + 1}`}
-                              className="w-20 h-28 object-cover rounded shadow-md"
+                              className="w-16 h-20 sm:w-20 sm:h-28 object-cover rounded shadow-md"
                             />
-                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-b">
+                            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-1 sm:px-2 py-1 rounded-b">
                               {index + 1}
                             </div>
                           </button>
@@ -475,8 +609,8 @@ function PDFViewer() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-96">
-                  <FaFilePdf className="text-gray-400 text-6xl mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No PDF content available</p>
+                  <FaFilePdf className="text-gray-400 text-4xl sm:text-6xl mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">No PDF content available</p>
                 </div>
               )}
             </div>

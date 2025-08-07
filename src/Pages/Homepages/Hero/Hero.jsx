@@ -94,17 +94,21 @@ const Hero = () => {
               transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
               className="relative"
             >
-              <img
-                src={HeroImg}
-                alt="Green Science Learning"
-                className="w-[350px] md:w-[550px] xl:w-[700px] rounded-2xl shadow-2xl border-4 border-green-200"
-              />
-              {/* Floating Elements */}
-              <div className="absolute -top-6 -right-6 bg-emerald-500 p-4 rounded-full shadow-lg animate-bounce">
-                <MdEco className="text-white text-2xl" />
-              </div>
-              <div className="absolute -bottom-6 -left-6 bg-green-500 p-4 rounded-full shadow-lg animate-pulse">
-                <GiPlantSeed className="text-white text-2xl" />
+              {/* Mobile: Image container with spacing for floating elements */}
+              <div className="relative mx-8 my-8 md:mx-0 md:my-0">
+                <img
+                  src={HeroImg}
+                  alt="Green Science Learning"
+                  className="w-[280px] sm:w-[320px] md:w-[550px] xl:w-[700px] rounded-2xl shadow-2xl border-4 border-green-200"
+                />
+                
+                {/* Floating Elements - Responsive positioning */}
+                <div className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 md:-top-6 md:-right-6 bg-emerald-500 p-2 sm:p-3 md:p-4 rounded-full shadow-lg animate-bounce">
+                  <MdEco className="text-white text-lg sm:text-xl md:text-2xl" />
+                </div>
+                <div className="absolute -bottom-3 -left-3 sm:-bottom-4 sm:-left-4 md:-bottom-6 md:-left-6 bg-green-500 p-2 sm:p-3 md:p-4 rounded-full shadow-lg animate-pulse">
+                  <GiPlantSeed className="text-white text-lg sm:text-xl md:text-2xl" />
+                </div>
               </div>
             </motion.div>
           </div>

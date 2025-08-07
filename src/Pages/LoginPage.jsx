@@ -231,8 +231,7 @@ const LoginPage = () => {
             className="text-center mt-8 text-sm text-gray-500"
           >
             <p>
-              © 2024 GreenSys - Green Science Learning Management System | SMA 1
-              Lhokseumawe
+              © 2025 GreenSys - Green Science Learning Management System
             </p>
           </motion.div>
         </div>
