@@ -7,7 +7,6 @@ import { useStateContext } from "../../contexts/ContextProvider";
 import { motion } from "framer-motion";
 import {
   FaLeaf,
-  FaSave,
   FaTimes,
   FaArrowLeft,
   FaLightbulb,
@@ -15,14 +14,16 @@ import {
   FaEye,
   FaEdit,
   FaInfoCircle,
+  FaBook,
+  FaUpload,
 } from "react-icons/fa";
 import {
   MdQuiz,
   MdLibraryBooks,
   MdRadioButtonChecked,
   MdRadioButtonUnchecked,
-  MdTipsAndUpdates,
   MdUpdate,
+  MdAutoStories,
 } from "react-icons/md";
 import { BsQuestionSquare, BsCheckCircle } from "react-icons/bs";
 import { GiPlantSeed } from "react-icons/gi";
@@ -42,6 +43,16 @@ const EditSoal = () => {
   const [error, setError] = useState("");
   const [showPreview, setShowPreview] = useState(false);
 
+  // Story feature states
+  const [showStory, setShowStory] = useState(false);
+  const [storyImage, setStoryImage] = useState(null);
+  const [storyImagePreview, setStoryImagePreview] = useState("");
+  const [storyText, setStoryText] = useState("");
+  const [judul, setJudul] = useState("");
+  const [existingImageUrl, setExistingImageUrl] = useState(""); // For existing image URL
+  const [removeImage, setRemoveImage] = useState(false); // Flag to remove image
+
+  const fileInputRef = useRef(null);
   const { currentColor, currentMode } = useStateContext();
 
   const { id } = useParams(); // soalId
@@ -88,13 +99,32 @@ const EditSoal = () => {
       setOriginalData(data);
       
       // Set form data
-      setSoal(data.soal); // Perbaikan: seharusnya lowercase
+      setSoal(data.soal);
       setOptionA(data.optionA);
       setOptionB(data.optionB);
       setOptionC(data.optionC);
       setOptionD(data.optionD);
       setOptionE(data.optionE || "");
       setCorrectAnswer(data.correctAnswer);
+      
+      // Set story data
+      setJudul(data.judul || "");
+      setStoryText(data.cerita || "");
+      
+      // Handle existing story image - API menggunakan field 'image' dan 'url'
+      if (data.image && data.url) {
+        setExistingImageUrl(data.image); // Simpan nama file
+        setStoryImagePreview(data.url); // Gunakan URL lengkap dari API
+      } else {
+        // Reset jika tidak ada gambar
+        setExistingImageUrl("");
+        setStoryImagePreview("");
+      }
+      
+      // Show story section if there's story data
+      if (data.judul || data.cerita || data.image) {
+        setShowStory(true);
+      }
       
       // Set group info if available
       if (data.groupSoal) {
@@ -110,37 +140,190 @@ const EditSoal = () => {
     }
   };
 
+  // Function untuk trigger file picker
+  const triggerFileUpload = () => {
+    if (fileInputRef.current) {
+      // Reset value dulu
+      fileInputRef.current.value = '';
+      // Trigger click
+      fileInputRef.current.click();
+    }
+  };
+
+  // Handle image upload dengan validasi
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Client-side validation
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
+      
+      // Check file size
+      if (file.size > maxSize) {
+        setError("Ukuran gambar harus kurang dari 10 MB");
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Check file type
+      if (!allowedTypes.includes(file.type)) {
+        setError("Format file harus PNG, JPG, JPEG, atau GIF");
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+      
+      // Clear any previous errors
+      setError("");
+      
+      setStoryImage(file);
+      setRemoveImage(false); // Reset remove flag when uploading new image
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setStoryImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Remove image completely
+  const handleRemoveImage = () => {
+    setStoryImage(null);
+    setStoryImagePreview("");
+    setRemoveImage(true); // Flag to indicate image should be removed
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Cancel new image upload (revert to existing)
+  const cancelImageChange = () => {
+    setStoryImage(null);
+    // Gunakan URL lengkap dari originalData jika ada
+    if (originalData && originalData.url) {
+      setStoryImagePreview(originalData.url);
+    } else {
+      setStoryImagePreview("");
+    }
+    setRemoveImage(false);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const updateSoal = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append("soal", soal);
-    formData.append("optionA", optionA);
-    formData.append("optionB", optionB);
-    formData.append("optionC", optionC);
-    formData.append("optionD", optionD);
-    formData.append("optionE", optionE);
-    formData.append("correctAnswer", correctAnswer);
-
-    const jsonData = {};
-    formData.forEach((value, key) => {
-      jsonData[key] = value;
-    });
-
     try {
       const token = localStorage.getItem("accessToken");
       const apiUrl = process.env.REACT_APP_URL_API;
-      await axios.patch(`${apiUrl}/soal/${id}`, jsonData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      
+      // Check if there are any image changes (new upload or removal)
+      const hasImageChanges = storyImage || removeImage;
+      
+      if (!hasImageChanges && showStory) {
+        // No image changes but story exists, send only text data as JSON
+        await axios.patch(`${apiUrl}/soal/${id}`, {
+          soal: soal,
+          optionA: optionA,
+          optionB: optionB,
+          optionC: optionC,
+          optionD: optionD,
+          optionE: optionE,
+          correctAnswer: correctAnswer,
+          judul: judul || "",
+          cerita: storyText || ""
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+      } else {
+        // Image changes detected or no story, use FormData
+        const formData = new FormData();
+        formData.append("soal", soal);
+        formData.append("optionA", optionA);
+        formData.append("optionB", optionB);
+        formData.append("optionC", optionC);
+        formData.append("optionD", optionD);
+        formData.append("optionE", optionE);
+        formData.append("correctAnswer", correctAnswer);
+
+        // Add story data if exists
+        if (showStory) {
+          if (judul) {
+            formData.append("judul", judul);
+          }
+          if (storyImage) {
+            formData.append("file", storyImage);
+          }
+          if (storyText) {
+            formData.append("cerita", storyText);
+          }
+          // If image was removed, send flag
+          if (removeImage) {
+            formData.append("removeImage", "true");
+          }
+        } else {
+          // If story section is hidden, remove all story data
+          formData.append("judul", "");
+          formData.append("cerita", "");
+          formData.append("removeImage", "true");
+        }
+
+        await axios.patch(`${apiUrl}/soal/${id}`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+      
       navigate("/data-soal");
     } catch (error) {
       console.error("Error updating soal:", error);
-      setError("Gagal memperbarui soal");
+      
+      // Handle specific error messages from backend
+      if (error.response) {
+        const { status, data } = error.response;
+        
+        switch (status) {
+          case 422:
+            // Validation errors (file size, file type, etc.)
+            setError(data.msg || "Terjadi kesalahan validasi");
+            break;
+          case 404:
+            setError("Soal tidak ditemukan");
+            break;
+          case 401:
+            setError("Sesi Anda telah berakhir. Silakan login kembali");
+            setTimeout(() => {
+              navigate("/login");
+            }, 2000);
+            break;
+          case 500:
+            setError("Terjadi kesalahan server. Silakan coba lagi");
+            break;
+          default:
+            setError(data.msg || "Terjadi kesalahan tidak terduga");
+        }
+      } else if (error.request) {
+        setError("Tidak dapat terhubung ke server. Periksa koneksi internet Anda");
+      } else {
+        setError("Terjadi kesalahan tidak terduga");
+      }
+      
       setIsSubmitting(false);
     }
   };
@@ -162,7 +345,12 @@ const EditSoal = () => {
       optionC !== originalData.optionC ||
       optionD !== originalData.optionD ||
       (optionE || "") !== (originalData.optionE || "") ||
-      correctAnswer !== originalData.correctAnswer
+      correctAnswer !== originalData.correctAnswer ||
+      (judul || "") !== (originalData.judul || "") ||
+      (storyText || "") !== (originalData.cerita || "") ||
+      storyImage !== null ||
+      removeImage ||
+      (!showStory && (originalData.judul || originalData.cerita || originalData.image))
     );
   };
 
@@ -289,7 +477,15 @@ const EditSoal = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded-lg"
           >
-            {error}
+            <div className="flex items-center justify-between">
+              <span>{error}</span>
+              <button
+                onClick={() => setError("")}
+                className="text-red-400 hover:text-red-600 transition-colors"
+              >
+                <FaTimes className="text-sm" />
+              </button>
+            </div>
           </motion.div>
         )}
 
@@ -328,6 +524,305 @@ const EditSoal = () => {
               {/* Form Content */}
               <div className="p-8">
                 <form onSubmit={updateSoal} className="space-y-8">
+                  {/* Story Section */}
+                  <div
+                    className="p-6 rounded-xl border"
+                    style={{
+                      backgroundColor: getColorWithOpacity(currentColor, 0.05),
+                      borderColor: getColorWithOpacity(currentColor, 0.2),
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <MdAutoStories style={{ color: currentColor }} />
+                        <h3
+                          className={`font-semibold text-lg ${
+                            isDark ? "text-white" : "text-gray-800"
+                          }`}
+                        >
+                          Cerita Soal (Opsional)
+                        </h3>
+                      </div>
+
+                      <motion.button
+                        type="button"
+                        onClick={() => setShowStory(!showStory)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                          showStory
+                            ? "text-white border-transparent"
+                            : `${
+                                isDark
+                                  ? "border-gray-600 text-gray-200 bg-gray-700 hover:bg-gray-600"
+                                  : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                              } border`
+                        }`}
+                        style={
+                          showStory
+                            ? {
+                                background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                                  currentColor,
+                                  0.8
+                                )} 100%)`,
+                              }
+                            : {}
+                        }
+                      >
+                        <FaBook />
+                        {showStory ? "Sembunyikan Cerita" : "Tampilkan Cerita"}
+                      </motion.button>
+                    </div>
+
+                    {showStory && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="space-y-6"
+                      >
+                        {/* Judul */}
+                        <div>
+                          <label
+                            className={`block text-sm font-medium mb-3 ${
+                              isDark ? "text-gray-200" : "text-gray-700"
+                            }`}
+                          >
+                            Judul Cerita
+                          </label>
+
+                          <div className="relative">
+                            <input
+                              type="text"
+                              name="judul"
+                              placeholder="Masukan Judul Cerita"
+                              className={`block w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
+                                isDark
+                                  ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400"
+                                  : "bg-white text-gray-900 border-gray-300 placeholder-gray-500"
+                              }`}
+                              style={{
+                                borderColor: getColorWithOpacity(
+                                  currentColor,
+                                  0.3
+                                ),
+                                boxShadow: `0 0 0 1px ${getColorWithOpacity(
+                                  currentColor,
+                                  0.1
+                                )}`,
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = currentColor;
+                                e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(
+                                  currentColor,
+                                  0.1
+                                )}`;
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor =
+                                  getColorWithOpacity(currentColor, 0.3);
+                                e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(
+                                  currentColor,
+                                  0.1
+                                )}`;
+                              }}
+                              value={judul}
+                              onChange={(e) => setJudul(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div>
+                          <label
+                            className={`block text-sm font-medium mb-3 ${
+                              isDark ? "text-gray-200" : "text-gray-700"
+                            }`}
+                          >
+                            Gambar Cerita
+                          </label>
+
+                          {/* Hidden file input */}
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+
+                          {/* Current/New Image Display */}
+                          {storyImagePreview && !removeImage && (
+                            <div className="relative mb-4">
+                              <div 
+                                className="relative rounded-xl overflow-hidden border"
+                                style={{ borderColor: getColorWithOpacity(currentColor, 0.3) }}
+                              >
+                                <img
+                                  src={storyImagePreview}
+                                  alt="Story preview"
+                                  className="w-full h-64 object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+                                  <FaEye className="text-white text-2xl" />
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between mt-3">
+                                <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                                  {storyImage ? `Gambar baru: ${storyImage.name}` : 'Gambar saat ini'}
+                                </p>
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={triggerFileUpload}
+                                    className={`px-3 py-1 text-xs rounded-lg transition-colors duration-300 ${
+                                      isDark 
+                                        ? 'bg-blue-600 text-white hover:bg-blue-500' 
+                                        : 'bg-blue-500 text-white hover:bg-blue-600'
+                                    }`}
+                                  >
+                                    {storyImage ? 'Ganti Lagi' : 'Ganti'}
+                                  </button>
+                                  {storyImage && (
+                                    <button
+                                      type="button"
+                                      onClick={cancelImageChange}
+                                      className="px-3 py-1 text-xs bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors duration-300"
+                                    >
+                                      Batal
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={handleRemoveImage}
+                                    className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300"
+                                  >
+                                    Hapus
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Upload Area - show if no image or image removed */}
+                          {(!storyImagePreview || removeImage) && (
+                            <div className="relative mb-4">
+                              {removeImage && (
+                                <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                  <p className="text-sm text-red-700">
+                                    ⚠️ Gambar akan dihapus. Upload gambar baru atau batal untuk mempertahankan gambar yang ada.
+                                  </p>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setRemoveImage(false);
+                                      // Gunakan URL lengkap dari originalData
+                                      if (originalData && originalData.url) {
+                                        setStoryImagePreview(originalData.url);
+                                      } else {
+                                        setStoryImagePreview("");
+                                      }
+                                    }}
+                                    className="mt-2 px-3 py-1 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-300"
+                                  >
+                                    Batalkan Penghapusan
+                                  </button>
+                                </div>
+                              )}
+                              
+                              <button
+                                type="button"
+                                onClick={triggerFileUpload}
+                                className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl transition-all duration-300 hover:border-opacity-100 ${
+                                  isDark 
+                                    ? 'border-gray-600 bg-gray-700 hover:bg-gray-600' 
+                                    : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+                                }`}
+                                style={{
+                                  borderColor: getColorWithOpacity(currentColor, 0.3),
+                                }}
+                              >
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                  <FaUpload 
+                                    className="mb-2 text-2xl" 
+                                    style={{ color: currentColor }}
+                                  />
+                                  <p className={`mb-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
+                                    <span className="font-semibold">Klik untuk upload</span> atau drag & drop
+                                  </p>
+                                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                                    PNG, JPG, JPEG, GIF (MAX. 10MB)
+                                  </p>
+                                </div>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Story Text Editor */}
+                        <div>
+                          <label
+                            className={`block text-sm font-medium mb-3 ${
+                              isDark ? "text-gray-200" : "text-gray-700"
+                            }`}
+                          >
+                            Teks Cerita
+                          </label>
+
+                          <textarea
+                            rows="16"
+                            placeholder="Tulis cerita yang menarik untuk memberikan konteks soal..."
+                            className={`block w-full px-4 py-3 rounded-xl border transition-all duration-300 focus:outline-none resize-none ${
+                              isDark
+                                ? "bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:border-blue-500"
+                                : "bg-white text-gray-900 border-gray-300 placeholder-gray-500 focus:border-blue-500"
+                            }`}
+                            style={{
+                              borderColor: getColorWithOpacity(
+                                currentColor,
+                                0.3
+                              ),
+                              boxShadow: `0 0 0 1px ${getColorWithOpacity(
+                                currentColor,
+                                0.1
+                              )}`,
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.borderColor = currentColor;
+                              e.target.style.boxShadow = `0 0 0 3px ${getColorWithOpacity(
+                                currentColor,
+                                0.1
+                              )}`;
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.borderColor = getColorWithOpacity(
+                                currentColor,
+                                0.3
+                              );
+                              e.target.style.boxShadow = `0 0 0 1px ${getColorWithOpacity(
+                                currentColor,
+                                0.1
+                              )}`;
+                            }}
+                            value={storyText}
+                            onChange={(e) => setStoryText(e.target.value)}
+                          />
+
+                          <p
+                            className={`mt-2 text-sm ${
+                              isDark ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          >
+                            Cerita dapat membantu siswa memahami konteks soal
+                            dengan lebih baik. Gunakan bahasa yang menarik dan
+                            mudah dipahami.
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+
                   {/* Pertanyaan Section */}
                   <div
                     className="p-6 rounded-xl border"
@@ -832,6 +1327,27 @@ const EditSoal = () => {
                   </div>
                 </div>
                 <div className="p-4">
+                  {/* Story Preview */}
+                  {showStory && (judul || storyImagePreview || storyText) && !removeImage && (
+                    <div className={`mb-6 p-4 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
+                      <h4 className={`font-bold text-lg mb-3 ${isDark ? 'text-gray-200' : 'text-gray-700'}`} style={{ color: currentColor }}>
+                        {judul || "Cerita Soal"}
+                      </h4>
+                      {storyImagePreview && (
+                        <img
+                          src={storyImagePreview}
+                          alt="Story preview"
+                          className="w-full h-32 object-cover rounded-lg mb-3"
+                        />
+                      )}
+                      {storyText && (
+                        <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
+                          {storyText}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  
                   <div className={`mb-4 p-4 rounded-lg ${isDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
                     <p className={`font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
                       {soal}
@@ -932,6 +1448,38 @@ const EditSoal = () => {
                         </p>
                       </div>
                     )}
+
+                    {(judul || "") !== (originalData.judul || "") && (
+                      <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700">
+                        <p className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-1">
+                          Judul cerita diubah
+                        </p>
+                      </div>
+                    )}
+
+                    {(storyText || "") !== (originalData.cerita || "") && (
+                      <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700">
+                        <p className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-1">
+                          Teks cerita diubah
+                        </p>
+                      </div>
+                    )}
+
+                    {storyImage && (
+                      <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700">
+                        <p className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-1">
+                          Gambar cerita diubah
+                        </p>
+                      </div>
+                    )}
+
+                    {removeImage && (
+                      <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700">
+                        <p className="text-xs font-medium text-amber-700 dark:text-amber-300 mb-1">
+                          Gambar cerita dihapus
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -1007,6 +1555,32 @@ const EditSoal = () => {
                           }`}
                         >
                           Gunakan preview untuk mengecek tampilan
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <BsCheckCircle
+                          style={{ color: currentColor }}
+                          className="text-sm mt-0.5 flex-shrink-0"
+                        />
+                        <span
+                          className={`text-xs ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          Cerita membantu siswa memahami konteks
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <BsCheckCircle
+                          style={{ color: currentColor }}
+                          className="text-sm mt-0.5 flex-shrink-0"
+                        />
+                        <span
+                          className={`text-xs ${
+                            isDark ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          Gambar cerita bersifat opsional
                         </span>
                       </div>
                     </div>
