@@ -425,7 +425,6 @@ const AddSoal = () => {
                             <input
                               type="text"
                               name="judul"
-                              required
                               placeholder="Masukan Judul"
                               className={`mb-3 block w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 rounded-lg sm:rounded-xl border transition-all duration-300 focus:outline-none text-sm sm:text-base ${
                                 isDark

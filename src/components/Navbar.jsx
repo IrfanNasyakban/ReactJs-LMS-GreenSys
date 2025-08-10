@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 
 import { AiOutlineMenu } from "react-icons/ai";
-import { RiNotification3Line } from "react-icons/ri";
 import { MdKeyboardArrowDown, MdScience } from "react-icons/md";
 import { FaLeaf } from "react-icons/fa";
 
@@ -219,15 +218,6 @@ const Navbar = () => {
 
       {/* User Profile Section */}
       <div className="flex items-center gap-3 relative z-50">
-        {/* Notifications */}
-        <NavButton
-          title="Notifications"
-          customFunc={() => handleClick("notification")}
-          icon={<RiNotification3Line />}
-          badge={unreadCount}
-          currentColor={currentColor}
-          currentMode={currentMode}
-        />
 
         {/* User Profile Dropdown */}
         <div

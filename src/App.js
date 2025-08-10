@@ -5,7 +5,7 @@ import { FaLeaf } from "react-icons/fa";
 import { Tooltip } from "react-tooltip";
 
 import { Navbar, Footer, Sidebar, ThemeSettings, PDFViewer } from "./components";
-import { Dashboard, ProfileSaya, ListSiswa, EditDataSiswa, ListGuru, EditDataGuru, ListKelas, AddKelas, EditKelas, GantiPassword, ListUsers, AddUsers, AddProfileGuru, AddProfileSiswa, AddModulBelajar, ListModulBelajar, EditModulBelajar, ListSubModulBelajar, AddSubModulBelajar, EditSubModulBelajar, ViewContent, CetakSertifikat, ListCertificate, ListSoal, AddGroupSoal, EditGroupSoal, AddSoal, EditSoal, ListQuiz, StartQuiz, HasilAkhir, ListDataNilai, NilaiSaya, DetailNilai } from "./Pages";
+import { Page404, Dashboard, ProfileSaya, ListSiswa, EditDataSiswa, ListGuru, EditDataGuru, ListKelas, AddKelas, EditKelas, GantiPassword, ListUsers, AddUsers, AddProfileGuru, AddProfileSiswa, AddModulBelajar, ListModulBelajar, EditModulBelajar, ListSubModulBelajar, AddSubModulBelajar, EditSubModulBelajar, ViewContent, CetakSertifikat, ListCertificate, ListSoal, AddGroupSoal, EditGroupSoal, AddSoal, EditSoal, ListQuiz, StartQuiz, HasilAkhir, ListDataNilai, NilaiSaya, DetailNilai } from "./Pages";
 
 import { useStateContext } from "./contexts/ContextProvider";
 
@@ -19,6 +19,7 @@ const AppContent = () => {
   const { activeMenu, themeSettings, setThemeSettings, currentColor, currentMode } = useStateContext();
   const location = useLocation();
   const isHomepage = location.pathname === "/";
+  const isError404 = location.pathname === "/page-not-found";
   const isLoginPage = location.pathname === "/login";
   const isForgetPassword = location.pathname === "/forget-password";
   const isResetPassword = location.pathname.startsWith("/reset-password/");
@@ -58,7 +59,7 @@ const AppContent = () => {
     <div className={`app-container ${currentMode === 'Dark' ? 'dark' : ''}`}>
       <div className="flex relative dark:bg-gray-900 bg-gray-50 min-h-screen">
         {/* Green Science Settings Button */}
-        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && (
+        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isError404 && (
           <div className="fixed right-4 bottom-4 z-[9999]">
             <button
               type="button"
@@ -86,7 +87,7 @@ const AppContent = () => {
         )}
 
         {/* Sidebar with Green Science Theme */}
-        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && activeMenu ? (
+        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isError404 && activeMenu ? (
           <div 
             className="w-72 fixed sidebar transition-all duration-300 z-40"
             style={{
@@ -99,7 +100,7 @@ const AppContent = () => {
           >
             <Sidebar />
           </div>
-        ) : !isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword ? (
+        ) : !isHomepage && !isLoginPage && !isForgetPassword && !isError404 && !isResetPassword ? (
           <div className="w-0 transition-all duration-300">
             <Sidebar />
           </div>
@@ -108,7 +109,7 @@ const AppContent = () => {
         {/* Main Content Area */}
         <div
           className={`min-h-screen w-full transition-all duration-300 ${
-            activeMenu && !isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword 
+            activeMenu && !isHomepage && !isLoginPage && !isForgetPassword && !isError404 && !isResetPassword 
               ? "md:ml-72" 
               : "ml-0"
           }`}
@@ -119,7 +120,7 @@ const AppContent = () => {
           }}
         >
           {/* Navbar */}
-          {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && (
+          {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isError404 && (
             <div 
               className="sticky top-0 w-full z-30 transition-all duration-300"
               style={{
@@ -185,21 +186,12 @@ const AppContent = () => {
               <Route path="/nilai" element={<ListDataNilai />} />
               <Route path="/nilai-saya" element={<NilaiSaya />} />
               <Route path="/detail-nilai/:id" element={<DetailNilai />} />
+
+              <Route path="/page-not-found" element={<Page404 />} />
               
               {/* Uncomment these routes as needed */}
               {/* 
-              <Route path="/data-soal/:id" element={<EditSoal />} />
-              <Route path="/quiz" element={<ListQuiz />} />
               
-              <Route path="/start-quiz-again/:id" element={<StartQuizLagi />} />
-              
-              <Route path="/nilai-saya" element={<NilaiSaya />} />
-              <Route path="/nilai-saya/:id" element={<DetailNilaiSaya />} />
-              
-    
-              
-              
-              <Route path="/users/:id" element={<EditUsers />} />
               
               
               
@@ -210,7 +202,7 @@ const AppContent = () => {
           </div>
 
           {/* Footer */}
-          {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && <Footer />}
+          {!isHomepage && !isLoginPage && !isForgetPassword && !isError404 && !isResetPassword && <Footer />}
         </div>
       </div>
 
