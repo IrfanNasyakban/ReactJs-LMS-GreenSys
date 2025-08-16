@@ -203,7 +203,7 @@ const ListKelas = () => {
                   <p
                     className={`${isDark ? "text-gray-300" : "text-gray-600"}`}
                   >
-                    Manajemen kelas Green Science - SMA 1 Lhokseumawe
+                    Manajemen kelas Green Science
                   </p>
                 </div>
               </div>

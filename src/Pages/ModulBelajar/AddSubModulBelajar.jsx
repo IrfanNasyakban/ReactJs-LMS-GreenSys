@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -21,11 +22,10 @@ import {
   FaPlayCircle,
   FaYoutube,
   FaLayerGroup,
-  FaFilePdf,
-  FaDownload
+  FaFilePdf
 } from "react-icons/fa";
 import { MdLibraryBooks, MdDescription, MdSubdirectoryArrowRight } from "react-icons/md";
-import { BsFileEarmarkText, BsCollection, BsFileEarmarkPdf } from "react-icons/bs";
+import { BsFileEarmarkText, BsCollection } from "react-icons/bs";
 
 const AddSubModulBelajar = () => {
   const [subJudul, setSubJudul] = useState("");
@@ -928,7 +928,7 @@ const AddSubModulBelajar = () => {
                   <div className="flex items-center justify-between pt-6">
                     <motion.button
                       type="button"
-                      onClick={() => navigate(`/sub-modul-belajar/${modulId}`)}
+                      onClick={() => navigate(`/sub-modul-belajar/detail/${modulId}`)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`flex items-center gap-2 px-6 py-3 border rounded-xl text-sm font-medium transition-all duration-300 ${

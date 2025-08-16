@@ -1,9 +1,10 @@
 import React from "react";
 import HeroImg from "../../../assets/heroimg.jpg";
-import { FaPlay, FaLeaf, FaRecycle } from "react-icons/fa";
-import { MdScience, MdEco } from "react-icons/md";
+import { FaLeaf, FaRecycle } from "react-icons/fa";
+import { MdEco } from "react-icons/md";
 import { GiPlantSeed } from "react-icons/gi";
 import { motion } from "framer-motion";
+import Logo from "../../../assets/logo.png";
 
 const Hero = () => {
   return (
@@ -35,9 +36,11 @@ const Hero = () => {
                 transition={{ duration: 0.6 }}
                 className="flex items-center gap-2 justify-center md:justify-start"
               >
-                <div className="bg-emerald-500 p-2 rounded-full">
-                  <MdScience className="text-white text-xl" />
-                </div>
+                <img
+                              src={Logo} // ganti dengan path/logo kamu
+                              alt="GreenSys Logo"
+                              className="w-8 h-8 object-contain"
+                            />
                 <p className="text-emerald-700 uppercase font-bold text-sm bg-emerald-100 px-3 py-1 rounded-full">
                   Green Science Learning Platform
                 </p>

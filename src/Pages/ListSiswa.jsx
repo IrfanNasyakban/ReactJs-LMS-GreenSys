@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../features/authSlice";
 import { motion } from "framer-motion";
@@ -12,16 +13,14 @@ import {
   FaLeaf,
   FaUserGraduate,
   FaSearch,
-  FaDownload,
 } from "react-icons/fa";
-import { MdScience, MdEco, MdNaturePeople } from "react-icons/md";
+import { MdScience, MdNaturePeople } from "react-icons/md";
 import { GiPlantSeed } from "react-icons/gi";
 
 const ListSiswa = () => {
   const [siswa, setSiswa] = useState([]);
   const [filteredSiswa, setFilteredSiswa] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [classStats, setClassStats] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterClass, setFilterClass] = useState("");
   const [filterGender, setFilterGender] = useState("");
@@ -29,7 +28,6 @@ const ListSiswa = () => {
   const { currentColor, currentMode } = useStateContext();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(getMe());
@@ -111,20 +109,6 @@ const ListSiswa = () => {
       if (student.gender === "Perempuan") classSummary[kelasId].femaleCount++;
       if (student.umur) classSummary[kelasId].ageSum += parseInt(student.umur);
     });
-
-    const statsArray = Object.values(classSummary).map((kelas) => ({
-      ...kelas,
-      avgAge:
-        kelas.ageSum > 0 ? Math.round(kelas.ageSum / kelas.totalSiswa) : 0,
-      malePercentage: Math.round((kelas.maleCount / kelas.totalSiswa) * 100),
-      femalePercentage: Math.round(
-        (kelas.femaleCount / kelas.totalSiswa) * 100
-      ),
-    }));
-
-    setClassStats(
-      statsArray.sort((a, b) => a.namaKelas.localeCompare(b.namaKelas))
-    );
   };
 
   const calculateAge = (birthDate) => {
@@ -232,7 +216,7 @@ const ListSiswa = () => {
                     currentMode === "Dark" ? "text-gray-300" : "text-gray-600"
                   }`}
                 >
-                  Data siswa pembelajar Green Science - SMA 1 Lhokseumawe
+                  Data siswa pembelajar Green Science
                 </p>
               </div>
             </div>

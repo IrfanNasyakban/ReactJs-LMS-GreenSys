@@ -171,7 +171,7 @@ const ListGuru = () => {
                   Green <span style={{ color: currentColor }}>Educators</span>
                 </h1>
                 <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Data guru pengajar Green Science - SMA 1 Lhokseumawe
+                  Data guru pengajar Green Science
                 </p>
               </div>
             </div>
