@@ -76,6 +76,40 @@ const CetakSertifikat = () => {
   // Template URL - ganti dengan image (JPG/PNG)
   const templateUrl = `${process.env.REACT_APP_URL_API}/templates/certificate-template.jpg`;
 
+  const formatTanggalIndonesia = (date) => {
+    const bulanIndonesia = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    let tanggalObj;
+
+    // Jika input adalah string, parse ke Date object
+    if (typeof date === "string") {
+      tanggalObj = new Date(date);
+    } else if (date instanceof Date) {
+      tanggalObj = date;
+    } else {
+      tanggalObj = new Date(); // gunakan tanggal sekarang jika input tidak valid
+    }
+
+    const hari = tanggalObj.getDate();
+    const bulan = bulanIndonesia[tanggalObj.getMonth()];
+    const tahun = tanggalObj.getFullYear();
+
+    return `${hari} ${bulan} ${tahun}`;
+  };
+
   useEffect(() => {
     dispatch(getMe());
   }, [dispatch]);
@@ -108,15 +142,10 @@ const CetakSertifikat = () => {
       setError("");
 
       // Load data in parallel for better performance
-      await Promise.all([
-        getProfileSiswa(),
-        getModulById(),
-        getNilaiById()
-      ]);
+      await Promise.all([getProfileSiswa(), getModulById(), getNilaiById()]);
 
       // Check for existing certificate after all data is loaded
       await checkExistingCertificate();
-
     } catch (error) {
       console.error("Error loading data:", error);
       setError("Gagal memuat data. Silakan coba lagi.");
@@ -189,6 +218,105 @@ const CetakSertifikat = () => {
     }
   };
 
+  const drawModuleTitle = (ctx, canvas, modulData) => {
+    // Prepare the text
+    const moduleText = modulData.judul;
+    const maxWidth = canvas.width * 0.6; // 70% of canvas width for text wrapping
+
+    // Set initial font properties
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#02612f"; // Dark green color
+
+    // Calculate font size based on canvas size and text length
+    let fontSize = Math.min(
+      canvas.width * 0.03, // Base size relative to canvas width
+      Math.max(36, canvas.width / (moduleText.length * 0.8)) // Minimum 36px, adjusted for text length
+    );
+
+    // Set the font with multiple fallbacks for better compatibility
+    ctx.font = `bold ${fontSize}px "Playfair Display", "Times New Roman", "Georgia", serif`;
+
+    // Check if text fits in one line, if not, wrap it
+    const textMetrics = ctx.measureText(moduleText);
+
+    if (textMetrics.width > maxWidth) {
+      // Text wrapping logic for long module titles
+      let line1 = "";
+
+      // Draw two lines with proper spacing
+      const startY = canvas.height * 0.485; // Slightly higher to accommodate two lines
+
+      // Add subtle shadow effect
+      ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
+      ctx.shadowBlur = 3;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+
+      // Draw first line
+      ctx.fillText(line1.trim(), canvas.width / 2, startY);
+    } else {
+      // Single line - center it perfectly
+      const yPosition = canvas.height * 0.5;
+
+      // Add subtle shadow effect
+      ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
+      ctx.shadowBlur = 3;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+
+      // Draw the text
+      ctx.fillText(moduleText, canvas.width / 2, yPosition);
+    }
+
+    // Reset shadow
+    ctx.shadowColor = "transparent";
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Optional: Add decorative elements around the text
+    drawDecorativeElements(ctx, canvas);
+  };
+
+  // Optional decorative elements function
+  const drawDecorativeElements = (ctx, canvas) => {
+    const centerX = canvas.width / 2;
+    const decorY = canvas.height * 0.53; // Below the text
+
+    // Save current context
+    ctx.save();
+
+    // Draw small decorative line elements
+    ctx.strokeStyle = "#10b981"; // Emerald color
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+
+    // Left decorative line
+    ctx.beginPath();
+    ctx.moveTo(centerX - 100, decorY);
+    ctx.lineTo(centerX - 40, decorY);
+    ctx.stroke();
+
+    // Right decorative line
+    ctx.beginPath();
+    ctx.moveTo(centerX + 40, decorY);
+    ctx.lineTo(centerX + 100, decorY);
+    ctx.stroke();
+
+    // Small decorative dots
+    ctx.fillStyle = "#10b981";
+    ctx.beginPath();
+    ctx.arc(centerX - 30, decorY, 3, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(centerX + 30, decorY, 3, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Restore context
+    ctx.restore();
+  };
+
   const checkExistingCertificate = async () => {
     if (!siswaData?.id) return;
 
@@ -203,8 +331,8 @@ const CetakSertifikat = () => {
 
       // ✅ Check for existing certificate with nilaiId
       const existingCert = response.data.find(
-        (cert) => 
-          cert.modulId === parseInt(modulId) && 
+        (cert) =>
+          cert.modulId === parseInt(modulId) &&
           cert.siswaId === siswaData.id &&
           cert.nilaiId === parseInt(nilaiId)
       );
@@ -241,56 +369,75 @@ const CetakSertifikat = () => {
     });
 
     // ✅ Enhanced certificate content with score details
-    
-    // Draw nama siswa (center, larger font)
-    ctx.font = "bold 84px Times, serif";
-    ctx.fillStyle = "#1e3a8a"; // blue-900
+
+    // Draw no sertifikat (center, larger font)
+    ctx.font = "normal 40px Times, serif";
+    ctx.fillStyle = "#000000"; // black
     ctx.textAlign = "center";
-    ctx.fillText(siswaData.nama, canvas.width / 2, canvas.height * 0.45);
+    const certId = `CERT-${siswaData.nis}-${modulData.id}-${nilaiData.id}`;
+    const certX = canvas.width / 2;
+    const certY = canvas.height * 0.18;
+    ctx.fillText(`${certId}`, canvas.width / 2, canvas.height * 0.18);
+
+    const textMetrics = ctx.measureText(certId);
+    const textWidth = textMetrics.width;
+
+    // Draw underline
+    ctx.strokeStyle = "#000000"; // Same color as text
+    ctx.lineWidth = 2; // Thickness of underline
+    ctx.lineCap = "round"; // Rounded line ends
+
+    ctx.beginPath();
+    ctx.moveTo(certX - textWidth / 2, certY + 8); // Start 8px below text baseline
+    ctx.lineTo(certX + textWidth / 2, certY + 8); // End at text width
+    ctx.stroke();
+
+    // Draw nama siswa (center, larger font)
+    ctx.font = "normal 92px Cinzel, Times, serif";
+    ctx.fillStyle = "#02612f"; // green-900
+    ctx.textAlign = "center";
+    ctx.fillText(
+      siswaData.nama.toUpperCase(),
+      canvas.width / 2,
+      canvas.height * 0.37
+    );
 
     // Draw judul modul (below nama)
-    ctx.font = "italic 54px Times, serif";
-    ctx.fillStyle = "#374151"; // gray-700
-    ctx.fillText(`"telah menyelesaikan modul ${modulData.judul}"`, canvas.width / 2, canvas.height * 0.51);
-
-    // ✅ Draw score details (enhanced)
-    const score = parseFloat(nilaiData.skor).toFixed(0);
-    
-    // Main score
-    ctx.font = "bold 48px Arial, sans-serif";
-    ctx.fillStyle = "#059669"; // green-600
-    ctx.fillText(
-      `dengan nilai: ${score}`,
-      canvas.width / 2,
-      canvas.height * 0.56
-    );
+    drawModuleTitle(ctx, canvas, modulData);
 
     // ✅ Enhanced bottom section
     ctx.textAlign = "left";
-    const infoStartX = canvas.width * 0.65;
-    const infoStartY = canvas.height * 0.82;
-    const lineHeight = canvas.height * 0.03;
 
     // Tanggal
-    ctx.font = "24px Arial, sans-serif";
-    ctx.fillStyle = "#4b5563"; // gray-600
-    ctx.fillText(`Tanggal: ${currentDate}`, infoStartX, infoStartY);
+    ctx.font = "normal 36px Poppins, Arial, sans-serif";
+    ctx.fillStyle = "#000000"; // black
+    ctx.fillText(currentDate, canvas.width * 0.77, canvas.height * 0.765);
 
-    // NIS
-    ctx.font = "20px Arial, sans-serif";
-    ctx.fillStyle = "#6b7280"; // gray-500
-    ctx.fillText(`NIS: ${siswaData.nis}`, infoStartX, infoStartY + lineHeight);
+    // Durasi
+    ctx.font = "normal 36px Poppins, Arial, sans-serif";
+    ctx.fillStyle = "#000000"; // black
+    ctx.fillText(
+      nilaiData.groupSoal.durasi + " Jam",
+      canvas.width * 0.353,
+      canvas.height * 0.77
+    );
 
-    // Kelas (if available)
-    if (siswaData.kelas) {
-      ctx.fillText(`Kelas: ${siswaData.kelas.namaKelas}`, infoStartX, infoStartY + (lineHeight * 2));
-    }
+    // Tanggal Penyelesaian
+    ctx.font = "normal 36px Poppins, Arial, sans-serif";
+    ctx.fillStyle = "#000000"; // black
+    ctx.fillText(
+      formatTanggalIndonesia(nilaiData.updatedAt),
+      canvas.width * 0.353,
+      canvas.height * 0.809
+    );
 
-    // Certificate ID untuk tracking
-    ctx.font = "16px Arial, sans-serif";
-    ctx.fillStyle = "#9ca3af"; // gray-400
-    const certId = `CERT-${siswaData.nis}-${modulData.id}-${nilaiData.id}`;
-    ctx.fillText(`ID: ${certId}`, infoStartX, infoStartY + (lineHeight * 3));
+    // ✅ Draw score details (enhanced)
+    const score = parseFloat(nilaiData.skor).toFixed(0);
+
+    // Main score
+    ctx.font = "normal 36px Poppins, Arial, sans-serif";
+    ctx.fillStyle = "#000000"; // black
+    ctx.fillText(score, canvas.width * 0.353, canvas.height * 0.8443);
 
     setCanvasReady(true);
   };
@@ -353,17 +500,20 @@ const CetakSertifikat = () => {
 
       setCertificateData(response.data.certificate);
       setSuccess("Sertifikat berhasil digenerate!");
-      
+
       // ✅ Show additional info from response
       if (response.data.additionalInfo) {
-        console.log("Certificate generated with grade:", response.data.additionalInfo.grade);
+        console.log(
+          "Certificate generated with grade:",
+          response.data.additionalInfo.grade
+        );
       }
-
     } catch (error) {
       console.error("Error generating certificate:", error);
       if (error.response?.status === 400) {
         setError(
-          error.response.data.msg || "Certificate sudah ada atau data tidak valid"
+          error.response.data.msg ||
+            "Certificate sudah ada atau data tidak valid"
         );
       } else if (error.response?.status === 404) {
         setError("Data nilai atau modul tidak ditemukan");
@@ -383,7 +533,9 @@ const CetakSertifikat = () => {
 
     const canvas = canvasRef.current;
     const link = document.createElement("a");
-    const filename = `certificate-${siswaData?.nama || 'unknown'}-${modulData?.judul || 'module'}-${nilaiData?.skor || 'score'}.png`;
+    const filename = `certificate-${siswaData?.nama || "unknown"}-${
+      modulData?.judul || "module"
+    }-${nilaiData?.skor || "score"}.png`;
     link.download = filename;
     link.href = canvas.toDataURL("image/png", 1.0);
     link.click();
@@ -483,7 +635,11 @@ const CetakSertifikat = () => {
               borderColor: `${greenTheme.primary} transparent ${greenTheme.primary} ${greenTheme.primary}`,
             }}
           />
-          <p className={`text-base sm:text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
+          <p
+            className={`text-base sm:text-lg ${
+              isDark ? "text-white" : "text-gray-800"
+            }`}
+          >
             Memuat data sertifikat...
           </p>
         </motion.div>
@@ -505,7 +661,9 @@ const CetakSertifikat = () => {
             <h3 className="text-base sm:text-lg font-semibold text-red-800 mb-2">
               Data Tidak Lengkap
             </h3>
-            <p className="text-sm sm:text-base text-red-700 mb-3 sm:mb-4">{error}</p>
+            <p className="text-sm sm:text-base text-red-700 mb-3 sm:mb-4">
+              {error}
+            </p>
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <button
                 onClick={() => navigate("/dashboard")}
@@ -592,15 +750,26 @@ const CetakSertifikat = () => {
                   <span style={{ color: greenTheme.primary }}>Cetak</span>{" "}
                   Sertifikat
                 </h1>
-                <p className={`text-sm sm:text-base break-words ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                <p
+                  className={`text-sm sm:text-base break-words ${
+                    isDark ? "text-gray-300" : "text-gray-600"
+                  }`}
+                >
                   GreenSys Learning Certificate
                 </p>
-                <p className={`text-xs sm:text-sm mt-1 break-words ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                <p
+                  className={`text-xs sm:text-sm mt-1 break-words ${
+                    isDark ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
                   {modulData?.judul}
                 </p>
                 {gradeInfo && (
                   <div className="flex flex-wrap items-center gap-2 mt-2">
-                    <span style={{ color: gradeInfo.color }} className="font-semibold text-sm sm:text-base">
+                    <span
+                      style={{ color: gradeInfo.color }}
+                      className="font-semibold text-sm sm:text-base"
+                    >
                       {gradeInfo.icon} {gradeInfo.grade}
                     </span>
                     <span className="text-xs sm:text-sm text-gray-500">
@@ -646,7 +815,9 @@ const CetakSertifikat = () => {
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                     <FaEye className="text-white text-lg sm:text-xl flex-shrink-0" />
                     <h2 className="text-base sm:text-lg lg:text-xl font-bold text-white truncate">
-                      <span className="hidden sm:inline">Preview Sertifikat Real-time</span>
+                      <span className="hidden sm:inline">
+                        Preview Sertifikat Real-time
+                      </span>
                       <span className="sm:hidden">Preview Sertifikat</span>
                     </h2>
                   </div>
@@ -673,7 +844,9 @@ const CetakSertifikat = () => {
                       <div className="text-center">
                         <FaSpinner className="text-2xl sm:text-3xl lg:text-4xl text-gray-400 animate-spin mx-auto mb-3 sm:mb-4" />
                         <p className="text-gray-600 text-sm sm:text-base">
-                          <span className="hidden sm:inline">Memuat template certificate...</span>
+                          <span className="hidden sm:inline">
+                            Memuat template certificate...
+                          </span>
                           <span className="sm:hidden">Memuat template...</span>
                         </p>
                       </div>
@@ -751,39 +924,56 @@ const CetakSertifikat = () => {
                   <div className="flex items-center gap-2 mb-3">
                     <FaCheckCircle className="text-green-600" />
                     <span className="font-medium text-green-800 text-sm sm:text-base">
-                      <span className="hidden sm:inline">Preview Real-time Certificate</span>
+                      <span className="hidden sm:inline">
+                        Preview Real-time Certificate
+                      </span>
                       <span className="sm:hidden">Preview Certificate</span>
                     </span>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                     <div>
                       <p className="text-gray-600">Nama Siswa:</p>
-                      <p className="font-medium text-gray-800 break-words">{siswaData?.nama || "Loading..."}</p>
+                      <p className="font-medium text-gray-800 break-words">
+                        {siswaData?.nama || "Loading..."}
+                      </p>
                     </div>
                     <div>
                       <p className="text-gray-600">NIS:</p>
-                      <p className="font-medium text-gray-800">{siswaData?.nis || "Loading..."}</p>
+                      <p className="font-medium text-gray-800">
+                        {siswaData?.nis || "Loading..."}
+                      </p>
                     </div>
                     <div className="sm:col-span-2">
                       <p className="text-gray-600">Modul:</p>
-                      <p className="font-medium text-gray-800 break-words">{modulData?.judul || "Loading..."}</p>
+                      <p className="font-medium text-gray-800 break-words">
+                        {modulData?.judul || "Loading..."}
+                      </p>
                     </div>
                     <div>
                       <p className="text-gray-600">Skor:</p>
                       <p className="font-medium text-gray-800">
-                        {nilaiData ? `${parseFloat(nilaiData.skor).toFixed(1)}/100` : "Loading..."}
+                        {nilaiData
+                          ? `${parseFloat(nilaiData.skor).toFixed(1)}/100`
+                          : "Loading..."}
                       </p>
                     </div>
                     <div>
                       <p className="text-gray-600">Jawaban Benar:</p>
                       <p className="font-medium text-gray-800">
-                        {nilaiData ? `${nilaiData.jumlahJawabanBenar}/${nilaiData.jumlahSoal}` : "Loading..."}
+                        {nilaiData
+                          ? `${nilaiData.jumlahJawabanBenar}/${nilaiData.jumlahSoal}`
+                          : "Loading..."}
                       </p>
                     </div>
                     <div>
                       <p className="text-gray-600">Grade:</p>
-                      <p className="font-medium break-words" style={{ color: gradeInfo?.color || "#6b7280" }}>
-                        {gradeInfo ? `${gradeInfo.icon} ${gradeInfo.grade}` : "Loading..."}
+                      <p
+                        className="font-medium break-words"
+                        style={{ color: gradeInfo?.color || "#6b7280" }}
+                      >
+                        {gradeInfo
+                          ? `${gradeInfo.icon} ${gradeInfo.grade}`
+                          : "Loading..."}
                       </p>
                     </div>
                     <div>
@@ -813,7 +1003,13 @@ const CetakSertifikat = () => {
               {!certificateData ? (
                 <motion.button
                   onClick={generateCertificate}
-                  disabled={generating || !siswaData || !modulData || !nilaiData || !canvasReady}
+                  disabled={
+                    generating ||
+                    !siswaData ||
+                    !modulData ||
+                    !nilaiData ||
+                    !canvasReady
+                  }
                   whileHover={{ scale: generating ? 1 : 1.02 }}
                   whileTap={{ scale: generating ? 1 : 0.98 }}
                   className={`flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-lg sm:rounded-xl font-medium text-white transition-all duration-300 shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto ${
@@ -1025,7 +1221,9 @@ const CetakSertifikat = () => {
                           isDark ? "text-white" : "text-gray-800"
                         }`}
                       >
-                        {nilaiData ? `${parseFloat(nilaiData.skor).toFixed(1)}/100` : "Loading..."}
+                        {nilaiData
+                          ? `${parseFloat(nilaiData.skor).toFixed(1)}/100`
+                          : "Loading..."}
                       </p>
                     </div>
                   </div>
@@ -1042,7 +1240,9 @@ const CetakSertifikat = () => {
                         isDark ? "text-white" : "text-gray-800"
                       }`}
                     >
-                      {nilaiData ? `${nilaiData.jumlahJawabanBenar} dari ${nilaiData.jumlahSoal} soal` : "Loading..."}
+                      {nilaiData
+                        ? `${nilaiData.jumlahJawabanBenar} dari ${nilaiData.jumlahSoal} soal`
+                        : "Loading..."}
                     </p>
                   </div>
                   <div>
@@ -1056,7 +1256,9 @@ const CetakSertifikat = () => {
                     <div className="flex items-center gap-2">
                       {gradeInfo && (
                         <>
-                          <span className="text-base sm:text-lg">{gradeInfo.icon}</span>
+                          <span className="text-base sm:text-lg">
+                            {gradeInfo.icon}
+                          </span>
                           <p
                             className="font-medium text-sm sm:text-base break-words"
                             style={{ color: gradeInfo.color }}
@@ -1187,7 +1389,9 @@ const CetakSertifikat = () => {
                     <p className="font-medium text-sm">
                       {error ? "Error!" : "Success!"}
                     </p>
-                    <p className="text-xs mt-1 break-words">{error || success}</p>
+                    <p className="text-xs mt-1 break-words">
+                      {error || success}
+                    </p>
                   </div>
                 </div>
                 <button
