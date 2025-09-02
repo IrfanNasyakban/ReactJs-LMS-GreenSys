@@ -470,7 +470,13 @@ const CetakSertifikat = () => {
   }, [siswaData, modulData, nilaiData]);
 
   const generateCertificate = async () => {
-    if (!siswaData?.id || !modulId || !nilaiId) {
+    if (
+      !siswaData?.id ||
+      !modulId ||
+      !nilaiId ||
+      !canvasReady ||
+      !canvasRef.current
+    ) {
       setError("Data tidak lengkap untuk generate sertifikat");
       return;
     }
@@ -478,6 +484,24 @@ const CetakSertifikat = () => {
     try {
       setGenerating(true);
       setError("");
+
+      // ✅ Get image data from canvas
+      const canvas = canvasRef.current;
+
+      // Ensure canvas is ready and has content
+      if (!canvas || canvas.width === 0 || canvas.height === 0) {
+        throw new Error("Canvas belum siap atau kosong");
+      }
+
+      // Convert canvas to base64 image data (PNG format, high quality)
+      const imageData = canvas.toDataURL("image/png", 1.0);
+
+      // Verify image data is valid
+      if (!imageData || imageData === "data:,") {
+        throw new Error("Gagal mengambil data gambar dari canvas");
+      }
+
+      console.log("Sending canvas image data to backend...");
 
       const token = localStorage.getItem("accessToken");
       const apiUrl = process.env.REACT_APP_URL_API;
@@ -488,7 +512,8 @@ const CetakSertifikat = () => {
         {
           siswaId: siswaData.id,
           modulId: parseInt(modulId),
-          nilaiId: parseInt(nilaiId), // ✅ Add nilaiId
+          nilaiId: parseInt(nilaiId),
+          imageData: imageData,
         },
         {
           headers: {
@@ -503,20 +528,24 @@ const CetakSertifikat = () => {
 
       // ✅ Show additional info from response
       if (response.data.additionalInfo) {
-        console.log(
-          "Certificate generated with grade:",
-          response.data.additionalInfo.grade
-        );
+        console.log("Certificate generated successfully:", {
+          certificateId: response.data.additionalInfo.certificateId,
+          grade: response.data.additionalInfo.gradeInfo?.grade,
+          fileInfo: response.data.additionalInfo.fileInfo,
+        });
       }
     } catch (error) {
       console.error("Error generating certificate:", error);
+
       if (error.response?.status === 400) {
-        setError(
+        const errorMsg =
           error.response.data.msg ||
-            "Certificate sudah ada atau data tidak valid"
-        );
+          "Data tidak valid atau certificate sudah ada";
+        setError(errorMsg);
       } else if (error.response?.status === 404) {
         setError("Data nilai atau modul tidak ditemukan");
+      } else if (error.message) {
+        setError(error.message);
       } else {
         setError("Gagal generate sertifikat. Silakan coba lagi.");
       }

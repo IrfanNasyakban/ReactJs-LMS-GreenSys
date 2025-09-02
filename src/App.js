@@ -169,7 +169,7 @@ const AppContent = () => {
 
               <Route path="/certificate" element={<ListCertificate />} />
 
-              <Route path="/pdf-viewer" element={<PDFViewer />} />
+              <Route path="/certificate-viewer" element={<PDFViewer />} />
 
               <Route path="/quiz" element={<ListQuiz />} />
               <Route path="/start-quiz/:groupId" element={<StartQuiz />} />

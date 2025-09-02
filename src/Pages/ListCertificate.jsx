@@ -185,15 +185,15 @@ const ListCertificate = () => {
 
   // ✅ FIXED: Updated to use proper PDF viewer route
   const handleViewCertificate = (url) => {
-    if (url) {
-      console.log("Opening PDF viewer for:", url);
-      // Use the same route pattern as mentioned in documents
-      navigate(`/pdf-viewer?pdfUrl=${encodeURIComponent(url)}`);
-    } else {
-      console.error("No certificate URL provided");
-      alert("URL sertifikat tidak tersedia");
-    }
-  };
+  if (url) {
+    console.log("Opening Image viewer for certificate:", url);
+    // Use image viewer route for PNG certificates
+    navigate(`/certificate-viewer?certificateUrl=${encodeURIComponent(url)}`);
+  } else {
+    console.error("No certificate URL provided");
+    alert("URL sertifikat tidak tersedia");
+  }
+};
 
   // ✅ FIXED: Updated download function with proxy support
   const handleDownloadCertificate = async (url, studentName) => {
