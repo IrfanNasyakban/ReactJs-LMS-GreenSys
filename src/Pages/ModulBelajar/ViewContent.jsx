@@ -1509,38 +1509,71 @@ const ViewContent = () => {
               >
                 {/* PDF Header */}
                 <div
-                  className="py-3 sm:py-4 px-4 sm:px-6"
+                  className="py-2.5 sm:py-4 px-3 sm:px-6"
                   style={{
                     backgroundColor: getColorWithOpacity('#dc2626', 0.1),
                   }}
                 >
-                  <div className="flex items-center justify-between gap-2">
+                  {/* Mobile Layout */}
+                  <div className="sm:hidden">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FaFilePdf style={{ color: '#dc2626' }} className="flex-shrink-0 text-base" />
+                        <h3
+                          className={`font-semibold text-sm truncate ${
+                            isDark ? "text-white" : "text-gray-800"
+                          }`}
+                          title={'Document.pdf'}
+                        >
+                          Document.pdf
+                        </h3>
+                      </div>
+                      <button
+                        onClick={() => setIsPdfExpanded(!isPdfExpanded)}
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                      >
+                        {isPdfExpanded ? <FaChevronUp className="text-xs" /> : <FaChevronDown className="text-xs" />}
+                        <span>{isPdfExpanded ? 'Tutup' : 'Buka'}</span>
+                      </button>
+                    </div>
+                    {isPdfExpanded && (
+                      <button
+                        onClick={downloadPdf}
+                        className="w-full flex items-center justify-center gap-1 px-3 py-1.5 text-xs bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
+                      >
+                        <FaDownload className="text-xs" />
+                        <span>Download PDF</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Desktop Layout */}
+                  <div className="hidden sm:flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <FaFilePdf style={{ color: '#dc2626' }} className="flex-shrink-0" />
+                      <FaFilePdf style={{ color: '#dc2626' }} className="flex-shrink-0 text-lg" />
                       <h3
-                        className={`font-semibold text-sm sm:text-lg truncate ${
+                        className={`font-semibold text-lg truncate ${
                           isDark ? "text-white" : "text-gray-800"
                         }`}
                         title={'Document.pdf'}
                       >
-                        <span className="hidden sm:inline">Materi PDF - </span>
-                        Document.pdf
+                        Materi PDF - Document.pdf
                       </h3>
                     </div>
-                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={downloadPdf}
-                        className="flex items-center gap-1 px-2 sm:px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors whitespace-nowrap"
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                       >
                         <FaDownload />
-                        <span className="hidden sm:inline">Download</span>
+                        <span>Download</span>
                       </button>
                       <button
                         onClick={() => setIsPdfExpanded(!isPdfExpanded)}
-                        className="flex items-center gap-1 px-2 sm:px-3 py-1 text-xs bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors whitespace-nowrap"
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
                       >
                         {isPdfExpanded ? <FaChevronUp /> : <FaChevronDown />}
-                        {isPdfExpanded ? 'Tutup' : 'Buka'}
+                        <span>{isPdfExpanded ? 'Tutup' : 'Buka'}</span>
                       </button>
                     </div>
                   </div>
@@ -1550,75 +1583,120 @@ const ViewContent = () => {
                 {isPdfExpanded && (
                   <div className="p-3 sm:p-6">
                     {isPdfLoading ? (
-                      <div className="text-center py-8 sm:py-12">
+                      <div className="text-center py-6 sm:py-12">
                         <div
                           className="w-8 h-8 sm:w-12 sm:h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-2 sm:mb-4"
                           style={{
                             borderColor: `#dc2626 transparent #dc2626 #dc2626`,
                           }}
                         />
-                        <p className={`text-base sm:text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
+                        <p className={`text-sm sm:text-lg ${isDark ? "text-white" : "text-gray-800"}`}>
                           Memuat PDF...
                         </p>
-                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
-                          Menggunakan proxy server untuk mengakses PDF
+                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-500"} mt-1`}>
+                          Menggunakan proxy server
                         </p>
                       </div>
                     ) : pdfError ? (
-                      <div className="text-center py-8 sm:py-12">
-                        <FaFilePdf className="text-red-400 text-4xl sm:text-6xl mx-auto mb-4" />
-                        <p className={`text-base sm:text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                      <div className="text-center py-6 sm:py-12">
+                        <FaFilePdf className="text-red-400 text-3xl sm:text-6xl mx-auto mb-3 sm:mb-4" />
+                        <p className={`text-sm sm:text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Gagal memuat PDF
                         </p>
-                        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-500"} mt-1`}>
                           {pdfError}
                         </p>
                         <button
                           onClick={() => convertPdfToImages(subModuleData.urlPdf)}
-                          className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
+                          className="mt-3 sm:mt-4 px-3 sm:px-4 py-1.5 sm:py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs sm:text-sm"
                         >
                           Coba Lagi
                         </button>
                       </div>
                     ) : pdfPages.length > 0 ? (
                       <div>
-                        {/* PDF Controls */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 mb-4 p-2 sm:p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                          <div className="flex items-center gap-2 w-full sm:w-auto">
+                        {/* PDF Controls - Mobile */}
+                        <div className="sm:hidden space-y-2 mb-3">
+                          {/* Page Navigation */}
+                          <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
                             <button
                               onClick={prevPage}
                               disabled={currentPdfPage === 0}
-                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 rounded-md bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <FaChevronLeft className="text-sm" />
+                              <FaChevronLeft className="text-xs" />
                             </button>
-                            <span className={`text-xs sm:text-sm flex-1 text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
-                              Halaman {currentPdfPage + 1} dari {pdfPages.length}
+                            <span className={`text-xs flex-1 text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                              {currentPdfPage + 1} / {pdfPages.length}
                             </span>
                             <button
                               onClick={nextPage}
                               disabled={currentPdfPage === pdfPages.length - 1}
-                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 rounded-md bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <FaChevronRight className="text-sm" />
+                              <FaChevronRight className="text-xs" />
                             </button>
                           </div>
                           
-                          <div className="flex items-center gap-2 w-full sm:w-auto justify-center">
+                          {/* Zoom Controls */}
+                          <div className="flex items-center justify-center gap-2 bg-gray-50 dark:bg-gray-700 p-2 rounded-lg">
                             <button
                               onClick={zoomOut}
                               disabled={pdfZoom <= 0.5}
-                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 rounded-md bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
-                              <FaSearchMinus className="text-sm" />
+                              <FaSearchMinus className="text-xs" />
                             </button>
-                            <span className={`text-xs sm:text-sm min-w-[50px] text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                            <span className={`text-xs min-w-[45px] text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                               {Math.round(pdfZoom * 100)}%
                             </span>
                             <button
                               onClick={zoomIn}
                               disabled={pdfZoom >= 3}
-                              className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                              className="p-1.5 rounded-md bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaSearchPlus className="text-xs" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* PDF Controls - Desktop */}
+                        <div className="hidden sm:flex items-center justify-between gap-3 mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={prevPage}
+                              disabled={currentPdfPage === 0}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaChevronLeft className="text-sm" />
+                            </button>
+                            <span className={`text-sm min-w-[120px] text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                              Halaman {currentPdfPage + 1} dari {pdfPages.length}
+                            </span>
+                            <button
+                              onClick={nextPage}
+                              disabled={currentPdfPage === pdfPages.length - 1}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaChevronRight className="text-sm" />
+                            </button>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={zoomOut}
+                              disabled={pdfZoom <= 0.5}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
+                            >
+                              <FaSearchMinus className="text-sm" />
+                            </button>
+                            <span className={`text-sm min-w-[60px] text-center ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                              {Math.round(pdfZoom * 100)}%
+                            </span>
+                            <button
+                              onClick={zoomIn}
+                              disabled={pdfZoom >= 3}
+                              className="p-2 rounded-lg bg-white dark:bg-gray-600 border disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                             >
                               <FaSearchPlus className="text-sm" />
                             </button>
@@ -1626,46 +1704,54 @@ const ViewContent = () => {
                         </div>
 
                         {/* PDF Page Display */}
-                        <div className="border rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                        <div className="border rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-800">
                           <div 
-                            className="flex justify-center p-2 sm:p-4 overflow-auto"
-                            style={{ maxHeight: '70vh' }}
+                            className="relative flex justify-center items-start p-2 sm:p-4 overflow-auto h-[50vh] sm:h-[70vh]"
                           >
-                            <img
-                              src={pdfPages[currentPdfPage]?.imageUrl}
-                              alt={`PDF Page ${currentPdfPage + 1}`}
-                              className="max-w-full h-auto shadow-lg"
-                              style={{ 
+                            <div 
+                              className="relative inline-block"
+                              style={{
                                 transform: `scale(${pdfZoom})`,
-                                transformOrigin: 'center center'
+                                transformOrigin: 'center top',
+                                transition: 'transform 0.2s ease'
                               }}
-                            />
+                            >
+                              <img
+                                src={pdfPages[currentPdfPage]?.imageUrl}
+                                alt={`PDF Page ${currentPdfPage + 1}`}
+                                className="shadow-lg rounded block max-h-[65vh] w-auto h-auto"
+                                style={{ 
+                                  maxWidth: pdfZoom > 1 ? 'none' : '90vw',
+                                  objectFit: 'contain'
+                                }}
+                              />
+                            </div>
                           </div>
                         </div>
 
                         {/* Page Thumbnails */}
                         {pdfPages.length > 1 && (
                           <div className="mt-3 sm:mt-4">
-                            <h4 className={`text-sm font-medium mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                              Halaman Lainnya:
+                            <h4 className={`text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                              Halaman:
                             </h4>
-                            <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2">
+                            <div className="flex gap-1 sm:gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
                               {pdfPages.map((page, index) => (
                                 <button
                                   key={index}
                                   onClick={() => goToPage(index)}
                                   className={`flex-shrink-0 relative ${
                                     index === currentPdfPage 
-                                      ? 'ring-2 ring-blue-500' 
+                                      ? 'ring-2 ring-red-500 shadow-md' 
                                       : 'hover:ring-1 hover:ring-gray-300'
-                                  } rounded transition-all`}
+                                  } rounded transition-all duration-200`}
                                 >
                                   <img
                                     src={page.imageUrl}
                                     alt={`Page ${index + 1}`}
-                                    className="w-12 h-16 sm:w-16 sm:h-20 object-cover rounded"
+                                    className="w-10 h-14 sm:w-16 sm:h-20 object-cover rounded"
                                   />
-                                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded-b">
+                                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs px-1 py-0.5 rounded-b text-center">
                                     {index + 1}
                                   </div>
                                 </button>
@@ -1675,12 +1761,12 @@ const ViewContent = () => {
                         )}
                       </div>
                     ) : (
-                      <div className="text-center py-8 sm:py-12">
-                        <MdPictureAsPdf className="text-gray-400 text-4xl sm:text-6xl mx-auto mb-4" />
-                        <p className={`text-base sm:text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
+                      <div className="text-center py-6 sm:py-12">
+                        <MdPictureAsPdf className="text-gray-400 text-3xl sm:text-6xl mx-auto mb-3 sm:mb-4" />
+                        <p className={`text-sm sm:text-lg ${isDark ? "text-gray-300" : "text-gray-600"}`}>
                           Tidak dapat memuat PDF
                         </p>
-                        <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                        <p className={`text-xs sm:text-sm ${isDark ? "text-gray-400" : "text-gray-500"} mt-1`}>
                           File PDF mungkin kosong atau tidak valid
                         </p>
                       </div>

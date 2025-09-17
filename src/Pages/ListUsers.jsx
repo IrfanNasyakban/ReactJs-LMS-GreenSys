@@ -410,7 +410,7 @@ const ListUsers = () => {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <button
+                          {/* <button
                             onClick={() => handleEdit(user.uuid)}
                             className="p-2 rounded-lg transition-all duration-300 hover:scale-110"
                             style={{ 
@@ -420,7 +420,7 @@ const ListUsers = () => {
                             title="Edit user"
                           >
                             <FaEdit />
-                          </button>
+                          </button> */}
                           <button
                             onClick={() => handleDeleteClick(user)}
                             className="p-2 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 transition-all duration-300 hover:scale-110"

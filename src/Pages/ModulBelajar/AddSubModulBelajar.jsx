@@ -928,7 +928,7 @@ const AddSubModulBelajar = () => {
                   <div className="flex items-center justify-between pt-6">
                     <motion.button
                       type="button"
-                      onClick={() => navigate(`/sub-modul-belajar/detail/${modulId}`)}
+                      onClick={() => navigate(`/modul-belajar/detail/${modulId}`)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className={`flex items-center gap-2 px-6 py-3 border rounded-xl text-sm font-medium transition-all duration-300 ${
