@@ -23,9 +23,7 @@ import {
   FaTimesCircle,
   FaSeedling
 } from "react-icons/fa";
-import { MdScience, MdEco, MdNaturePeople, MdSecurity, MdVerifiedUser } from "react-icons/md";
-import { GiPlantSeed } from "react-icons/gi";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { MdScience, MdEco, MdSecurity, MdVerifiedUser } from "react-icons/md";
 
 const GantiPassword = () => {
   const [oldPassword, setOldPassword] = useState("");

@@ -221,11 +221,6 @@ const AddSubModulBelajar = () => {
     setSuccess("");
 
     // Validation
-    if (!image) {
-      setError("Gambar cover wajib diupload untuk sub modul");
-      setIsSubmitting(false);
-      return;
-    }
 
     if (urlYoutube && !validateYouTubeURL(urlYoutube)) {
       setError("Link YouTube tidak valid. Format: https://youtube.com/watch?v=... atau https://youtu.be/...");
@@ -276,11 +271,7 @@ const AddSubModulBelajar = () => {
         
         switch (status) {
           case 400:
-            if (data.msg === "No File Uploaded") {
-              setError("Gambar cover wajib diupload");
-            } else {
-              setError(data.msg || "Data tidak valid");
-            }
+            setError(data.msg || "Data tidak valid");
             break;
           case 422:
             setError(data.msg || "Terjadi kesalahan validasi");
@@ -671,6 +662,12 @@ const AddSubModulBelajar = () => {
                       <h3 className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
                         Link Video YouTube
                       </h3>
+                      <span
+                        className={`text-sm px-2 py-1 rounded text-white`}
+                        style={{ backgroundColor: "#ef4444" }}
+                      >
+                        Wajib
+                      </span>
                     </div>
                     
                     <label className={`block text-sm font-medium mb-3 ${
@@ -725,6 +722,15 @@ const AddSubModulBelajar = () => {
                       <h3 className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-800'}`}>
                         Gambar Cover Sub Modul
                       </h3>
+                      <span
+                        className={`text-sm px-2 py-1 rounded ${
+                          isDark
+                            ? "bg-gray-700 text-gray-300"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        Opsional
+                      </span>
                     </div>
                     
                     <label className={`block text-sm font-medium mb-3 ${
@@ -818,7 +824,7 @@ const AddSubModulBelajar = () => {
                     )}
                     
                     <p className={`mt-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      ⚠️ Gambar cover wajib diupload untuk sub modul
+                      ⚠️ Gambar cover opsional diupload untuk sub modul
                     </p>
                   </div>
 
@@ -1148,7 +1154,7 @@ const AddSubModulBelajar = () => {
                       <div className="flex items-center gap-2">
                         <FaImage style={{ color: currentColor }} className="text-sm" />
                         <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                          Gambar cover wajib untuk setiap sub modul
+                          Gambar cover opsional untuk setiap sub modul
                         </span>
                       </div>
                       <div className="flex items-center gap-2">

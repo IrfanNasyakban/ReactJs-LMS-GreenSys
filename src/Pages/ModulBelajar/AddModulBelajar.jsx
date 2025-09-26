@@ -164,7 +164,7 @@ const AddModulBelajar = () => {
                   Buat <span style={{ color: currentColor }}>Modul Belajar</span> Baru
                 </h1>
                 <p className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                  Green Science Learning Management System - SMA 1 Lhokseumawe
+                  Green Science Learning Management System
                 </p>
               </div>
             </div>

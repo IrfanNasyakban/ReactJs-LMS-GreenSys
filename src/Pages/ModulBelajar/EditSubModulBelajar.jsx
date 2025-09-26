@@ -841,13 +841,10 @@ const EditSubModulBelajar = () => {
                         Link Video YouTube
                       </h3>
                       <span
-                        className={`text-sm px-2 py-1 rounded ${
-                          isDark
-                            ? "bg-gray-700 text-gray-300"
-                            : "bg-gray-100 text-gray-600"
-                        }`}
+                        className={`text-sm px-2 py-1 rounded text-white`}
+                        style={{ backgroundColor: "#ef4444" }}
                       >
-                        Opsional
+                        Wajib
                       </span>
                     </div>
 
@@ -930,10 +927,13 @@ const EditSubModulBelajar = () => {
                         Gambar Cover Sub Modul
                       </h3>
                       <span
-                        className={`text-sm px-2 py-1 rounded text-white`}
-                        style={{ backgroundColor: "#ef4444" }}
+                        className={`text-sm px-2 py-1 rounded ${
+                          isDark
+                            ? "bg-gray-700 text-gray-300"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
                       >
-                        Wajib
+                        Opsional
                       </span>
                     </div>
 
