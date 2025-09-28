@@ -33,4 +33,5 @@ export { default as ListDataNilai } from './Soal/ListDataNilai';
 export { default as NilaiSaya } from './Soal/NilaiSaya';
 export { default as DetailNilai } from './Soal/DetailNilai';
 
+export { default as RegisterPage } from './RegisterPage';
 export { default as Page404 } from './Page404';

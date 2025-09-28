@@ -174,7 +174,7 @@ const LoginPage = () => {
                   <button
                     type="button"
                     className="text-emerald-600 hover:text-emerald-700 text-sm font-semibold transition-colors duration-300"
-                    onClick={() => navigate("/page-not-found")}
+                    onClick={() => navigate("/register")}
                   >
                     Register
                   </button>

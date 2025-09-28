@@ -175,42 +175,47 @@ const ListModulBelajar = () => {
           className="mb-8"
         >
           <div
-            className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
+            className="p-4 sm:p-6 rounded-2xl shadow-lg backdrop-blur-sm border"
             style={{
               backgroundColor: getColorWithOpacity(currentColor, 0.4),
               borderColor: getColorWithOpacity(currentColor, 0.2),
             }}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+            {/* Mobile Layout (Stacked) */}
+            <div className="block sm:hidden">
+              <div className="flex items-center gap-3 mb-4">
                 <div
-                  className="p-3 rounded-full"
+                  className="p-2.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: currentColor }}
                 >
-                  <BsGrid3X3Gap className="text-white text-2xl" />
+                  <BsGrid3X3Gap className="text-white text-lg" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <h1
-                    className={`text-3xl font-bold ${
+                    className={`text-xl font-bold leading-tight ${
                       isDark ? "text-white" : "text-gray-800"
                     }`}
                   >
-                    <span style={{ color: currentColor }}>Modul Belajar</span>{" "}
+                    <span className="text-green-800">Modul Belajar</span>{" "}
+                    <br className="sm:hidden" />
                     Green Science
                   </h1>
                   <p
-                    className={`${isDark ? "text-gray-300" : "text-gray-600"}`}
+                    className={`text-xs mt-1 ${
+                      isDark ? "text-gray-300" : "text-gray-600"
+                    }`}
                   >
                     Koleksi Modul Pembelajaran
                   </p>
                 </div>
               </div>
+
               {user?.role !== "siswa" && (
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => navigate("/modul-belajar/add")}
-                  className="flex items-center gap-2 px-6 py-3 rounded-xl shadow-lg text-white font-medium transition-all duration-300 hover:shadow-xl"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl shadow-lg text-white font-medium text-sm transition-all duration-300 hover:shadow-xl"
                   style={{
                     background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
                       currentColor,
@@ -218,10 +223,108 @@ const ListModulBelajar = () => {
                     )} 100%)`,
                   }}
                 >
-                  <FaPlus />
+                  <FaPlus className="text-sm" />
                   Tambah Modul
                 </motion.button>
               )}
+            </div>
+
+            {/* Tablet Layout (Adjusted spacing) */}
+            <div className="hidden sm:block lg:hidden">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div
+                    className="p-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: currentColor }}
+                  >
+                    <BsGrid3X3Gap className="text-white text-xl" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h1
+                      className={`text-2xl font-bold ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      <span style={{ color: currentColor }}>Modul Belajar</span>{" "}
+                      Green Science
+                    </h1>
+                    <p
+                      className={`text-sm ${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      }`}
+                    >
+                      Koleksi Modul Pembelajaran
+                    </p>
+                  </div>
+                </div>
+
+                {user?.role !== "siswa" && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate("/modul-belajar/add")}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl shadow-lg text-white font-medium text-sm transition-all duration-300 hover:shadow-xl flex-shrink-0"
+                    style={{
+                      background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                        currentColor,
+                        0.8
+                      )} 100%)`,
+                    }}
+                  >
+                    <FaPlus className="text-sm" />
+                    <span className="hidden md:inline">Tambah Modul</span>
+                    <span className="md:hidden">Tambah</span>
+                  </motion.button>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Layout (Original) */}
+            <div className="hidden lg:block">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div
+                    className="p-3 rounded-full"
+                    style={{ backgroundColor: currentColor }}
+                  >
+                    <BsGrid3X3Gap className="text-white text-2xl" />
+                  </div>
+                  <div>
+                    <h1
+                      className={`text-3xl font-bold ${
+                        isDark ? "text-white" : "text-gray-800"
+                      }`}
+                    >
+                      <span style={{ color: currentColor }}>Modul Belajar</span>{" "}
+                      Green Science
+                    </h1>
+                    <p
+                      className={`${
+                        isDark ? "text-gray-300" : "text-gray-600"
+                      }`}
+                    >
+                      Koleksi Modul Pembelajaran
+                    </p>
+                  </div>
+                </div>
+                {user?.role !== "siswa" && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate("/modul-belajar/add")}
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl shadow-lg text-white font-medium transition-all duration-300 hover:shadow-xl"
+                    style={{
+                      background: `linear-gradient(135deg, ${currentColor} 0%, ${getColorWithOpacity(
+                        currentColor,
+                        0.8
+                      )} 100%)`,
+                    }}
+                  >
+                    <FaPlus />
+                    Tambah Modul
+                  </motion.button>
+                )}
+              </div>
             </div>
           </div>
         </motion.div>

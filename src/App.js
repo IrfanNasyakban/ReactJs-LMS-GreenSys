@@ -12,6 +12,7 @@ import { useStateContext } from "./contexts/ContextProvider";
 import "./App.css";
 import Homepage from "./Pages/Homepages/homepage";
 import LoginPage from "./Pages/LoginPage";
+import RegisterPage from "./Pages/RegisterPage";
 import ForgetPassword from "./Pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "./Pages/ForgetPassword/ResetPassword";
 
@@ -21,6 +22,7 @@ const AppContent = () => {
   const isHomepage = location.pathname === "/";
   const isError404 = location.pathname === "/page-not-found";
   const isLoginPage = location.pathname === "/login";
+  const isRegisterPage = location.pathname === "/register";
   const isForgetPassword = location.pathname === "/forget-password";
   const isResetPassword = location.pathname.startsWith("/reset-password/");
 
@@ -59,7 +61,7 @@ const AppContent = () => {
     <div className={`app-container ${currentMode === 'Dark' ? 'dark' : ''}`}>
       <div className="flex relative dark:bg-gray-900 bg-gray-50 min-h-screen">
         {/* Green Science Settings Button */}
-        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isError404 && (
+        {!isHomepage && !isLoginPage && !isRegisterPage && !isForgetPassword && !isResetPassword && !isError404 && (
           <div className="fixed right-4 bottom-4 z-[9999]">
             <button
               type="button"
@@ -87,7 +89,7 @@ const AppContent = () => {
         )}
 
         {/* Sidebar with Green Science Theme */}
-        {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isError404 && activeMenu ? (
+        {!isHomepage && !isLoginPage && !isRegisterPage && !isForgetPassword && !isResetPassword && !isError404 && activeMenu ? (
           <div 
             className="w-72 fixed sidebar transition-all duration-300 z-40"
             style={{
@@ -100,7 +102,7 @@ const AppContent = () => {
           >
             <Sidebar />
           </div>
-        ) : !isHomepage && !isLoginPage && !isForgetPassword && !isError404 && !isResetPassword ? (
+        ) : !isHomepage && !isLoginPage && !isRegisterPage && !isForgetPassword && !isError404 && !isResetPassword ? (
           <div className="w-0 transition-all duration-300">
             <Sidebar />
           </div>
@@ -109,7 +111,7 @@ const AppContent = () => {
         {/* Main Content Area */}
         <div
           className={`min-h-screen w-full transition-all duration-300 ${
-            activeMenu && !isHomepage && !isLoginPage && !isForgetPassword && !isError404 && !isResetPassword 
+            activeMenu && !isHomepage && !isLoginPage && !isRegisterPage && !isForgetPassword && !isError404 && !isResetPassword 
               ? "md:ml-72" 
               : "ml-0"
           }`}
@@ -120,7 +122,7 @@ const AppContent = () => {
           }}
         >
           {/* Navbar */}
-          {!isHomepage && !isLoginPage && !isForgetPassword && !isResetPassword && !isError404 && (
+          {!isHomepage && !isLoginPage && !isRegisterPage && !isForgetPassword && !isResetPassword && !isError404 && (
             <div 
               className="sticky top-0 w-full z-30 transition-all duration-300"
               style={{
@@ -143,6 +145,7 @@ const AppContent = () => {
               {/* Public Routes */}
               <Route path="/" element={<Homepage />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
               <Route path="/forget-password" element={<ForgetPassword />} />
               <Route path="/reset-password/:token" element={<ResetPassword />} />
               <Route path="/ganti-password" element={<GantiPassword />} />
@@ -202,7 +205,7 @@ const AppContent = () => {
           </div>
 
           {/* Footer */}
-          {!isHomepage && !isLoginPage && !isForgetPassword && !isError404 && !isResetPassword && <Footer />}
+          {!isHomepage && !isLoginPage && !isRegisterPage && !isForgetPassword && !isError404 && !isResetPassword && <Footer />}
         </div>
       </div>
 

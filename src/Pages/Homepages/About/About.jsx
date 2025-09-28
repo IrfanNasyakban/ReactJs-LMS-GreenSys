@@ -19,13 +19,13 @@ const VideoPlayer = memo(({
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
-      className={`relative ${isMain ? 'flex-1' : 'w-full sm:w-52 md:w-56 lg:w-64'}`} // Adjust width for responsiveness
+      className={`relative ${isMain ? 'w-full' : 'w-full sm:w-52 md:w-56 lg:w-64'}`}
     >
       <div className="backdrop-blur-xl rounded-2xl overflow-hidden border border-green-600/50 relative shadow-2xl hover:shadow-green-400/20 transition-all duration-500 group">
         {!isPlaying ? (
           <div className="relative">
             {/* Video container with proper aspect ratio */}
-            <div className='relative aspect-[9/16] w-full'>
+            <div className={`relative ${isMain ? 'aspect-[9/16]' : 'aspect-[9/16]'} w-full`}>
               <div 
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat cursor-pointer"
                 style={{
@@ -34,22 +34,22 @@ const VideoPlayer = memo(({
                 onClick={onPlay}
               >
                 {/* Gradient overlay */}
-                <div className="absolute inset-0" />
+                <div className="absolute inset-0 bg-black/20" />
                 
                 {/* Play button overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <motion.div 
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`rounded-full flex items-center justify-center transform transition-all duration-300 cursor-pointer shadow-2xl ${
-                      isMain ? 'w-20 h-20' : 'w-14 h-14'
+                    className={`bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transform transition-all duration-300 cursor-pointer shadow-2xl border border-white/30 ${
+                      isMain ? 'w-24 h-24' : 'w-14 h-14'
                     }`}
                     role="button"
                     aria-label="Play Video"
                     tabIndex="0"
                     onClick={onPlay}
                   >
-                    <FaPlay className={`text-white ${isMain ? 'text-2xl' : 'text-lg'} ml-1`} />
+                    <FaPlay className={`text-white ${isMain ? 'text-3xl' : 'text-lg'} ml-1`} />
                   </motion.div>
                 </div>
               </div>
@@ -58,14 +58,17 @@ const VideoPlayer = memo(({
             {/* Video info overlay */}
             <div className={`absolute ${isMain ? 'bottom-0 left-0 right-0 p-6' : 'bottom-0 left-0 right-0 p-4'}`}>
               <div className="space-y-2">
-                <h3 className={`text-white font-semibold ${isMain ? 'text-lg leading-tight' : 'text-sm leading-tight'} line-clamp-2`}>
+                <h3 className={`text-white font-semibold ${isMain ? 'text-xl leading-tight' : 'text-sm leading-tight'} line-clamp-2`}>
                   {title}
                 </h3>
+                {isMain && channelInfo && (
+                  <p className="text-green-200 text-sm opacity-90">{channelInfo}</p>
+                )}
               </div>
             </div>
           </div>
         ) : (
-          <div className='aspect-[9/16] w-full'>
+          <div className={`${isMain ? 'aspect-[9/16]' : 'aspect-[9/16]'} w-full`}>
             <iframe
               key={`video-${videoKey}-${videoId}`}
               className="w-full h-full rounded-2xl"
@@ -100,8 +103,31 @@ const About = () => {
   const handlePlayVideo1 = useCallback(() => handlePlayVideo('video1'), [handlePlayVideo]);
   const handlePlayVideo2 = useCallback(() => handlePlayVideo('video2'), [handlePlayVideo]);
 
+  // Configuration untuk video tambahan (set ke null atau undefined untuk menyembunyikan)
+  const additionalVideos = [
+    // Uncomment untuk menampilkan video tambahan
+    // {
+    //   videoId: "_Zh8TfEu0_w",
+    //   title: "Green Economy dalam Praktik - Pengelolaan Limbah Organik",
+    //   thumbnailUrl: "https://videolabs.id/wp-content/uploads/2024/01/IMG_2178.jpg",
+    //   videoKey: "video1",
+    //   channelInfo: "Eco Learning",
+    //   onPlay: handlePlayVideo1,
+    //   isPlaying: playingVideos.video1
+    // },
+    // {
+    //   videoId: "k9km8DvWVQ0",
+    //   title: "Peningkatan Literasi Sains Melalui Green Learning",
+    //   thumbnailUrl: "https://videolabs.id/wp-content/uploads/2024/01/IMG_2177.jpg",
+    //   videoKey: "video2",
+    //   channelInfo: "Science Education",
+    //   onPlay: handlePlayVideo2,
+    //   isPlaying: playingVideos.video2
+    // }
+  ].filter(Boolean); // Filter out null/undefined entries
+
   return (
-    <div className="bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 py-8 relative overflow-hidden min-h-screen">
+    <div className="bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 py-8 relative overflow-hidden min-h-screen font-homepage">
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
         {/* Geometric patterns */}
@@ -142,13 +168,13 @@ const About = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-start">
+        <div className={`grid grid-cols-1 ${additionalVideos.length > 0 ? 'lg:grid-cols-2' : 'lg:grid-cols-3'} gap-6 lg:gap-12 items-start`}>
           {/* Left Content - Mobile Optimized */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-6 lg:space-y-10"
+            className={`space-y-6 lg:space-y-10 ${additionalVideos.length > 0 ? '' : 'lg:col-span-2'}`}
           >
             <div className="space-y-4 lg:space-y-8">
               <motion.div
@@ -187,7 +213,7 @@ const About = () => {
             >
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-green-400/20 transition-all duration-300"
+                className="green-card bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-green-400/20 transition-all duration-300"
               >
                 <div className="flex items-center justify-center mb-2 lg:mb-3">
                   <FaUsers className="text-green-300 text-sm sm:text-lg lg:text-xl" />
@@ -198,7 +224,7 @@ const About = () => {
               
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-emerald-400/20 transition-all duration-300"
+                className="green-card bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-emerald-400/20 transition-all duration-300"
               >
                 <div className="flex items-center justify-center mb-2 lg:mb-3">
                   <FaVideo className="text-emerald-300 text-sm sm:text-lg lg:text-xl" />
@@ -209,7 +235,7 @@ const About = () => {
               
               <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-green-300/20 transition-all duration-300"
+                className="green-card bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 border border-white/20 text-center shadow-xl hover:shadow-green-300/20 transition-all duration-300"
               >
                 <div className="flex items-center justify-center mb-2 lg:mb-3">
                   <FaStar className="text-green-200 text-sm sm:text-lg lg:text-xl" />
@@ -224,7 +250,7 @@ const About = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8 }}
-              className="bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-8 border border-white/20 shadow-xl"
+              className="green-card bg-white/10 backdrop-blur-xl rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-8 border border-white/20 shadow-xl"
             >
               <div className="flex items-start space-x-3 lg:space-x-4">
                 <div className="bg-gradient-to-br from-green-300 to-emerald-400 p-2 lg:p-3 rounded-lg lg:rounded-xl flex-shrink-0">
@@ -251,50 +277,46 @@ const About = () => {
             </motion.div>
           </motion.div>
 
-          {/* Right Content - Enhanced Videos */}
+          {/* Right Content - Video Section */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex gap-8 items-start flex-wrap"
+            className={`${additionalVideos.length > 0 ? 'flex gap-8 items-start flex-wrap' : 'w-full'}`}
           >
-            {/* Main Video (Left) */}
-            <VideoPlayer 
-              videoId="WfcPyvLwajI"
-              title="Pembelajaran IPA Berkelanjutan - Testimoni Siswa GreenSys"
-              thumbnailUrl="https://videolabs.id/wp-content/uploads/2024/01/IMG_2176.jpg"
-              isMain={true}
-              delay={0.4}
-              videoKey="main"
-              channelInfo="GreenSys Official"
-              isPlaying={playingVideos.main}
-              onPlay={handlePlayMain}
-            />
-
-            {/* Videos Stack (Right) */}
-            <div className="flex flex-col gap-8 w-full md:w-auto">
+            {/* Main Video */}
+            <div className={`${additionalVideos.length > 0 ? 'flex-1' : 'w-full max-w-4xl mx-auto'}`}>
               <VideoPlayer 
-                videoId="_Zh8TfEu0_w"
-                title="Green Economy dalam Praktik - Pengelolaan Limbah Organik"
-                thumbnailUrl="https://videolabs.id/wp-content/uploads/2024/01/IMG_2178.jpg"
-                delay={0.6}
-                videoKey="video1"
-                channelInfo="Eco Learning"
-                isPlaying={playingVideos.video1}
-                onPlay={handlePlayVideo1}
-              />
-              
-              <VideoPlayer 
-                videoId="k9km8DvWVQ0"
-                title="Peningkatan Literasi Sains Melalui Green Learning"
-                thumbnailUrl="https://videolabs.id/wp-content/uploads/2024/01/IMG_2177.jpg"
-                delay={0.8}
-                videoKey="video2"
-                channelInfo="Science Education"
-                isPlaying={playingVideos.video2}
-                onPlay={handlePlayVideo2}
+                videoId="lRV-oj_a9kA"
+                title="Pembelajaran IPA Berkelanjutan - Testimoni Guru GreenSys"
+                thumbnailUrl="https://i.postimg.cc/mkBFsyqw/Screenshot-2025-09-28-090411.png"
+                isMain={true}
+                delay={0.4}
+                videoKey="main"
+                channelInfo="GreenSys Official"
+                isPlaying={playingVideos.main}
+                onPlay={handlePlayMain}
               />
             </div>
+
+            {/* Additional Videos (if any) */}
+            {additionalVideos.length > 0 && (
+              <div className="flex flex-col gap-8 w-full md:w-auto">
+                {additionalVideos.map((video, index) => (
+                  <VideoPlayer
+                    key={video.videoKey}
+                    videoId={video.videoId}
+                    title={video.title}
+                    thumbnailUrl={video.thumbnailUrl}
+                    delay={0.6 + (index * 0.2)}
+                    videoKey={video.videoKey}
+                    channelInfo={video.channelInfo}
+                    isPlaying={video.isPlaying}
+                    onPlay={video.onPlay}
+                  />
+                ))}
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

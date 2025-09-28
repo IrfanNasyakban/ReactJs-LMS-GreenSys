@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +23,7 @@ import {
   FaPlay,
   FaCheckCircle
 } from "react-icons/fa";
-import { MdScience, MdEco, MdNaturePeople } from "react-icons/md";
+import { MdScience, MdEco } from "react-icons/md";
 import { GiPlantSeed } from "react-icons/gi";
 
 const Dashboard = () => {
@@ -94,6 +95,8 @@ const Dashboard = () => {
           title: "Modul Green Science",
           subtitle: "Pembelajaran IPA berkelanjutan",
           color: currentColor,
+          navigateTo: "/modul-belajar",
+          onClick: () => navigate("/modul-belajar")
         },
         {
           icon: <FaPencilAlt />,
@@ -101,6 +104,8 @@ const Dashboard = () => {
           title: "Bank Soal Eco-Learning",
           subtitle: "Evaluasi berbasis lingkungan",
           color: currentColor,
+          navigateTo: "/data-soal",
+          onClick: () => navigate("/data-soal")
         },
         {
           icon: <FaUsers />,
@@ -108,6 +113,8 @@ const Dashboard = () => {
           title: "Green Learners",
           subtitle: "Siswa masa depan berkelanjutan",
           color: currentColor,
+          navigateTo: "/siswa",
+          onClick: () => navigate("/siswa")
         },
         {
           icon: <FaChalkboardTeacher />,
@@ -115,6 +122,8 @@ const Dashboard = () => {
           title: "Green Educators",
           subtitle: "Guru ramah lingkungan",
           color: currentColor,
+          navigateTo: "/guru",
+          onClick: () => navigate("/guru")
         },
       ];
     }
@@ -334,6 +343,7 @@ const Dashboard = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.1 * index }}
               className="group cursor-pointer"
+              onClick={item.onClick}
             >
               <div 
                 className="p-6 rounded-2xl shadow-lg backdrop-blur-sm border transition-all duration-300 hover:shadow-xl hover:scale-105"
